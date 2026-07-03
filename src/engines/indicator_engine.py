@@ -5,6 +5,8 @@ from indicators.bollinger import calculate_bollinger
 from indicators.atr import calculate_atr
 from indicators.adx import calculate_adx
 from indicators.volume import calculate_volume_sma
+from indicators.support_resistance import calculate_support_resistance
+from indicators.candlestick import detect_candle_pattern
 
 
 def calculate_indicators(df):
@@ -27,8 +29,14 @@ def calculate_indicators(df):
 
     #ADX
     df["ADX14"] = calculate_adx(df)
-    
+
     #VOLUME
     df["VOL_SMA20"] = calculate_volume_sma(df)
+
+    #SUPPORT AND RESISTANCE
+    df["SUPPORT"], df["RESISTANCE"] = calculate_support_resistance(df)
+
+    #CANDLE PATTERN
+    df["CANDLE_PATTERN"] = detect_candle_pattern(df)
 
     return df

@@ -4,6 +4,7 @@ from plugins.binance_data import get_live_price, download_klines
 from engines.indicator_engine import calculate_indicators
 from strategies.signal import generate_signal
 from engines.risk_engine import calculate_risk_levels
+
 import os
 
 
@@ -55,6 +56,9 @@ def start():
     print("ADX14      :", round(df["ADX14"].iloc[-1], 2))
     print("Volume     :", round(df["volume"].iloc[-1], 2))
     print("Vol SMA20  :", round(df["VOL_SMA20"].iloc[-1], 2))
+    print("Support    :", round(df["SUPPORT"].iloc[-1], 2))
+    print("Resistance :", round(df["RESISTANCE"].iloc[-1], 2))
+    print("Candle     :", df["CANDLE_PATTERN"].iloc[-1])
 
     signal = generate_signal(
         df["EMA20"].iloc[-1],
@@ -63,7 +67,7 @@ def start():
         df["MACD"].iloc[-1],
         df["MACD_SIGNAL"].iloc[-1]
     )
-    
+
     if df["volume"].iloc[-1] > df["VOL_SMA20"].iloc[-1]:
         print("Volume Confirmation : YES")
     else:
