@@ -1,10 +1,9 @@
 from utils.banner import show_banner
 from utils.system import show_system_info
 from plugins.binance_data import get_live_price, download_klines
-from indicators.ema import calculate_ema
-from indicators.rsi import calculate_rsi
-from indicators.macd import calculate_macd
+from engines.indicator_engine import calculate_indicators
 from strategies.signal import generate_signal
+from engines.risk_engine import calculate_risk_levels
 import os
 
 
@@ -38,31 +37,24 @@ def start():
     print("File saved: data/BTCUSDT/1h.csv")
 
     print()
-    print("Calculating EMA...")
+    print("Calculating Indicators...")
 
-    df["EMA20"] = calculate_ema(df, 20)
-    df["EMA50"] = calculate_ema(df, 50)
-    df["EMA200"] = calculate_ema(df, 200)
+    df = calculate_indicators(df)
 
-    print("EMA20 :", round(df["EMA20"].iloc[-1], 2))
-    print("EMA50 :", round(df["EMA50"].iloc[-1], 2))
-    print("EMA200:", round(df["EMA200"].iloc[-1], 2))
-
-    print()
-    print("Calculating RSI...")
-
-    df["RSI14"] = calculate_rsi(df, 14)
-
-    print("RSI14 :", round(df["RSI14"].iloc[-1], 2))
-
-    print()
-    print("Calculating MACD...")
-
-    df["MACD"], df["MACD_SIGNAL"], df["MACD_HIST"] = calculate_macd(df)
-
+    print("EMA20      :", round(df["EMA20"].iloc[-1], 2))
+    print("EMA50      :", round(df["EMA50"].iloc[-1], 2))
+    print("EMA200     :", round(df["EMA200"].iloc[-1], 2))
+    print("RSI14      :", round(df["RSI14"].iloc[-1], 2))
     print("MACD       :", round(df["MACD"].iloc[-1], 2))
-    print("Signal     :", round(df["MACD_SIGNAL"].iloc[-1], 2))
+    print("MACD Signal:", round(df["MACD_SIGNAL"].iloc[-1], 2))
     print("Histogram  :", round(df["MACD_HIST"].iloc[-1], 2))
+    print("BB Upper   :", round(df["BB_UPPER"].iloc[-1], 2))
+    print("BB Middle  :", round(df["BB_MIDDLE"].iloc[-1], 2))
+    print("BB Lower   :", round(df["BB_LOWER"].iloc[-1], 2))
+    print("ATR14      :", round(df["ATR14"].iloc[-1], 2))
+    print("ADX14      :", round(df["ADX14"].iloc[-1], 2))
+    print("Volume     :", round(df["volume"].iloc[-1], 2))
+    print("Vol SMA20  :", round(df["VOL_SMA20"].iloc[-1], 2))
 
     signal = generate_signal(
         df["EMA20"].iloc[-1],
@@ -71,8 +63,37 @@ def start():
         df["MACD"].iloc[-1],
         df["MACD_SIGNAL"].iloc[-1]
     )
+    
+    if df["volume"].iloc[-1] > df["VOL_SMA20"].iloc[-1]:
+        print("Volume Confirmation : YES")
+    else:
+        print("Volume Confirmation : NO")
 
     print()
     print("Signal Analysis")
     print("----------------")
     print("Signal :", signal)
+
+    entry_price = df["close"].iloc[-1]
+    atr = df["ATR14"].iloc[-1]
+
+    stop_loss, take_profit = calculate_risk_levels(entry_price, atr, signal)
+
+    print()
+    print("Risk Levels")
+    print("-----------")
+    print("Entry Price :", round(entry_price, 2))
+
+    print()
+
+    if df["ADX14"].iloc[-1] > 25:
+        print("Trend Strength : STRONG")
+    else:
+        print("Trend Strength : WEAK")
+
+    if signal != "HOLD":
+        print("Stop Loss   :", round(stop_loss, 2))
+        print("Take Profit :", round(take_profit, 2))
+        print("Risk Reward : 1:2")
+    else:
+        print("No trade setup. Waiting for BUY or SELL signal.")
