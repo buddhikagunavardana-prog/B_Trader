@@ -1,0 +1,17 @@
+TOP_15_USDT_PAIRS = [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "DOGEUSDT",
+    "AVAXUSDT",
+    "LINKUSDT",
+    "TRXUSDT",
+    "DOTUSDT",
+    "LTCUSDT",
+    "BCHUSDT",
+    "SUIUSDT",
+    "NEARUSDT",
+]
