@@ -8,7 +8,6 @@ from strategies.signal import generate_signal
 import os
 
 
-
 def start():
     show_banner()
 
@@ -65,15 +64,13 @@ def start():
     print("Signal     :", round(df["MACD_SIGNAL"].iloc[-1], 2))
     print("Histogram  :", round(df["MACD_HIST"].iloc[-1], 2))
 
-    print("Signal Analysis...")
-
     signal = generate_signal(
-    df["EMA20"].iloc[-1],
-    df["EMA50"].iloc[-1],
-    df["RSI14"].iloc[-1],
-    df["MACD"].iloc[-1],
-    df["MACD_SIGNAL"].iloc[-1]
-)
+        df["EMA20"].iloc[-1],
+        df["EMA50"].iloc[-1],
+        df["RSI14"].iloc[-1],
+        df["MACD"].iloc[-1],
+        df["MACD_SIGNAL"].iloc[-1]
+    )
 
     print()
     print("Signal Analysis")
