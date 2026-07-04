@@ -47,10 +47,13 @@ class MultiPairAnalyzer:
                 "Pair": symbol,
                 "SL %": best["SL %"],
                 "TP %": best["TP %"],
+
                 "Initial Balance": best["Initial Balance"],
                 "Final Balance": best["Final Balance"],
                 "Net Profit": best["Net Profit"],
                 "ROI %": best["ROI %"],
+                "Max Drawdown %": best["Max Drawdown %"],
+
                 "Profit Factor": best["Profit Factor"],
                 "Total PnL %": best["Total PnL %"],
                 "Win Rate %": best["Win Rate %"],

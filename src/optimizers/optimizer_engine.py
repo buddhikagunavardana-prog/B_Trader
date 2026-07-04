@@ -45,6 +45,7 @@ class OptimizerEngine:
                     "Gross Loss": result_dict["gross_loss"],
                     "Net Profit": result_dict["net_profit"],
                     "ROI %": result_dict["roi_pct"],
+                    "Max Drawdown %": result_dict["max_drawdown_pct"],
                     "Fees Paid": result_dict["total_fees"],
                     "Total Trades": result_dict["total_trades"],
                     "Wins": result_dict["wins"],

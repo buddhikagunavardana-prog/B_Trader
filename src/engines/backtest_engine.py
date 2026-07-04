@@ -82,6 +82,32 @@ class BacktestEngine:
     def _calculate_fee(self, amount):
         return amount * (self.fee_pct / 100)
 
+    def _record_equity(self, time):
+        self.equity_curve.append({
+            "time": time,
+            "balance": round(self.balance, 2)
+        })
+
+    def _calculate_max_drawdown_pct(self):
+        if not self.equity_curve:
+            return 0.0
+
+        peak = self.equity_curve[0]["balance"]
+        max_drawdown = 0.0
+
+        for point in self.equity_curve:
+            balance = point["balance"]
+
+            if balance > peak:
+                peak = balance
+
+            if peak > 0:
+                drawdown = ((balance - peak) / peak) * 100
+                if drawdown < max_drawdown:
+                    max_drawdown = drawdown
+
+        return max_drawdown
+
     def run(self, df, signals):
         self.balance = self.initial_balance
         self.trades = []
@@ -97,16 +123,14 @@ class BacktestEngine:
             signal = signals.iloc[i]
             current_price = float(candle["close"])
 
-            self.equity_curve.append({
-                "time": candle.name,
-                "balance": round(self.balance, 2)
-            })
+            self._record_equity(candle.name)
 
             if position is None and signal == "BUY":
                 entry_price = current_price
                 buy_fee = self._calculate_fee(self.balance)
 
                 self.balance -= buy_fee
+                self._record_equity(candle.name)
 
                 position = {
                     "entry_index": i,
@@ -165,6 +189,7 @@ class BacktestEngine:
                     }
 
                     self.trades.append(trade)
+                    self._record_equity(candle.name)
                     position = None
 
         return self.get_results()
@@ -202,6 +227,8 @@ class BacktestEngine:
             ((100 - win_rate) / 100) * avg_loss
         ) if total_trades > 0 else 0
 
+        max_drawdown_pct = self._calculate_max_drawdown_pct()
+
         return BacktestResult(
             initial_balance=self.initial_balance,
             final_balance=self.balance,
@@ -216,6 +243,7 @@ class BacktestEngine:
             total_pnl_pct=total_pnl_pct,
             profit_factor=profit_factor,
             total_fees=total_fees,
+            max_drawdown_pct=max_drawdown_pct,
             avg_win=avg_win,
             avg_loss=avg_loss,
             largest_win=largest_win,
