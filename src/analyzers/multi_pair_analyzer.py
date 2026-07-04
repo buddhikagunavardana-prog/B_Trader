@@ -13,9 +13,15 @@ class MultiPairAnalyzer:
         symbols,
         interval="1h",
         start_str="1 year ago UTC",
-        sl_values=[1, 1.5, 2, 2.5],
-        tp_values=[2, 3, 4, 5]
+        sl_values=None,
+        tp_values=None
     ):
+
+        if sl_values is None:
+            sl_values = [1, 1.5, 2, 2.5]
+
+        if tp_values is None:
+            tp_values = [2, 3, 4, 5]
 
         final_results = []
 
@@ -38,20 +44,17 @@ class MultiPairAnalyzer:
             best = results.iloc[0]
 
             final_results.append({
-
                 "Pair": symbol,
-
                 "SL %": best["SL %"],
                 "TP %": best["TP %"],
-
+                "Initial Balance": best["Initial Balance"],
+                "Final Balance": best["Final Balance"],
+                "Net Profit": best["Net Profit"],
+                "ROI %": best["ROI %"],
                 "Profit Factor": best["Profit Factor"],
-
                 "Total PnL %": best["Total PnL %"],
-
                 "Win Rate %": best["Win Rate %"],
-
                 "Trades": best["Total Trades"]
-
             })
 
         return final_results
