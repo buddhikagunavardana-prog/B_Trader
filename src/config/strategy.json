@@ -1,0 +1,61 @@
+{
+    "name": "EMA_RSI_PRO",
+    "version": "1.0.0",
+    "exchange": "Binance",
+    "market_type": "spot",
+    "quote_asset": "USDT",
+    "timeframe": "1h",
+    "symbols": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT"
+    ],
+    "indicators": {
+        "ema": {
+            "enabled": true,
+            "fast": 10,
+            "slow": 50,
+            "trend": 200
+        },
+        "rsi": {
+            "enabled": true,
+            "period": 14,
+            "buy": 55,
+            "sell": 45
+        },
+        "macd": {
+            "enabled": true,
+            "fast": 12,
+            "slow": 26,
+            "signal": 9
+        },
+        "atr": {
+            "enabled": true,
+            "period": 14,
+            "multiplier": 2
+        }
+    },
+    "entry_rules": {
+        "ema_cross": true,
+        "ema200_filter": true,
+        "rsi_filter": true,
+        "macd_confirmation": true
+    },
+    "exit_rules": {
+        "stop_loss_type": "percent",
+        "stop_loss_percent": 1.5,
+        "take_profit_type": "percent",
+        "take_profit_percent": 4,
+        "risk_reward": 2,
+        "trailing_stop": false
+    },
+    "risk": {
+        "risk_per_trade": 2,
+        "max_daily_loss": 5,
+        "max_drawdown": 20,
+        "max_open_trades": 3
+    },
+    "signal_scoring": {
+        "minimum_score": 75
+    }
+}

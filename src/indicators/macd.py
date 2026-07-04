@@ -1,12 +1,29 @@
 import pandas as pd
 
 
-def calculate_macd(df: pd.DataFrame):
-    ema12 = df["close"].ewm(span=12, adjust=False).mean()
-    ema26 = df["close"].ewm(span=26, adjust=False).mean()
+def calculate_macd(
+    df: pd.DataFrame,
+    fast: int = 12,
+    slow: int = 26,
+    signal: int = 9
+):
+    ema_fast = df["close"].ewm(
+        span=fast,
+        adjust=False
+    ).mean()
 
-    macd = ema12 - ema26
-    signal = macd.ewm(span=9, adjust=False).mean()
-    histogram = macd - signal
+    ema_slow = df["close"].ewm(
+        span=slow,
+        adjust=False
+    ).mean()
 
-    return macd, signal, histogram
+    macd = ema_fast - ema_slow
+
+    signal_line = macd.ewm(
+        span=signal,
+        adjust=False
+    ).mean()
+
+    histogram = macd - signal_line
+
+    return macd, signal_line, histogram
