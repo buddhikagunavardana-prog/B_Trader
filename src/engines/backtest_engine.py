@@ -115,6 +115,7 @@ class BacktestEngine:
 
         position = None
 
+                    
         stop_loss_pct = self._resolve_stop_loss_pct() / 100
         take_profit_pct = self._resolve_take_profit_pct() / 100
 
@@ -172,22 +173,37 @@ class BacktestEngine:
                     total_trade_fee = position["buy_fee"] + sell_fee
 
                     trade = {
-                        "entry_time": position["entry_time"],
-                        "exit_time": candle.name,
-                        "entry_price": round(entry_price, 6),
-                        "exit_price": round(exit_price, 6),
-                        "result": result,
-                        "gross_pnl_pct": round(gross_pnl_pct, 2),
-                        "pnl_pct": round(gross_pnl_pct, 2),
-                        "gross_pnl_amount": round(gross_pnl_amount, 2),
-                        "pnl_amount": round(net_pnl_amount, 2),
-                        "buy_fee": round(position["buy_fee"], 2),
-                        "sell_fee": round(sell_fee, 2),
-                        "total_fee": round(total_trade_fee, 2),
-                        "balance_before": round(position["balance_before"], 2),
-                        "balance_after": round(self.balance, 2)
-                    }
+    "trade_id": len(self.trades) + 1,
 
+    "direction": "LONG",
+    "result": result,
+    "exit_reason": "STOP_LOSS" if result == "LOSS" else "TAKE_PROFIT",
+
+    "entry_index": position["entry_index"],
+    "exit_index": i,
+    "duration_candles": i - position["entry_index"],
+
+    "entry_time": position["entry_time"],
+    "exit_time": candle.name,
+
+    "entry_price": round(entry_price, 6),
+    "exit_price": round(exit_price, 6),
+    "stop_loss": round(position["stop_loss"], 6),
+    "take_profit": round(position["take_profit"], 6),
+
+    "gross_pnl_pct": round(gross_pnl_pct, 2),
+    "pnl_pct": round(gross_pnl_pct, 2),
+
+    "gross_pnl_amount": round(gross_pnl_amount, 2),
+    "pnl_amount": round(net_pnl_amount, 2),
+
+    "buy_fee": round(position["buy_fee"], 2),
+    "sell_fee": round(sell_fee, 2),
+    "total_fee": round(total_trade_fee, 2),
+
+    "balance_before": round(position["balance_before"], 2),
+    "balance_after": round(self.balance, 2),
+}
                     self.trades.append(trade)
                     self._record_equity(candle.name)
                     position = None

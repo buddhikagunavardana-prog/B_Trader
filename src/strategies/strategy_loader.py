@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from strategies.strategy_model import Strategy
-from strategies.strategy_validator import validate_strategy
+from src.strategies.strategy_model import Strategy
+from src.strategies.strategy_validator import validate_strategy
 
 
 def load_strategy(config_path: str = "src/config/strategy.json") -> Strategy:
