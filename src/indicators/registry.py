@@ -8,6 +8,12 @@ from src.indicators.trend.vwma import calculate_vwma
 
 from src.indicators.momentum.rsi import calculate_rsi
 from src.indicators.momentum.macd import calculate_macd
+from src.indicators.momentum.stochastic import calculate_stochastic
+from src.indicators.momentum.stochastic_rsi import calculate_stochastic_rsi
+from src.indicators.momentum.cci import calculate_cci
+from src.indicators.momentum.williams_r import calculate_williams_r
+from src.indicators.momentum.roc import calculate_roc
+from src.indicators.momentum.momentum import calculate_momentum
 
 from src.indicators.volatility.atr import calculate_atr
 from src.indicators.volatility.bollinger import calculate_bollinger_bands
@@ -35,7 +41,13 @@ INDICATOR_REGISTRY = {
 
     # Momentum
     "rsi": calculate_rsi,
-    "macd": calculate_macd,
+    "macd": calculate_macd,# Momentum
+    "stochastic": calculate_stochastic,
+    "stochastic_rsi": calculate_stochastic_rsi,
+    "cci": calculate_cci,
+    "williams_r": calculate_williams_r,
+    "roc": calculate_roc,
+    "momentum": calculate_momentum,
 
     # Volatility
     "atr": calculate_atr,
