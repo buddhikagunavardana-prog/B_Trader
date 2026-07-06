@@ -22,6 +22,11 @@ from src.indicators.volatility.donchian import calculate_donchian_channel
 from src.indicators.volatility.chaikin import calculate_chaikin_volatility
 
 from src.indicators.volume.volume import calculate_volume_indicators
+from src.indicators.volume.obv import calculate_obv
+from src.indicators.volume.mfi import calculate_mfi
+from src.indicators.volume.cmf import calculate_cmf
+from src.indicators.volume.vwap import calculate_vwap
+from src.indicators.volume.adl import calculate_adl
 
 from src.indicators.structure.support_resistance import calculate_support_resistance
 
@@ -61,6 +66,11 @@ INDICATOR_REGISTRY = {
 
     # Volume
     "volume": calculate_volume_indicators,
+    "obv": calculate_obv,
+    "mfi": calculate_mfi,
+    "cmf": calculate_cmf,
+    "vwap": calculate_vwap,
+    "adl": calculate_adl,
 
     # Structure
     "support_resistance": calculate_support_resistance,
