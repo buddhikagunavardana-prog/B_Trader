@@ -17,6 +17,9 @@ from src.indicators.momentum.momentum import calculate_momentum
 
 from src.indicators.volatility.atr import calculate_atr
 from src.indicators.volatility.bollinger import calculate_bollinger_bands
+from src.indicators.volatility.keltner import calculate_keltner_channel
+from src.indicators.volatility.donchian import calculate_donchian_channel
+from src.indicators.volatility.chaikin import calculate_chaikin_volatility
 
 from src.indicators.volume.volume import calculate_volume_indicators
 
@@ -52,6 +55,9 @@ INDICATOR_REGISTRY = {
     # Volatility
     "atr": calculate_atr,
     "bollinger": calculate_bollinger_bands,
+    "keltner": calculate_keltner_channel,
+    "donchian": calculate_donchian_channel,
+    "chaikin_volatility": calculate_chaikin_volatility,
 
     # Volume
     "volume": calculate_volume_indicators,
