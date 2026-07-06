@@ -8,7 +8,8 @@ class BacktestEngine:
         initial_balance=10000,
         stop_loss_pct=None,
         take_profit_pct=None,
-        fee_pct=0.0
+        fee_pct=0.0,
+        position_size_percent=100
     ):
         self.strategy = strategy
         self.initial_balance = float(initial_balance)
@@ -17,6 +18,7 @@ class BacktestEngine:
         self.stop_loss_pct = stop_loss_pct
         self.take_profit_pct = take_profit_pct
         self.fee_pct = float(fee_pct)
+        self.position_size_percent = float(position_size_percent)
 
         self.trades = []
         self.equity_curve = []
@@ -103,6 +105,7 @@ class BacktestEngine:
 
             if peak > 0:
                 drawdown = ((balance - peak) / peak) * 100
+
                 if drawdown < max_drawdown:
                     max_drawdown = drawdown
 
@@ -115,7 +118,6 @@ class BacktestEngine:
 
         position = None
 
-                    
         stop_loss_pct = self._resolve_stop_loss_pct() / 100
         take_profit_pct = self._resolve_take_profit_pct() / 100
 
@@ -128,10 +130,9 @@ class BacktestEngine:
 
             if position is None and signal == "BUY":
                 entry_price = current_price
-                buy_fee = self._calculate_fee(self.balance)
 
-                self.balance -= buy_fee
-                self._record_equity(candle.name)
+                trade_capital = self.balance * (self.position_size_percent / 100)
+                buy_fee = self._calculate_fee(trade_capital)
 
                 position = {
                     "entry_index": i,
@@ -139,7 +140,8 @@ class BacktestEngine:
                     "entry_price": entry_price,
                     "stop_loss": entry_price * (1 - stop_loss_pct),
                     "take_profit": entry_price * (1 + take_profit_pct),
-                    "balance_before": self.balance + buy_fee,
+                    "balance_before": self.balance,
+                    "trade_capital": trade_capital,
                     "buy_fee": buy_fee
                 }
 
@@ -162,50 +164,55 @@ class BacktestEngine:
                     entry_price = position["entry_price"]
 
                     gross_pnl_pct = ((exit_price - entry_price) / entry_price) * 100
-                    gross_pnl_amount = self.balance * (gross_pnl_pct / 100)
+                    gross_pnl_amount = position["trade_capital"] * (gross_pnl_pct / 100)
 
-                    balance_after_gross_pnl = self.balance + gross_pnl_amount
-                    sell_fee = self._calculate_fee(balance_after_gross_pnl)
-
-                    net_pnl_amount = gross_pnl_amount - sell_fee
-                    self.balance = balance_after_gross_pnl - sell_fee
+                    exit_value = position["trade_capital"] + gross_pnl_amount
+                    sell_fee = self._calculate_fee(exit_value)
 
                     total_trade_fee = position["buy_fee"] + sell_fee
+                    net_pnl_amount = gross_pnl_amount - total_trade_fee
+
+                    self.balance += net_pnl_amount
 
                     trade = {
-    "trade_id": len(self.trades) + 1,
+                        "trade_id": len(self.trades) + 1,
 
-    "direction": "LONG",
-    "result": result,
-    "exit_reason": "STOP_LOSS" if result == "LOSS" else "TAKE_PROFIT",
+                        "direction": "LONG",
+                        "result": result,
+                        "exit_reason": "STOP_LOSS" if result == "LOSS" else "TAKE_PROFIT",
 
-    "entry_index": position["entry_index"],
-    "exit_index": i,
-    "duration_candles": i - position["entry_index"],
+                        "entry_index": position["entry_index"],
+                        "exit_index": i,
+                        "duration_candles": i - position["entry_index"],
 
-    "entry_time": position["entry_time"],
-    "exit_time": candle.name,
+                        "entry_time": position["entry_time"],
+                        "exit_time": candle.name,
 
-    "entry_price": round(entry_price, 6),
-    "exit_price": round(exit_price, 6),
-    "stop_loss": round(position["stop_loss"], 6),
-    "take_profit": round(position["take_profit"], 6),
+                        "entry_price": round(entry_price, 6),
+                        "exit_price": round(exit_price, 6),
+                        "stop_loss": round(position["stop_loss"], 6),
+                        "take_profit": round(position["take_profit"], 6),
 
-    "gross_pnl_pct": round(gross_pnl_pct, 2),
-    "pnl_pct": round(gross_pnl_pct, 2),
+                        "position_size_percent": round(self.position_size_percent, 2),
+                        "trade_capital": round(position["trade_capital"], 2),
 
-    "gross_pnl_amount": round(gross_pnl_amount, 2),
-    "pnl_amount": round(net_pnl_amount, 2),
+                        "gross_pnl_pct": round(gross_pnl_pct, 2),
+                        "pnl_pct": round(gross_pnl_pct, 2),
 
-    "buy_fee": round(position["buy_fee"], 2),
-    "sell_fee": round(sell_fee, 2),
-    "total_fee": round(total_trade_fee, 2),
+                        "gross_pnl_amount": round(gross_pnl_amount, 2),
+                        "pnl_amount": round(net_pnl_amount, 2),
 
-    "balance_before": round(position["balance_before"], 2),
-    "balance_after": round(self.balance, 2),
-}
+                        "buy_fee": round(position["buy_fee"], 2),
+                        "sell_fee": round(sell_fee, 2),
+                        "total_fee": round(total_trade_fee, 2),
+
+                        "balance_before": round(position["balance_before"], 2),
+                        "balance_after": round(self.balance, 2),
+                    }
+
                     self.trades.append(trade)
                     self._record_equity(candle.name)
+
                     position = None
 
         return self.get_results()
