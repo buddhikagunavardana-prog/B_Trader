@@ -1,13 +1,12 @@
-from src.indicators.ema import calculate_ema
-from src.indicators.rsi import calculate_rsi
-from src.indicators.macd import calculate_macd
-from src.indicators.bollinger import calculate_bollinger
-from src.indicators.atr import calculate_atr
-from src.indicators.adx import calculate_adx
-from src.indicators.volume import calculate_volume_sma
-from src.indicators.support_resistance import calculate_support_resistance
-from src.indicators.candlestick import detect_candle_pattern
-
+from src.indicators.trend.ema import calculate_ema
+from src.indicators.momentum.rsi import calculate_rsi
+from src.indicators.momentum.macd import calculate_macd
+from src.indicators.volatility.atr import calculate_atr
+from src.indicators.volatility.bollinger import calculate_bollinger
+from src.indicators.market_strength.adx import calculate_adx
+from src.indicators.volume.volume import calculate_volume_sma
+from src.indicators.structure.support_resistance import calculate_support_resistance
+from src.indicators.candlestick.candlestick import detect_candle_pattern
 
 def calculate_indicators(df, strategy):
 
