@@ -29,6 +29,10 @@ from src.indicators.volume.vwap import calculate_vwap
 from src.indicators.volume.adl import calculate_adl
 
 from src.indicators.structure.support_resistance import calculate_support_resistance
+from src.indicators.structure.pivot_points import calculate_pivot_points
+from src.indicators.structure.fibonacci import calculate_fibonacci_levels
+from src.indicators.structure.swing import calculate_swing_points
+from src.indicators.structure.breakout import calculate_breakout_levels
 
 from src.indicators.candlestick.candlestick import calculate_candlestick_patterns
 
@@ -74,6 +78,10 @@ INDICATOR_REGISTRY = {
 
     # Structure
     "support_resistance": calculate_support_resistance,
+    "pivot_points": calculate_pivot_points,
+    "fibonacci": calculate_fibonacci_levels,
+    "swing": calculate_swing_points,
+    "breakout": calculate_breakout_levels,
 
     # Candlestick
     "candlestick": calculate_candlestick_patterns,
