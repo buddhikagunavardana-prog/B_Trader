@@ -37,6 +37,9 @@ from src.indicators.structure.breakout import calculate_breakout_levels
 from src.indicators.candlestick.candlestick import calculate_candlestick_patterns
 
 from src.indicators.market_strength.adx import calculate_adx
+from src.indicators.market_strength.dmi import calculate_dmi
+from src.indicators.market_strength.aroon import calculate_aroon
+from src.indicators.market_strength.aroon_oscillator import calculate_aroon_oscillator
 
 
 INDICATOR_REGISTRY = {
@@ -86,9 +89,11 @@ INDICATOR_REGISTRY = {
     # Candlestick
     "candlestick": calculate_candlestick_patterns,
 
-
     # Market Strength
     "adx": calculate_adx,
+    "dmi": calculate_dmi,
+    "aroon": calculate_aroon,
+    "aroon_oscillator": calculate_aroon_oscillator,
 }
 
 
