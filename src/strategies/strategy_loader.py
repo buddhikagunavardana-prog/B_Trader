@@ -2,6 +2,10 @@ import json
 from pathlib import Path
 
 from src.strategies.strategy_model import Strategy
+from src.strategies.strategy_schema import (
+    DEFAULT_SCHEMA,
+    is_supported,
+)
 from src.strategies.strategy_validator import validate_strategy
 
 
@@ -13,6 +17,13 @@ def load_strategy(config_path: str = "src/config/strategy.json") -> Strategy:
 
     with open(path, "r", encoding="utf-8") as file:
         data = json.load(file)
+
+    schema = data.get("schema", DEFAULT_SCHEMA)
+
+    if not is_supported(schema):
+        raise ValueError(
+            f"Unsupported strategy schema: {schema}"
+        )
 
     validate_strategy(data)
 
