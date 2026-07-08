@@ -1,20 +1,31 @@
 {
     "schema": "1.0",
+    "schema_version": "18.4",
     "name": "EMA_RSI_PRO",
     "version": "1.0.0",
     "exchange": "Binance",
     "market_type": "spot",
     "quote_asset": "USDT",
-    "timeframe": "1h",
+    "timeframe": "15m",
+    "default_timeframe": "15m",
     "symbols": [
         "BTCUSDT",
         "ETHUSDT",
-        "BNBUSDT"
+        "BNBUSDT",
+        "SOLUSDT",
+        "XRPUSDT"
+    ],
+    "pairs": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT",
+        "XRPUSDT"
     ],
     "indicators": {
         "ema": {
             "enabled": true,
-            "fast": 10,
+            "fast": 20,
             "slow": 50,
             "trend": 200
         },
@@ -34,13 +45,36 @@
             "enabled": true,
             "period": 14,
             "multiplier": 2
+        },
+        "bollinger": {
+            "enabled": true,
+            "period": 20,
+            "std_dev": 2
+        },
+        "supertrend": {
+            "enabled": true,
+            "period": 10,
+            "multiplier": 3
+        },
+        "volume": {
+            "enabled": true,
+            "period": 20,
+            "multiplier": 1.2
+        },
+        "candlestick": {
+            "enabled": true,
+            "confirmation_required": true
         }
     },
     "entry_rules": {
         "ema_cross": true,
         "ema200_filter": true,
         "rsi_filter": true,
-        "macd_confirmation": true
+        "macd_confirmation": true,
+        "bollinger_reversal": true,
+        "supertrend_confirmation": true,
+        "volume_confirmation": true,
+        "candlestick_confirmation": true
     },
     "exit_rules": {
         "stop_loss_type": "percent",
@@ -48,7 +82,8 @@
         "take_profit_type": "percent",
         "take_profit_percent": 4,
         "risk_reward": 2,
-        "trailing_stop": false
+        "trailing_stop": false,
+        "atr_stop_loss": true
     },
     "risk": {
         "risk_per_trade": 2,
@@ -58,5 +93,14 @@
     },
     "signal_scoring": {
         "minimum_score": 75
+    },
+    "research": {
+        "enabled": true,
+        "initial_balance": 10000,
+        "min_profit_factor": 1.0,
+        "min_trades": 20,
+        "max_drawdown_pct": 25,
+        "top_n": 5,
+        "timeframe": "15m"
     }
 }

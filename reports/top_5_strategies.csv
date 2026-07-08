@@ -1,0 +1,3 @@
+Strategy,Pair,Timeframe,SL %,TP %,Initial Balance,Final Balance,Net Profit,ROI %,Max Drawdown %,Profit Factor,Total PnL %,Win Rate %,Trades,Expectancy,PF Score,PnL Score,Win Score,DD Score,Trade Score,Overall Score
+EMA 200 Filter + MACD Cross,BTCUSDT,15m,1.0,2.0,10000.0,9985.59,-14.41,-0.14,-18.51,1.0,3.0,33.65,315.0,-0.05,12.5,1.5,11.216666666666663,10.745,10.0,45.961666666666666
+MACD + RSI + Volume,BTCUSDT,15m,1.0,2.0,10000.0,9972.87,-27.13,-0.27,-22.3,1.0,4.0,33.64,428.0,-0.06,12.5,2.0,11.213333333333331,8.85,10.0,44.56333333333333
