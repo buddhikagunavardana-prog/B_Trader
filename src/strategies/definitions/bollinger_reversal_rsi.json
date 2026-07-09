@@ -1,0 +1,21 @@
+{
+    "strategy_id": "bollinger_reversal_rsi",
+    "name": "Bollinger Band Reversal + RSI",
+    "timeframe": "15m",
+    "indicators": {
+        "bollinger": {"enabled": true},
+        "rsi": {"enabled": true}
+    },
+    "entry_rules": {
+        "bollinger_reversal": true,
+        "rsi_filter": true
+    },
+    "exit_rules": {
+        "stop_loss_percent": 1.5,
+        "take_profit_percent": 4
+    },
+    "risk": {
+        "risk_per_trade": 2
+    },
+    "enabled": true
+}

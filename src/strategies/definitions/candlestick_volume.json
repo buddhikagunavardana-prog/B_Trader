@@ -1,0 +1,21 @@
+{
+    "strategy_id": "candlestick_volume",
+    "name": "Candlestick Confirmation + Volume",
+    "timeframe": "15m",
+    "indicators": {
+        "candlestick": {"enabled": true},
+        "volume": {"enabled": true}
+    },
+    "entry_rules": {
+        "candlestick_confirmation": true,
+        "volume_confirmation": true
+    },
+    "exit_rules": {
+        "stop_loss_percent": 1.5,
+        "take_profit_percent": 4
+    },
+    "risk": {
+        "risk_per_trade": 2
+    },
+    "enabled": true
+}

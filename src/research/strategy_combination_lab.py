@@ -1,26 +1,24 @@
 import os
 import pandas as pd
 
-from src.plugins.binance_data import download_klines
+from src.data.data_cache_engine import get_cached_klines
 from src.optimizers.optimizer_engine import OptimizerEngine
-from src.research.strategy_factory import get_strategy_combinations
-from src.strategies.strategy_loader import load_strategy_config
+from src.strategies.strategy_factory import get_strategy_combinations
 
 
 REPORT_PATH = "reports/strategy_combination_report.csv"
+SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"]
+TIMEFRAME = "15m"
+LOOKBACK = "1 year ago UTC"
 
 
 def run_strategy_combination_lab():
-    config = load_strategy_config()
-
-    symbols = ["BTCUSDT"]
-    timeframe = config["timeframe"]
-
-    sl_values = [1]
-    tp_values = [2]
+    sl_values = [1, 1.5, 2, 2.5]
+    tp_values = [2, 3, 4, 5]
 
     combinations = get_strategy_combinations()
     final_results = []
+    market_data = {}
 
     print("\n===== B TRADER 15m STRATEGY COMBINATION LAB =====")
 
@@ -31,14 +29,17 @@ def run_strategy_combination_lab():
 
         optimizer = OptimizerEngine(strategy)
 
-        for symbol in symbols:
-            print(f"  Pair: {symbol} | Timeframe: {timeframe}")
+        for symbol in SYMBOLS:
+            print(f"  Pair: {symbol} | Timeframe: {TIMEFRAME}")
 
-            df = download_klines(
-                symbol=symbol,
-                interval=timeframe,
-                start_str="1 year ago UTC"
-            )
+            if symbol not in market_data:
+                market_data[symbol] = get_cached_klines(
+                    symbol=symbol,
+                    timeframe=TIMEFRAME,
+                    lookback=LOOKBACK,
+                )
+
+            df = market_data[symbol].copy()
 
             results = optimizer.optimize(
                 df=df,
@@ -51,7 +52,7 @@ def run_strategy_combination_lab():
             final_results.append({
                 "Strategy": strategy_name,
                 "Pair": symbol,
-                "Timeframe": timeframe,
+                "Timeframe": TIMEFRAME,
                 "SL %": best["SL %"],
                 "TP %": best["TP %"],
                 "Initial Balance": best["Initial Balance"],

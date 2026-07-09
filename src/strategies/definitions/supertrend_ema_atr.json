@@ -1,0 +1,23 @@
+{
+    "strategy_id": "supertrend_ema_atr",
+    "name": "SuperTrend + EMA + ATR SL",
+    "timeframe": "15m",
+    "indicators": {
+        "supertrend": {"enabled": true},
+        "ema": {"enabled": true},
+        "atr": {"enabled": true}
+    },
+    "entry_rules": {
+        "supertrend_confirmation": true,
+        "ema200_filter": true
+    },
+    "exit_rules": {
+        "stop_loss_percent": 1.5,
+        "take_profit_percent": 4,
+        "atr_stop_loss": true
+    },
+    "risk": {
+        "risk_per_trade": 2
+    },
+    "enabled": true
+}

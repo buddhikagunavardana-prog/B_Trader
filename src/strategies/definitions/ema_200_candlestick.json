@@ -1,0 +1,21 @@
+{
+    "strategy_id": "ema_200_candlestick",
+    "name": "EMA 200 Trend + Candlestick Confirmation",
+    "timeframe": "15m",
+    "indicators": {
+        "ema": {"enabled": true},
+        "candlestick": {"enabled": true}
+    },
+    "entry_rules": {
+        "ema200_filter": true,
+        "candlestick_confirmation": true
+    },
+    "exit_rules": {
+        "stop_loss_percent": 1.5,
+        "take_profit_percent": 4
+    },
+    "risk": {
+        "risk_per_trade": 2
+    },
+    "enabled": true
+}

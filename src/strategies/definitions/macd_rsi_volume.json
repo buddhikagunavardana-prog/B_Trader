@@ -1,0 +1,23 @@
+{
+    "strategy_id": "macd_rsi_volume",
+    "name": "MACD + RSI + Volume",
+    "timeframe": "15m",
+    "indicators": {
+        "macd": {"enabled": true},
+        "rsi": {"enabled": true},
+        "volume": {"enabled": true}
+    },
+    "entry_rules": {
+        "macd_confirmation": true,
+        "rsi_filter": true,
+        "volume_confirmation": true
+    },
+    "exit_rules": {
+        "stop_loss_percent": 1.5,
+        "take_profit_percent": 4
+    },
+    "risk": {
+        "risk_per_trade": 2
+    },
+    "enabled": true
+}
