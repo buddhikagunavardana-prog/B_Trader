@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 
+from src.research.strategy_scoring_engine import StrategyScoringEngine
+
 
 REPORT_PATH = "reports/strategy_combination_report.csv"
 TOP_5_PATH = "reports/top_5_strategies.csv"
@@ -15,19 +17,39 @@ def select_top_5_strategies():
 
     report = pd.read_csv(REPORT_PATH)
 
-    filtered = report[
-        (report["Profit Factor"] >= 1.0)
-        & (report["Trades"] >= 20)
-        & (report["Max Drawdown %"].abs() <= 35)
-    ]
+    scoring_engine = StrategyScoringEngine()
+    scored_report = scoring_engine.score_report(report)
 
-    if filtered.empty:
-        filtered = report.copy()
-
-    top_5 = filtered.sort_values(
-        by=["Overall Score", "Profit Factor", "Win Rate %"],
+    top_5 = scored_report.sort_values(
+        by=["Final Score", "Profit Factor", "ROI %"],
         ascending=False
     ).head(5)
+
+    top_5 = top_5.reset_index(drop=True)
+    top_5["Rank"] = top_5.index + 1
+
+    top_5 = top_5[
+        [
+            "Rank",
+            "Strategy",
+            "Pair",
+            "ROI %",
+            "Profit Factor",
+            "Win Rate %",
+            "Max Drawdown %",
+            "Trades",
+            "Expectancy",
+            "Stability Score",
+            "Final Score",
+        ]
+    ].rename(
+        columns={
+            "ROI %": "ROI",
+            "Win Rate %": "Win Rate",
+            "Max Drawdown %": "Max Drawdown",
+            "Trades": "Trade Count",
+        }
+    )
 
     os.makedirs("reports", exist_ok=True)
     top_5.to_csv(TOP_5_PATH, index=False)
