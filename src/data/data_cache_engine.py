@@ -49,7 +49,12 @@ def get_cached_klines(
 
     if cache_file.exists():
         print(f"  Cache hit: {cache_file}")
-        return _normalize_ohlcv_df(pd.read_csv(cache_file))
+        return _normalize_ohlcv_df(
+            pd.read_csv(
+                cache_file,
+                parse_dates=["open_time", "close_time"],
+            )
+        )
 
     print(f"  Cache miss: downloading {symbol} {timeframe} {lookback}")
     df = download_klines(

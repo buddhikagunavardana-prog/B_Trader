@@ -1,8 +1,14 @@
+import copy
 import os
+import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
 import pandas as pd
 
 from src.data.data_cache_engine import get_cached_klines
-from src.optimizers.optimizer_engine import OptimizerEngine
+from src.engines.backtest_engine import BacktestEngine
+from src.engines.indicator_engine import calculate_indicators
+from src.engines.signal_engine import generate_signals
 from src.strategies.strategy_factory import get_strategy_combinations
 
 
@@ -10,9 +16,102 @@ REPORT_PATH = "reports/strategy_combination_report.csv"
 SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"]
 TIMEFRAME = "15m"
 LOOKBACK = "1 year ago UTC"
+PREVIOUS_RUNTIME_MINUTES = 34.0
+MAX_WORKERS = min(4, os.cpu_count() or 1)
+
+_WORKER_MARKET_DATA = {}
+
+
+def _initialize_worker(market_data):
+    global _WORKER_MARKET_DATA
+    _WORKER_MARKET_DATA = market_data
+
+
+def _run_backtest_grid(df, strategy, sl_values, tp_values):
+    results = []
+    signal_strategy = copy.deepcopy(strategy)
+    signal_df = calculate_indicators(df.copy(), signal_strategy)
+    signal_df = generate_signals(signal_df, signal_strategy)
+    signals = signal_df["SIGNAL"]
+
+    for sl in sl_values:
+        for tp in tp_values:
+            test_strategy = copy.deepcopy(strategy)
+            test_strategy.exit_rules["stop_loss_percent"] = sl
+            test_strategy.exit_rules["take_profit_percent"] = tp
+
+            backtest = BacktestEngine(
+                strategy=test_strategy,
+                initial_balance=10000,
+                stop_loss_pct=sl,
+                take_profit_pct=tp,
+                fee_pct=0.0,
+            )
+
+            result = backtest.run(signal_df, signals)
+            result_dict = result.to_dict()
+
+            results.append({
+                "SL %": sl,
+                "TP %": tp,
+                "Initial Balance": result_dict["initial_balance"],
+                "Final Balance": result_dict["final_balance"],
+                "Gross Profit": result_dict["gross_profit"],
+                "Gross Loss": result_dict["gross_loss"],
+                "Net Profit": result_dict["net_profit"],
+                "ROI %": result_dict["roi_pct"],
+                "Max Drawdown %": result_dict["max_drawdown_pct"],
+                "Fees Paid": result_dict["total_fees"],
+                "Total Trades": result_dict["total_trades"],
+                "Wins": result_dict["wins"],
+                "Losses": result_dict["losses"],
+                "Win Rate %": result_dict["win_rate"],
+                "Total PnL %": result_dict["total_pnl_pct"],
+                "Profit Factor": result_dict["profit_factor"],
+                "Avg Win": result_dict["avg_win"],
+                "Avg Loss": result_dict["avg_loss"],
+                "Largest Win": result_dict["largest_win"],
+                "Largest Loss": result_dict["largest_loss"],
+                "Expectancy": result_dict["expectancy"],
+            })
+
+    results_df = pd.DataFrame(results)
+
+    return results_df.sort_values(
+        by=["Profit Factor", "ROI %"],
+        ascending=False,
+    )
+
+
+def _evaluate_strategy_pair(task):
+    strategy_index, pair_index, symbol, strategy, sl_values, tp_values = task
+    df = _WORKER_MARKET_DATA[symbol].copy()
+    results = _run_backtest_grid(df, strategy, sl_values, tp_values)
+    best = results.iloc[0]
+
+    return {
+        "strategy_index": strategy_index,
+        "pair_index": pair_index,
+        "Strategy": strategy.name,
+        "Pair": symbol,
+        "Timeframe": TIMEFRAME,
+        "SL %": best["SL %"],
+        "TP %": best["TP %"],
+        "Initial Balance": best["Initial Balance"],
+        "Final Balance": best["Final Balance"],
+        "Net Profit": best["Net Profit"],
+        "ROI %": best["ROI %"],
+        "Max Drawdown %": best["Max Drawdown %"],
+        "Profit Factor": best["Profit Factor"],
+        "Total PnL %": best["Total PnL %"],
+        "Win Rate %": best["Win Rate %"],
+        "Trades": best["Total Trades"],
+        "Expectancy": best["Expectancy"],
+    }
 
 
 def run_strategy_combination_lab():
+    started_at = time.perf_counter()
     sl_values = [1, 1.5, 2, 2.5]
     tp_values = [2, 3, 4, 5]
 
@@ -21,51 +120,69 @@ def run_strategy_combination_lab():
     market_data = {}
 
     print("\n===== B TRADER 15m STRATEGY COMBINATION LAB =====")
+    print(f"Previous runtime baseline: ~{PREVIOUS_RUNTIME_MINUTES:.1f} minutes")
+    print(f"Parallel workers: {MAX_WORKERS}")
 
-    for strategy in combinations:
-        strategy_name = strategy.name
+    for symbol in SYMBOLS:
+        print(f"Loading cached data: {symbol} | Timeframe: {TIMEFRAME}")
+        market_data[symbol] = get_cached_klines(
+            symbol=symbol,
+            timeframe=TIMEFRAME,
+            lookback=LOOKBACK,
+        )
 
-        print(f"\nTesting Strategy: {strategy_name}")
+    tasks = [
+        (strategy_index, pair_index, symbol, strategy, sl_values, tp_values)
+        for strategy_index, strategy in enumerate(combinations)
+        for pair_index, symbol in enumerate(SYMBOLS)
+    ]
+    total_tasks = len(tasks)
+    completed_tasks = 0
+    failures = []
 
-        optimizer = OptimizerEngine(strategy)
+    with ProcessPoolExecutor(
+        max_workers=MAX_WORKERS,
+        initializer=_initialize_worker,
+        initargs=(market_data,),
+    ) as executor:
+        future_map = {
+            executor.submit(_evaluate_strategy_pair, task): task
+            for task in tasks
+        }
 
-        for symbol in SYMBOLS:
-            print(f"  Pair: {symbol} | Timeframe: {TIMEFRAME}")
+        for future in as_completed(future_map):
+            strategy_index, _, symbol, strategy, _, _ = future_map[future]
+            completed_tasks += 1
+            progress_pct = completed_tasks / total_tasks * 100
 
-            if symbol not in market_data:
-                market_data[symbol] = get_cached_klines(
-                    symbol=symbol,
-                    timeframe=TIMEFRAME,
-                    lookback=LOOKBACK,
+            try:
+                final_results.append(future.result())
+                print(
+                    f"[{progress_pct:6.2f}%] Done: "
+                    f"{strategy.name} | {symbol}"
+                )
+            except Exception as error:
+                failures.append({
+                    "strategy_index": strategy_index,
+                    "strategy": strategy.name,
+                    "symbol": symbol,
+                    "error": str(error),
+                })
+                print(
+                    f"[{progress_pct:6.2f}%] Failed: "
+                    f"{strategy.name} | {symbol} | {error}"
                 )
 
-            df = market_data[symbol].copy()
+    if not final_results:
+        raise RuntimeError("No strategy research results were generated")
 
-            results = optimizer.optimize(
-                df=df,
-                sl_values=sl_values,
-                tp_values=tp_values
+    if failures:
+        print("\nResearch completed with failures:")
+        for failure in failures:
+            print(
+                f"  {failure['strategy']} | {failure['symbol']} | "
+                f"{failure['error']}"
             )
-
-            best = results.iloc[0]
-
-            final_results.append({
-                "Strategy": strategy_name,
-                "Pair": symbol,
-                "Timeframe": TIMEFRAME,
-                "SL %": best["SL %"],
-                "TP %": best["TP %"],
-                "Initial Balance": best["Initial Balance"],
-                "Final Balance": best["Final Balance"],
-                "Net Profit": best["Net Profit"],
-                "ROI %": best["ROI %"],
-                "Max Drawdown %": best["Max Drawdown %"],
-                "Profit Factor": best["Profit Factor"],
-                "Total PnL %": best["Total PnL %"],
-                "Win Rate %": best["Win Rate %"],
-                "Trades": best["Total Trades"],
-                "Expectancy": best["Expectancy"],
-            })
 
     report = pd.DataFrame(final_results)
 
@@ -86,14 +203,26 @@ def run_strategy_combination_lab():
     )
 
     report = report.sort_values(
-        by=["Overall Score", "Profit Factor", "ROI %"],
-        ascending=False
+        by=[
+            "Overall Score",
+            "Profit Factor",
+            "ROI %",
+            "strategy_index",
+            "pair_index",
+        ],
+        ascending=[False, False, False, True, True],
     )
+    report = report.drop(columns=["strategy_index", "pair_index"])
 
     os.makedirs("reports", exist_ok=True)
     report.to_csv(REPORT_PATH, index=False)
 
+    elapsed_minutes = (time.perf_counter() - started_at) / 60
+
     print("\nReport saved -> reports/strategy_combination_report.csv")
+    print(f"Previous runtime: ~{PREVIOUS_RUNTIME_MINUTES:.1f} minutes")
+    print(f"New runtime: {elapsed_minutes:.2f} minutes")
+    print("Biggest impact: one indicator/signal pass per strategy/pair")
     print(report.head(20).to_string(index=False))
 
     return report
