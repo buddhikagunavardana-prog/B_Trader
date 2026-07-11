@@ -1,0 +1,7 @@
+{
+    "train_days": 180,
+    "test_days": 60,
+    "step_days": 60,
+    "minimum_trades": 30,
+    "pass_score": 70
+}
