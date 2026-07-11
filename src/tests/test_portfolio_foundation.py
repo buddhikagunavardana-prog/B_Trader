@@ -22,7 +22,10 @@ from src.research.portfolio.portfolio_metrics import (
     calculate_diversification_score,
     calculate_portfolio_metrics,
 )
-from src.research.portfolio.portfolio_report import candidates_to_report
+from src.research.portfolio.portfolio_report import (
+    PORTFOLIO_REPORT_COLUMNS,
+    candidates_to_report,
+)
 from src.research.portfolio.portfolio_runner import run_portfolio_builder
 
 
@@ -198,6 +201,13 @@ def test_diversification_score_handles_empty():
     assert calculate_diversification_score([]) == 0.0
 
 
+def test_empty_portfolio_report_preserves_schema():
+    report = candidates_to_report([])
+
+    assert report.empty
+    assert list(report.columns) == PORTFOLIO_REPORT_COLUMNS
+
+
 def test_disabled_runner_is_lightweight():
     report, metrics = run_portfolio_builder(
         candidates=_candidate_list(),
@@ -244,6 +254,7 @@ if __name__ == "__main__":
     test_allocation_constraints()
     test_portfolio_metrics()
     test_diversification_score_handles_empty()
+    test_empty_portfolio_report_preserves_schema()
     test_disabled_runner_is_lightweight()
     test_runner_small_smoke_with_temp_reports()
     print("test_portfolio_foundation passed")

@@ -4,8 +4,28 @@ from src.research.pipeline.pipeline_reporter import save_csv_report, save_json_r
 from src.research.portfolio.portfolio_candidate import PortfolioCandidate
 
 
+PORTFOLIO_REPORT_COLUMNS = [
+    "Candidate ID",
+    "Strategy ID",
+    "Pair",
+    "Template Type",
+    "Expected ROI",
+    "Profit Factor",
+    "Drawdown",
+    "Walk Forward Score",
+    "Robustness Score",
+    "Risk Score",
+    "Allocation Weight",
+    "Quality Score",
+    "Metadata",
+]
+
+
 def candidates_to_report(candidates: list[PortfolioCandidate]) -> pd.DataFrame:
-    return pd.DataFrame([candidate.to_dict() for candidate in candidates])
+    rows = [candidate.to_dict() for candidate in candidates]
+    if not rows:
+        return pd.DataFrame(columns=PORTFOLIO_REPORT_COLUMNS)
+    return pd.DataFrame(rows)
 
 
 def save_portfolio_report(
