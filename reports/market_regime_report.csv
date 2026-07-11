@@ -1,0 +1,6 @@
+Pair,Date,Regime,Confidence,Reasons,Recommended Strategy Family
+BTCUSDT,2026-07-09,LOW_VOLATILITY,1.0,ATR low at 0.31% | Bollinger width narrow at 0.82% | Volume ratio quiet at 0.50,"Squeeze, Low Volatility"
+ETHUSDT,2026-07-09,LOW_VOLATILITY,0.8,ATR low at 0.33% | Bollinger width narrow at 1.44%,"Squeeze, Low Volatility"
+BNBUSDT,2026-07-09,LOW_VOLATILITY,1.0,ATR low at 0.20% | Bollinger width narrow at 0.94% | Volume ratio quiet at 0.01,"Squeeze, Low Volatility"
+SOLUSDT,2026-07-09,LOW_VOLATILITY,1.0,ATR low at 0.37% | Bollinger width narrow at 1.29% | Volume ratio quiet at 0.08,"Squeeze, Low Volatility"
+XRPUSDT,2026-07-09,LOW_VOLATILITY,1.0,ATR low at 0.27% | Bollinger width narrow at 0.69% | Volume ratio quiet at 0.02,"Squeeze, Low Volatility"

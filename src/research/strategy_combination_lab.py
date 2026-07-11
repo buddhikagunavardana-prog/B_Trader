@@ -9,6 +9,11 @@ from src.data.data_cache_engine import get_cached_klines
 from src.engines.backtest_engine import BacktestEngine
 from src.engines.indicator_engine import calculate_indicators
 from src.engines.signal_engine import generate_signals
+from src.research.market_regime_engine import (
+    REGIME_STRATEGY_FAMILIES,
+    detect_market_regime,
+    load_market_regime_config,
+)
 from src.strategies.strategy_factory import get_strategy_combinations
 
 
@@ -20,6 +25,62 @@ PREVIOUS_RUNTIME_MINUTES = 34.0
 MAX_WORKERS = min(4, os.cpu_count() or 1)
 
 _WORKER_MARKET_DATA = {}
+
+
+def _strategy_matches_regime(strategy_name: str, regime: str) -> bool:
+    strategy_name_lower = strategy_name.lower()
+    families = REGIME_STRATEGY_FAMILIES.get(regime, [])
+
+    for family in families:
+        family_lower = family.lower()
+        if family_lower in strategy_name_lower:
+            return True
+
+        if "ema" in family_lower and "ema" in strategy_name_lower:
+            return True
+
+        if "supertrend" in family_lower and "supertrend" in strategy_name_lower:
+            return True
+
+        if "bollinger" in family_lower and "bollinger" in strategy_name_lower:
+            return True
+
+        if "rsi" in family_lower and "rsi" in strategy_name_lower:
+            return True
+
+        if "atr" in family_lower and "atr" in strategy_name_lower:
+            return True
+
+    return False
+
+
+def _build_regime_map(market_data: dict, config: dict) -> dict:
+    if (
+        not config.get("enabled", True)
+        or not config.get("regime_filtering_enabled", False)
+    ):
+        return {}
+
+    return {
+        symbol: detect_market_regime(df, config)
+        for symbol, df in market_data.items()
+    }
+
+
+def _filter_tasks_by_regime(tasks: list, regime_map: dict, config: dict) -> list:
+    if not config.get("regime_filtering_enabled", False):
+        return tasks
+
+    filtered_tasks = []
+
+    for task in tasks:
+        _, _, symbol, strategy, _, _ = task
+        regime = regime_map.get(symbol, {}).get("regime")
+
+        if regime and _strategy_matches_regime(strategy.name, regime):
+            filtered_tasks.append(task)
+
+    return filtered_tasks or tasks
 
 
 def _initialize_worker(market_data):
@@ -118,6 +179,7 @@ def run_strategy_combination_lab():
     combinations = get_strategy_combinations()
     final_results = []
     market_data = {}
+    regime_config = load_market_regime_config()
 
     print("\n===== B TRADER 15m STRATEGY COMBINATION LAB =====")
     print(f"Previous runtime baseline: ~{PREVIOUS_RUNTIME_MINUTES:.1f} minutes")
@@ -136,6 +198,14 @@ def run_strategy_combination_lab():
         for strategy_index, strategy in enumerate(combinations)
         for pair_index, symbol in enumerate(SYMBOLS)
     ]
+    regime_map = _build_regime_map(market_data, regime_config)
+    tasks = _filter_tasks_by_regime(tasks, regime_map, regime_config)
+
+    if regime_config.get("regime_filtering_enabled", False):
+        print(f"Regime filtering enabled: {len(tasks)} tasks selected")
+    else:
+        print("Regime filtering disabled: running all strategy/pair tasks")
+
     total_tasks = len(tasks)
     completed_tasks = 0
     failures = []

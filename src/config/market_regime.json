@@ -1,0 +1,26 @@
+{
+    "enabled": true,
+    "regime_filtering_enabled": false,
+    "lookback_candles": 200,
+    "adx": {
+        "trending_min": 25,
+        "sideways_max": 18
+    },
+    "atr": {
+        "high_volatility_pct": 3.0,
+        "low_volatility_pct": 0.8
+    },
+    "bollinger_width": {
+        "high_volatility_pct": 6.0,
+        "low_volatility_pct": 2.0,
+        "sideways_max_pct": 4.0
+    },
+    "ema_distance": {
+        "trending_min_pct": 1.5,
+        "sideways_max_pct": 0.8
+    },
+    "volume_ratio": {
+        "high_volatility_min": 1.5,
+        "low_volatility_max": 0.7
+    }
+}
