@@ -196,6 +196,7 @@ def test_small_optimizer_smoke_prepares_metadata_only():
             "parallel_workers": 1,
             "pairs": ["BTCUSDT"],
             "output_report": output_report,
+            "search_metadata_report": None,
         })
 
         assert Path(output_report).exists()

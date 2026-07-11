@@ -1,12 +1,23 @@
 {
     "enabled": false,
+    "search_algorithm": "grid",
+    "random_seed": 42,
     "max_candidates": 100,
     "optimization_budget": 100,
+    "max_random_attempts": 1000,
+    "resume_enabled": true,
     "parameter_space": "current",
     "parallel_workers": 4,
     "strict_constraints": true,
     "pairs": ["BTCUSDT"],
     "timeframe": "15m",
     "lookback": "synthetic",
-    "output_report": "reports/optimizer_candidates.csv"
+    "output_report": "reports/optimizer_candidates.csv",
+    "search_metadata_report": "reports/optimizer_search_metadata.json",
+    "early_stopping": {
+        "enabled": false,
+        "patience": 20,
+        "minimum_improvement": 0.1,
+        "maximum_failures": 10
+    }
 }
