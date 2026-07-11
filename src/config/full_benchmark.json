@@ -1,0 +1,40 @@
+{
+    "enabled": false,
+    "mode": "FULL_BENCHMARK",
+    "benchmark_name": "b_trader_full_benchmark_v1",
+    "random_seed": 42,
+    "resume_enabled": true,
+    "fail_fast": false,
+    "continue_on_stage_failure": true,
+    "maximum_available_history": true,
+    "target_history_years": 10,
+    "timeframes": ["15m"],
+    "pairs": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT",
+        "XRPUSDT"
+    ],
+    "future_pairs_disabled": [
+        "DOGEUSDT",
+        "ADAUSDT",
+        "LINKUSDT",
+        "AVAXUSDT",
+        "SUIUSDT"
+    ],
+    "include_fixed_strategies": true,
+    "include_generated_candidates": true,
+    "generated_candidate_limit": 60,
+    "optimization_search_algorithm": "grid",
+    "optimization_candidate_budget": 500,
+    "walk_forward_windows": 5,
+    "robustness_top_candidate_count": 20,
+    "monte_carlo_simulations": 1000,
+    "portfolio_max_strategies": 10,
+    "global_task_budget": 100000,
+    "global_runtime_budget_seconds": 172800,
+    "output_directory": "reports/research_runs",
+    "final_shortlist_count": 10,
+    "paper_trading_shortlist_count": 5
+}

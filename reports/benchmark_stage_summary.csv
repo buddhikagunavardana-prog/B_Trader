@@ -1,0 +1,4 @@
+Stage,Status,Task Usage,Runtime Seconds,Message
+load_data,COMPLETED,1,0.0,
+optimization_search,COMPLETED,1,0.0,
+monte_carlo,COMPLETED,1,0.0,

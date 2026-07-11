@@ -1,0 +1,15 @@
+{
+    "paper_trading_ready": [],
+    "promising_review": [],
+    "rejected_count": 0,
+    "formula": {
+        "Robustness Score": 25,
+        "Walk Forward Score": 20,
+        "Monte Carlo Stability": 20,
+        "Profit Factor Score": 10,
+        "Drawdown Score": 10,
+        "Expectancy Score": 5,
+        "Pair Consistency": 5,
+        "Regime Consistency": 5
+    }
+}

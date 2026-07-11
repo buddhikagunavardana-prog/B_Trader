@@ -1,0 +1,53 @@
+{
+    "benchmark_name": "b_trader_full_benchmark_v1",
+    "mode": "SMALL_BENCHMARK",
+    "status": "COMPLETED",
+    "run_id": "resume_fake",
+    "pairs": [
+        "BTCUSDT"
+    ],
+    "timeframes": [
+        "15m"
+    ],
+    "data_coverage": [
+        {
+            "Pair": "BTCUSDT",
+            "Timeframe": "15m",
+            "Earliest Timestamp": "2025-07-09T13:15:00",
+            "Latest Timestamp": "2026-07-09T13:00:00",
+            "Available Days": 364.99,
+            "Available Years": 0.999,
+            "Expected Candles": 35040,
+            "Actual Candles": 35040,
+            "Missing Candle Estimate": 0,
+            "Duplicate Count": 0,
+            "Invalid Row Count": 0,
+            "Coverage Status": "OK",
+            "Notes": ""
+        }
+    ],
+    "fixed_strategy_count": "deferred_to_stage",
+    "generated_candidate_count": 5,
+    "optimization_candidate_budget": 10,
+    "walk_forward_windows": 2,
+    "robustness_top_candidate_count": 3,
+    "monte_carlo_simulations": 20,
+    "portfolio_max_strategies": 2,
+    "paper_trading_ready_count": 0,
+    "promising_review_count": 0,
+    "rejected_count": 0,
+    "task_usage": 3,
+    "runtime_usage": 0.1,
+    "completed_stages": [
+        "load_data",
+        "optimization_search",
+        "monte_carlo"
+    ],
+    "failed_stages": [],
+    "blocked_stages": [],
+    "warnings": [],
+    "failures": [],
+    "reproducibility_status": "REPRODUCIBLE",
+    "paper_trading_readiness": "NOT_READY",
+    "honest_conclusion": "Benchmark path executed; review shortlist and failures before Paper Trading."
+}
