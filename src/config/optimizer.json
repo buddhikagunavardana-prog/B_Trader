@@ -1,0 +1,12 @@
+{
+    "enabled": false,
+    "max_candidates": 100,
+    "optimization_budget": 100,
+    "parameter_space": "current",
+    "parallel_workers": 4,
+    "strict_constraints": true,
+    "pairs": ["BTCUSDT"],
+    "timeframe": "15m",
+    "lookback": "synthetic",
+    "output_report": "reports/optimizer_candidates.csv"
+}
