@@ -1,0 +1,15 @@
+{
+    "enabled": false,
+    "base_output_directory": "reports/research_runs",
+    "history_file": "run_history.json",
+    "snapshot_configs": true,
+    "capture_git_metadata": true,
+    "capture_environment_metadata": true,
+    "prevent_overwrite": true,
+    "validate_reproducibility": true,
+    "allow_resume": true,
+    "allow_child_runs": true,
+    "default_tags": [],
+    "default_notes": "",
+    "write_stage_csv": true
+}
