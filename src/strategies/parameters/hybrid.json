@@ -1,0 +1,16 @@
+{
+    "template_name": "hybrid",
+    "template_id": "HYB001",
+    "enabled": true,
+    "max_candidates": 5,
+    "parameters": {
+        "fast_ema": [20, 50],
+        "slow_ema": [100, 200],
+        "rsi_period": [14],
+        "rsi_buy": [40],
+        "volume_period": [20],
+        "volume_multiplier": [1.2, 1.5],
+        "stop_loss_pct": [1.5],
+        "take_profit_pct": [3.0]
+    }
+}

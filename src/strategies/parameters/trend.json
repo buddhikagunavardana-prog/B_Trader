@@ -1,0 +1,14 @@
+{
+    "template_name": "trend",
+    "template_id": "TRD001",
+    "enabled": true,
+    "max_candidates": 5,
+    "parameters": {
+        "fast_ema": [20, 50],
+        "slow_ema": [100, 200],
+        "rsi_period": [14],
+        "rsi_pullback": [40, 45],
+        "stop_loss_pct": [1.0],
+        "take_profit_pct": [2.0, 3.0]
+    }
+}

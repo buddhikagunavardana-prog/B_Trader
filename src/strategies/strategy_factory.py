@@ -1,6 +1,7 @@
 import copy
 
 from src.strategies.json_strategy_loader import load_enabled_json_strategies
+from src.strategies.parameter_generator import ParameterGenerator
 from src.strategies.strategy_loader import load_strategy
 
 
@@ -66,6 +67,34 @@ def get_json_strategy_combinations():
     return [
         create_strategy_from_json_config(config)
         for config in load_enabled_json_strategies()
+    ]
+
+
+def get_generated_strategy_configs(
+    enabled_templates: list[str] | None = None,
+    global_max_candidates: int | None = None,
+) -> list[dict]:
+    generator = ParameterGenerator()
+
+    return [
+        candidate["config"]
+        for candidate in generator.generate_candidates(
+            enabled_templates=enabled_templates,
+            global_max_candidates=global_max_candidates,
+        )
+    ]
+
+
+def get_generated_strategy_combinations(
+    enabled_templates: list[str] | None = None,
+    global_max_candidates: int | None = None,
+):
+    return [
+        create_strategy_from_json_config(config)
+        for config in get_generated_strategy_configs(
+            enabled_templates=enabled_templates,
+            global_max_candidates=global_max_candidates,
+        )
     ]
 
 

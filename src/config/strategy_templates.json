@@ -1,0 +1,13 @@
+{
+    "use_generated_candidates": false,
+    "include_fixed_strategies": true,
+    "global_max_candidates": 60,
+    "enabled_templates": [
+        "trend",
+        "pullback",
+        "breakout",
+        "mean_reversion",
+        "volume",
+        "hybrid"
+    ]
+}

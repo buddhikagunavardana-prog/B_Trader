@@ -1,0 +1,14 @@
+{
+    "template_name": "mean_reversion",
+    "template_id": "MRV001",
+    "enabled": true,
+    "max_candidates": 5,
+    "parameters": {
+        "bollinger_period": [20],
+        "bollinger_std": [2],
+        "rsi_period": [14],
+        "rsi_buy": [30, 35, 40],
+        "stop_loss_pct": [1.0, 1.5],
+        "take_profit_pct": [2.0]
+    }
+}

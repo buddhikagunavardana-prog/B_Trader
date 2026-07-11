@@ -1,7 +1,9 @@
 import copy
+import json
 import os
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from pathlib import Path
 
 import pandas as pd
 
@@ -14,10 +16,14 @@ from src.research.market_regime_engine import (
     detect_market_regime,
     load_market_regime_config,
 )
-from src.strategies.strategy_factory import get_strategy_combinations
+from src.strategies.strategy_factory import (
+    get_generated_strategy_combinations,
+    get_strategy_combinations,
+)
 
 
 REPORT_PATH = "reports/strategy_combination_report.csv"
+STRATEGY_TEMPLATE_CONFIG_PATH = Path("src/config/strategy_templates.json")
 SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"]
 TIMEFRAME = "15m"
 LOOKBACK = "1 year ago UTC"
@@ -25,6 +31,41 @@ PREVIOUS_RUNTIME_MINUTES = 34.0
 MAX_WORKERS = min(4, os.cpu_count() or 1)
 
 _WORKER_MARKET_DATA = {}
+
+
+def load_strategy_template_config(
+    config_path: Path = STRATEGY_TEMPLATE_CONFIG_PATH,
+) -> dict:
+    if not config_path.exists():
+        return {
+            "use_generated_candidates": False,
+            "include_fixed_strategies": True,
+            "global_max_candidates": 60,
+            "enabled_templates": [],
+        }
+
+    with open(config_path, "r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def _load_research_strategies(config: dict):
+    fixed_strategies = []
+    generated_strategies = []
+
+    if config.get("include_fixed_strategies", True):
+        fixed_strategies = get_strategy_combinations()
+
+    if config.get("use_generated_candidates", False):
+        generated_strategies = get_generated_strategy_combinations(
+            enabled_templates=config.get("enabled_templates", []),
+            global_max_candidates=config.get("global_max_candidates", 60),
+        )
+
+    print(f"Active fixed strategies: {len(fixed_strategies)}")
+    print(f"Generated candidates: {len(generated_strategies)}")
+    print(f"Total research candidates: {len(fixed_strategies) + len(generated_strategies)}")
+
+    return fixed_strategies + generated_strategies
 
 
 def _strategy_matches_regime(strategy_name: str, regime: str) -> bool:
@@ -176,7 +217,8 @@ def run_strategy_combination_lab():
     sl_values = [1, 1.5, 2, 2.5]
     tp_values = [2, 3, 4, 5]
 
-    combinations = get_strategy_combinations()
+    template_config = load_strategy_template_config()
+    combinations = _load_research_strategies(template_config)
     final_results = []
     market_data = {}
     regime_config = load_market_regime_config()
