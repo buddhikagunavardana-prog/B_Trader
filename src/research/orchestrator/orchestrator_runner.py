@@ -211,7 +211,8 @@ def run_research_orchestrator(
             metadata={"reason": "Research orchestrator is disabled"},
         )
 
-    registry = registry or build_default_stage_registry()
+    adapter_mode = context.metadata.get("adapter_mode", "SMOKE")
+    registry = registry or build_default_stage_registry(adapter_mode)
     plan = build_plan(context, registry)
 
     if context.dry_run:
