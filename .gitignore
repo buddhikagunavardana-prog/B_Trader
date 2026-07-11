@@ -10,3 +10,4 @@ __pycache__/
 
 # Cached Binance data
 data/cache/
+reports/research_runs/
