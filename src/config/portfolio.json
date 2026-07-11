@@ -1,0 +1,13 @@
+{
+    "enabled": false,
+    "allocation_method": "equal",
+    "max_strategies": 10,
+    "max_pair_weight": 0.40,
+    "max_strategy_weight": 0.30,
+    "minimum_diversification": 2,
+    "maximum_drawdown_pct": 35.0,
+    "minimum_robustness": 60.0,
+    "minimum_profit_factor": 1.10,
+    "output_report": "reports/portfolio_candidates.csv",
+    "metrics_report": "reports/portfolio_metrics.json"
+}
