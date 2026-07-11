@@ -1,0 +1,16 @@
+{
+    "enabled": false,
+    "include_fixed_strategies": true,
+    "generated_candidate_limit": 30,
+    "pairs": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT",
+        "XRPUSDT"
+    ],
+    "timeframe": "15m",
+    "lookback": "1 year ago UTC",
+    "output_report": "reports/generated_candidate_comparison.csv",
+    "summary_report": "reports/generated_candidate_summary.json"
+}

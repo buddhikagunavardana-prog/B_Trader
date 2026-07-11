@@ -70,6 +70,10 @@ def get_json_strategy_combinations():
     ]
 
 
+def get_fixed_strategy_combinations():
+    return get_json_strategy_combinations()
+
+
 def get_generated_strategy_configs(
     enabled_templates: list[str] | None = None,
     global_max_candidates: int | None = None,
