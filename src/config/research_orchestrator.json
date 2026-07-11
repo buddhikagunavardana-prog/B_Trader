@@ -1,0 +1,33 @@
+{
+    "enabled": false,
+    "run_id": null,
+    "random_seed": 42,
+    "dry_run": true,
+    "resume_enabled": true,
+    "fail_fast": true,
+    "continue_on_stage_failure": false,
+    "global_task_budget": 100000,
+    "global_runtime_budget_seconds": 86400,
+    "output_directory": "reports/research_runs",
+    "state_file": "orchestrator_state.json",
+    "summary_file": "orchestrator_summary.json",
+    "manifest_file": "artifact_manifest.json",
+    "smoke_mode": false,
+    "stage_order": [
+        "load_data",
+        "fixed_strategy_research",
+        "generated_candidate_research",
+        "optimization_search",
+        "parameter_optimization",
+        "walk_forward",
+        "market_regime",
+        "robustness_validation",
+        "portfolio_builder",
+        "monte_carlo",
+        "best_strategy_selection",
+        "final_summary"
+    ],
+    "enabled_stages": [],
+    "stage_overrides": {},
+    "metadata": {}
+}
