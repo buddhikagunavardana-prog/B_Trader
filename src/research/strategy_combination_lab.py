@@ -1,13 +1,10 @@
 import copy
-import json
 import os
 import time
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
 
-from src.data.data_cache_engine import get_cached_klines
 from src.engines.backtest_engine import BacktestEngine
 from src.engines.indicator_engine import calculate_indicators
 from src.engines.signal_engine import generate_signals
@@ -16,6 +13,14 @@ from src.research.market_regime_engine import (
     detect_market_regime,
     load_market_regime_config,
 )
+from src.research.pipeline.pipeline_executor import (
+    execute_tasks,
+    get_worker_market_data,
+)
+from src.research.pipeline.pipeline_loader import load_json_config, load_market_data
+from src.research.pipeline.pipeline_metrics import add_research_score_columns
+from src.research.pipeline.pipeline_reporter import save_csv_report
+from src.research.pipeline.pipeline_runner import build_strategy_pair_tasks
 from src.strategies.strategy_factory import (
     get_generated_strategy_combinations,
     get_strategy_combinations,
@@ -30,22 +35,19 @@ LOOKBACK = "1 year ago UTC"
 PREVIOUS_RUNTIME_MINUTES = 34.0
 MAX_WORKERS = min(4, os.cpu_count() or 1)
 
-_WORKER_MARKET_DATA = {}
-
 
 def load_strategy_template_config(
     config_path: Path = STRATEGY_TEMPLATE_CONFIG_PATH,
 ) -> dict:
-    if not config_path.exists():
-        return {
+    return load_json_config(
+        config_path,
+        defaults={
             "use_generated_candidates": False,
             "include_fixed_strategies": True,
             "global_max_candidates": 60,
             "enabled_templates": [],
-        }
-
-    with open(config_path, "r", encoding="utf-8") as file:
-        return json.load(file)
+        },
+    )
 
 
 def _load_research_strategies(config: dict):
@@ -115,18 +117,14 @@ def _filter_tasks_by_regime(tasks: list, regime_map: dict, config: dict) -> list
     filtered_tasks = []
 
     for task in tasks:
-        _, _, symbol, strategy, _, _ = task
+        symbol = task.pair
+        strategy = task.payload
         regime = regime_map.get(symbol, {}).get("regime")
 
         if regime and _strategy_matches_regime(strategy.name, regime):
             filtered_tasks.append(task)
 
     return filtered_tasks or tasks
-
-
-def _initialize_worker(market_data):
-    global _WORKER_MARKET_DATA
-    _WORKER_MARKET_DATA = market_data
 
 
 def _run_backtest_grid(df, strategy, sl_values, tp_values):
@@ -186,8 +184,13 @@ def _run_backtest_grid(df, strategy, sl_values, tp_values):
 
 
 def _evaluate_strategy_pair(task):
-    strategy_index, pair_index, symbol, strategy, sl_values, tp_values = task
-    df = _WORKER_MARKET_DATA[symbol].copy()
+    strategy_index = task.item_index
+    pair_index = task.pair_index
+    symbol = task.pair
+    strategy = task.payload
+    sl_values = task.metadata["sl_values"]
+    tp_values = task.metadata["tp_values"]
+    df = get_worker_market_data(symbol).copy()
     results = _run_backtest_grid(df, strategy, sl_values, tp_values)
     best = results.iloc[0]
 
@@ -220,26 +223,27 @@ def run_strategy_combination_lab():
     template_config = load_strategy_template_config()
     combinations = _load_research_strategies(template_config)
     final_results = []
-    market_data = {}
     regime_config = load_market_regime_config()
 
     print("\n===== B TRADER 15m STRATEGY COMBINATION LAB =====")
     print(f"Previous runtime baseline: ~{PREVIOUS_RUNTIME_MINUTES:.1f} minutes")
     print(f"Parallel workers: {MAX_WORKERS}")
 
-    for symbol in SYMBOLS:
-        print(f"Loading cached data: {symbol} | Timeframe: {TIMEFRAME}")
-        market_data[symbol] = get_cached_klines(
-            symbol=symbol,
-            timeframe=TIMEFRAME,
-            lookback=LOOKBACK,
-        )
-
-    tasks = [
-        (strategy_index, pair_index, symbol, strategy, sl_values, tp_values)
-        for strategy_index, strategy in enumerate(combinations)
-        for pair_index, symbol in enumerate(SYMBOLS)
-    ]
+    market_data = load_market_data(
+        SYMBOLS,
+        TIMEFRAME,
+        LOOKBACK,
+        logger=print,
+    )
+    tasks = build_strategy_pair_tasks(
+        combinations,
+        SYMBOLS,
+        TIMEFRAME,
+        metadata_builder=lambda _strategy, _pair: {
+            "sl_values": sl_values,
+            "tp_values": tp_values,
+        },
+    )
     regime_map = _build_regime_map(market_data, regime_config)
     tasks = _filter_tasks_by_regime(tasks, regime_map, regime_config)
 
@@ -249,41 +253,26 @@ def run_strategy_combination_lab():
         print("Regime filtering disabled: running all strategy/pair tasks")
 
     total_tasks = len(tasks)
-    completed_tasks = 0
-    failures = []
 
-    with ProcessPoolExecutor(
-        max_workers=MAX_WORKERS,
-        initializer=_initialize_worker,
-        initargs=(market_data,),
-    ) as executor:
-        future_map = {
-            executor.submit(_evaluate_strategy_pair, task): task
-            for task in tasks
-        }
+    def _progress(completed_tasks, task_count, task, error):
+        progress_pct = completed_tasks / task_count * 100
+        strategy = task.payload
+        if error:
+            print(
+                f"[{progress_pct:6.2f}%] Failed: "
+                f"{strategy.name} | {task.pair} | {error}"
+            )
+            return
 
-        for future in as_completed(future_map):
-            strategy_index, _, symbol, strategy, _, _ = future_map[future]
-            completed_tasks += 1
-            progress_pct = completed_tasks / total_tasks * 100
+        print(f"[{progress_pct:6.2f}%] Done: {strategy.name} | {task.pair}")
 
-            try:
-                final_results.append(future.result())
-                print(
-                    f"[{progress_pct:6.2f}%] Done: "
-                    f"{strategy.name} | {symbol}"
-                )
-            except Exception as error:
-                failures.append({
-                    "strategy_index": strategy_index,
-                    "strategy": strategy.name,
-                    "symbol": symbol,
-                    "error": str(error),
-                })
-                print(
-                    f"[{progress_pct:6.2f}%] Failed: "
-                    f"{strategy.name} | {symbol} | {error}"
-                )
+    final_results, failures = execute_tasks(
+        tasks,
+        _evaluate_strategy_pair,
+        MAX_WORKERS,
+        market_data=market_data,
+        progress_callback=_progress,
+    )
 
     if not final_results:
         raise RuntimeError("No strategy research results were generated")
@@ -291,29 +280,15 @@ def run_strategy_combination_lab():
     if failures:
         print("\nResearch completed with failures:")
         for failure in failures:
+            task = failure["task"]
             print(
-                f"  {failure['strategy']} | {failure['symbol']} | "
+                f"  {task.payload.name} | {task.pair} | "
                 f"{failure['error']}"
             )
 
     report = pd.DataFrame(final_results)
 
-    report["PF Score"] = report["Profit Factor"].clip(0, 2) / 2 * 25
-    report["PnL Score"] = report["Total PnL %"].clip(0, 50) / 50 * 25
-    report["Win Score"] = report["Win Rate %"].clip(0, 60) / 60 * 20
-    report["DD Score"] = (
-        1 - report["Max Drawdown %"].abs().clip(0, 40) / 40
-    ) * 20
-    report["Trade Score"] = report["Trades"].clip(0, 200) / 200 * 10
-
-    report["Overall Score"] = (
-        report["PF Score"]
-        + report["PnL Score"]
-        + report["Win Score"]
-        + report["DD Score"]
-        + report["Trade Score"]
-    )
-
+    report = add_research_score_columns(report)
     report = report.sort_values(
         by=[
             "Overall Score",
@@ -326,8 +301,7 @@ def run_strategy_combination_lab():
     )
     report = report.drop(columns=["strategy_index", "pair_index"])
 
-    os.makedirs("reports", exist_ok=True)
-    report.to_csv(REPORT_PATH, index=False)
+    save_csv_report(report, REPORT_PATH)
 
     elapsed_minutes = (time.perf_counter() - started_at) / 60
 

@@ -1,12 +1,17 @@
-import json
-import os
 import time
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
 
-from src.data.data_cache_engine import get_cached_klines
+from src.research.pipeline.pipeline_executor import (
+    execute_tasks,
+    get_worker_market_data,
+)
+from src.research.pipeline.pipeline_filters import prevent_duplicate_ids
+from src.research.pipeline.pipeline_loader import load_json_config, load_market_data
+from src.research.pipeline.pipeline_metrics import add_research_score_columns
+from src.research.pipeline.pipeline_reporter import save_csv_report, save_json_report
+from src.research.pipeline.pipeline_runner import build_strategy_pair_tasks
 from src.research.strategy_combination_lab import MAX_WORKERS, _run_backtest_grid
 from src.strategies.json_strategy_loader import load_enabled_json_strategies
 from src.strategies.parameter_generator import ParameterGenerator
@@ -17,13 +22,8 @@ CONFIG_PATH = Path("src/config/generated_candidate_experiment.json")
 SL_VALUES = [1, 1.5, 2, 2.5]
 TP_VALUES = [2, 3, 4, 5]
 
-_WORKER_MARKET_DATA = {}
-
 
 def load_experiment_config(config_path: Path = CONFIG_PATH) -> dict:
-    with open(config_path, "r", encoding="utf-8") as file:
-        config = json.load(file)
-
     required_fields = [
         "enabled",
         "include_fixed_strategies",
@@ -34,16 +34,7 @@ def load_experiment_config(config_path: Path = CONFIG_PATH) -> dict:
         "output_report",
     ]
 
-    for field in required_fields:
-        if field not in config:
-            raise ValueError(f"Missing experiment config field: {field}")
-
-    return config
-
-
-def _initialize_worker(market_data):
-    global _WORKER_MARKET_DATA
-    _WORKER_MARKET_DATA = market_data
+    return load_json_config(config_path, required_fields)
 
 
 def _strategy_record_from_config(config: dict, source: str) -> dict:
@@ -78,41 +69,21 @@ def load_generated_strategy_records(limit: int) -> list[dict]:
 
 
 def _prevent_duplicate_strategy_ids(records: list[dict]) -> None:
-    seen_ids = set()
-
-    for record in records:
-        strategy_id = record["strategy_id"]
-
-        if strategy_id in seen_ids:
-            raise ValueError(f"Duplicate strategy ID in experiment: {strategy_id}")
-
-        seen_ids.add(strategy_id)
+    prevent_duplicate_ids(records, "strategy_id", "strategy")
 
 
 def _score_report(report: pd.DataFrame) -> pd.DataFrame:
-    scored = report.copy()
-    scored["PF Score"] = scored["Profit Factor"].clip(0, 2) / 2 * 25
-    scored["PnL Score"] = scored["Total PnL %"].clip(0, 50) / 50 * 25
-    scored["Win Score"] = scored["Win Rate %"].clip(0, 60) / 60 * 20
-    scored["DD Score"] = (
-        1 - scored["Max Drawdown %"].abs().clip(0, 40) / 40
-    ) * 20
-    scored["Trade Score"] = scored["Trades"].clip(0, 200) / 200 * 10
-    scored["Overall Score"] = (
-        scored["PF Score"]
-        + scored["PnL Score"]
-        + scored["Win Score"]
-        + scored["DD Score"]
-        + scored["Trade Score"]
-    )
-
-    return scored
+    return add_research_score_columns(report)
 
 
 def _evaluate_strategy_pair(task):
-    strategy_index, pair_index, symbol, record, timeframe = task
+    strategy_index = task.item_index
+    pair_index = task.pair_index
+    symbol = task.pair
+    record = task.payload
+    timeframe = task.timeframe
     started_at = time.perf_counter()
-    df = _WORKER_MARKET_DATA[symbol].copy()
+    df = get_worker_market_data(symbol).copy()
     results = _run_backtest_grid(df, record["strategy"], SL_VALUES, TP_VALUES)
     best = results.iloc[0]
 
@@ -139,11 +110,7 @@ def _evaluate_strategy_pair(task):
 
 
 def _build_tasks(records: list[dict], pairs: list[str], timeframe: str) -> list[tuple]:
-    return [
-        (strategy_index, pair_index, pair, record, timeframe)
-        for strategy_index, record in enumerate(records)
-        for pair_index, pair in enumerate(pairs)
-    ]
+    return build_strategy_pair_tasks(records, pairs, timeframe)
 
 
 def _run_records(
@@ -153,21 +120,22 @@ def _run_records(
     timeframe: str,
 ) -> tuple[pd.DataFrame, float]:
     started_at = time.perf_counter()
-    rows = []
     tasks = _build_tasks(records, pairs, timeframe)
+    rows, failures = execute_tasks(
+        tasks,
+        _evaluate_strategy_pair,
+        MAX_WORKERS,
+        market_data=market_data,
+    )
 
-    with ProcessPoolExecutor(
-        max_workers=MAX_WORKERS,
-        initializer=_initialize_worker,
-        initargs=(market_data,),
-    ) as executor:
-        future_map = {
-            executor.submit(_evaluate_strategy_pair, task): task
-            for task in tasks
-        }
-
-        for future in as_completed(future_map):
-            rows.append(future.result())
+    if failures:
+        for failure in failures:
+            task = failure["task"]
+            print(
+                "Generated experiment task failed: "
+                f"{task.payload['strategy_name']} | {task.pair} | "
+                f"{failure['error']}"
+            )
 
     report = pd.DataFrame(rows)
 
@@ -304,10 +272,7 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
     pairs = config["pairs"]
     timeframe = config["timeframe"]
     lookback = config["lookback"]
-    market_data = {
-        pair: get_cached_klines(pair, timeframe, lookback)
-        for pair in pairs
-    }
+    market_data = load_market_data(pairs, timeframe, lookback)
 
     print("\n===== B TRADER GENERATED CANDIDATE EXPERIMENT =====")
     print(f"Fixed strategy count: {len(fixed_records)}")
@@ -333,8 +298,7 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
         ascending=False,
     )
 
-    os.makedirs(Path(config["output_report"]).parent, exist_ok=True)
-    report.to_csv(config["output_report"], index=False)
+    save_csv_report(report, config["output_report"])
 
     summary = _build_summary(
         fixed_report,
@@ -346,8 +310,7 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
         "summary_report",
         "reports/generated_candidate_summary.json",
     )
-    with open(summary_report, "w", encoding="utf-8") as file:
-        json.dump(summary, file, indent=4)
+    save_json_report(summary, summary_report)
 
     total_tasks = len(all_records) * len(pairs)
     _print_summary(fixed_report, generated_report, summary, total_tasks)

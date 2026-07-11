@@ -1,16 +1,21 @@
 import copy
 import json
-import os
 from pathlib import Path
 
 import pandas as pd
 
-from src.data.data_cache_engine import get_cached_klines
 from src.research.generated_candidate_experiment import _score_report
 from src.research.market_regime_engine import (
     detect_market_regime,
     load_market_regime_config,
 )
+from src.research.pipeline.pipeline_filters import limit_by_task_budget
+from src.research.pipeline.pipeline_loader import (
+    load_csv_report,
+    load_json_config,
+    load_market_data,
+)
+from src.research.pipeline.pipeline_reporter import save_csv_report, save_json_report
 from src.research.strategy_combination_lab import _run_backtest_grid
 from src.research.walk_forward_engine import (
     build_walk_forward_windows,
@@ -56,9 +61,6 @@ ROBUSTNESS_WEIGHTS = {
 
 
 def load_robustness_config(config_path: Path = CONFIG_PATH) -> dict:
-    with open(config_path, "r", encoding="utf-8") as file:
-        config = json.load(file)
-
     required_keys = [
         "enabled",
         "top_candidate_count",
@@ -78,11 +80,7 @@ def load_robustness_config(config_path: Path = CONFIG_PATH) -> dict:
         "pass_score",
     ]
 
-    for key in required_keys:
-        if key not in config:
-            raise ValueError(f"Missing robustness config key: {key}")
-
-    return config
+    return load_json_config(config_path, required_keys)
 
 
 def _bounded_score(value: float) -> float:
@@ -90,11 +88,6 @@ def _bounded_score(value: float) -> float:
 
 
 def _load_comparison_report(path: str) -> pd.DataFrame:
-    report_path = Path(path)
-    if not report_path.exists():
-        raise FileNotFoundError(f"Comparison report not found: {path}")
-
-    report = pd.read_csv(report_path)
     required_columns = {
         "Strategy ID",
         "Strategy Name",
@@ -110,11 +103,7 @@ def _load_comparison_report(path: str) -> pd.DataFrame:
         "Trades",
         "Overall Score",
     }
-    missing = required_columns - set(report.columns)
-    if missing:
-        raise ValueError(f"Comparison report missing columns: {sorted(missing)}")
-
-    return report
+    return load_csv_report(path, required_columns)
 
 
 def select_top_generated_candidates(
@@ -189,13 +178,11 @@ def _estimate_validation_tasks(config: dict) -> int:
 
 def _apply_validation_task_cap(records: list[dict], config: dict) -> list[dict]:
     task_estimate = _estimate_validation_tasks(config)
-    max_tasks = int(config["global_max_validation_tasks"])
-
-    if task_estimate <= 0:
-        return records
-
-    allowed_records = max(1, max_tasks // task_estimate)
-    return records[:allowed_records]
+    return limit_by_task_budget(
+        records,
+        int(config["global_max_validation_tasks"]),
+        task_estimate,
+    )
 
 
 def _metric_pass(row, config: dict) -> bool:
@@ -732,10 +719,11 @@ def run_generated_strategy_robustness(config_override: dict | None = None):
     comparison_report = comparison_report[
         comparison_report["Pair"].isin(pairs)
     ].copy()
-    market_data = {
-        pair: get_cached_klines(pair, config["timeframe"], config["lookback"])
-        for pair in pairs
-    }
+    market_data = load_market_data(
+        pairs,
+        config["timeframe"],
+        config["lookback"],
+    )
     regime_map = _build_regime_map(market_data)
     rows = []
     total = len(records)
@@ -765,12 +753,10 @@ def run_generated_strategy_robustness(config_override: dict | None = None):
         by=["Robustness Score", "Overfitting Risk Score", "Original ROI %"],
         ascending=[False, True, False],
     )
-    os.makedirs(Path(config["output_report"]).parent, exist_ok=True)
-    report.to_csv(config["output_report"], index=False)
+    save_csv_report(report, config["output_report"])
 
     shortlist = _build_shortlist(report, records)
-    with open(config["shortlist_report"], "w", encoding="utf-8") as file:
-        json.dump(shortlist, file, indent=4)
+    save_json_report(shortlist, config["shortlist_report"])
 
     print(f"\nRobustness report saved -> {config['output_report']}")
     print(f"Shortlist saved -> {config['shortlist_report']}")
