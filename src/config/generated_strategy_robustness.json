@@ -1,0 +1,18 @@
+{
+    "enabled": false,
+    "top_candidate_count": 10,
+    "neighbor_limit": 8,
+    "walk_forward_windows": 5,
+    "global_max_validation_tasks": 500,
+    "comparison_report": "reports/generated_candidate_comparison.csv",
+    "output_report": "reports/generated_strategy_robustness.csv",
+    "shortlist_report": "reports/generated_strategy_shortlist.json",
+    "pairs": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"],
+    "timeframe": "15m",
+    "lookback": "1 year ago UTC",
+    "minimum_trades": 30,
+    "minimum_profit_factor": 1.05,
+    "maximum_drawdown_pct": 35.0,
+    "maximum_neighbor_degradation_pct": 30.0,
+    "pass_score": 65.0
+}

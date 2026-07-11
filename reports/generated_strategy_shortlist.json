@@ -1,0 +1,68 @@
+[
+    {
+        "strategy_id": "HYB001_EMA50_100_RSI14_VOL1P2_SL1P5_TP3P0",
+        "name": "Generated Hybrid EMA 50/100 RSI 14 Vol 1.2",
+        "template_type": "hybrid",
+        "parameters": {
+            "fast_ema": 50,
+            "rsi_buy": 40,
+            "rsi_period": 14,
+            "slow_ema": 100,
+            "stop_loss_pct": 1.5,
+            "take_profit_pct": 3.0,
+            "volume_multiplier": 1.2,
+            "volume_period": 20,
+            "template_id": "HYB001",
+            "timeframe": "15m"
+        },
+        "recommended_pairs": [
+            "ETHUSDT"
+        ],
+        "recommended_regimes": [
+            "LOW_VOLATILITY"
+        ],
+        "robustness_score": 80.62,
+        "overfitting_risk_score": 20.29,
+        "minimum_expected_metrics": {
+            "profit_factor": 1.19,
+            "roi_pct": 72.34,
+            "win_rate_pct": 45.08,
+            "max_drawdown_pct": -20.37,
+            "trades": 244
+        },
+        "notes": "Generated candidate passed robustness validation."
+    },
+    {
+        "strategy_id": "HYB001_EMA20_100_RSI14_VOL1P5_SL1P5_TP3P0",
+        "name": "Generated Hybrid EMA 20/100 RSI 14 Vol 1.5",
+        "template_type": "hybrid",
+        "parameters": {
+            "fast_ema": 20,
+            "rsi_buy": 40,
+            "rsi_period": 14,
+            "slow_ema": 100,
+            "stop_loss_pct": 1.5,
+            "take_profit_pct": 3.0,
+            "volume_multiplier": 1.5,
+            "volume_period": 20,
+            "template_id": "HYB001",
+            "timeframe": "15m"
+        },
+        "recommended_pairs": [
+            "ETHUSDT"
+        ],
+        "recommended_regimes": [
+            "LOW_VOLATILITY"
+        ],
+        "robustness_score": 77.74,
+        "overfitting_risk_score": 22.58,
+        "minimum_expected_metrics": {
+            "profit_factor": 1.16,
+            "roi_pct": 55.56,
+            "win_rate_pct": 26.85,
+            "max_drawdown_pct": -19.39,
+            "trades": 216
+        },
+        "notes": "Generated candidate passed robustness validation."
+    }
+]
