@@ -121,12 +121,21 @@ class BacktestEngine:
         stop_loss_pct = self._resolve_stop_loss_pct() / 100
         take_profit_pct = self._resolve_take_profit_pct() / 100
 
-        for i in range(len(df)):
-            candle = df.iloc[i]
-            signal = signals.iloc[i]
-            current_price = float(candle["close"])
+        # Read-only column/index views avoid constructing two pandas Series for
+        # every candle.  The loop order and all trading calculations remain the
+        # same; only the access path to the existing values changes.
+        index = df.index
+        close_values = df["close"].to_numpy(copy=False)
+        low_values = df["low"].to_numpy(copy=False)
+        high_values = df["high"].to_numpy(copy=False)
+        signal_values = signals.to_numpy(copy=False)
 
-            self._record_equity(candle.name)
+        for i in range(len(df)):
+            candle_time = index[i]
+            signal = signal_values[i]
+            current_price = float(close_values[i])
+
+            self._record_equity(candle_time)
 
             if position is None and signal == "BUY":
                 entry_price = current_price
@@ -136,7 +145,7 @@ class BacktestEngine:
 
                 position = {
                     "entry_index": i,
-                    "entry_time": candle.name,
+                    "entry_time": candle_time,
                     "entry_price": entry_price,
                     "stop_loss": entry_price * (1 - stop_loss_pct),
                     "take_profit": entry_price * (1 + take_profit_pct),
@@ -146,8 +155,8 @@ class BacktestEngine:
                 }
 
             elif position is not None:
-                low_price = float(candle["low"])
-                high_price = float(candle["high"])
+                low_price = float(low_values[i])
+                high_price = float(high_values[i])
 
                 exit_price = None
                 result = None
@@ -186,7 +195,7 @@ class BacktestEngine:
                         "duration_candles": i - position["entry_index"],
 
                         "entry_time": position["entry_time"],
-                        "exit_time": candle.name,
+                        "exit_time": candle_time,
 
                         "entry_price": round(entry_price, 6),
                         "exit_price": round(exit_price, 6),
@@ -211,7 +220,7 @@ class BacktestEngine:
                     }
 
                     self.trades.append(trade)
-                    self._record_equity(candle.name)
+                    self._record_equity(candle_time)
 
                     position = None
 
