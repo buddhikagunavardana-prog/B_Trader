@@ -24,6 +24,7 @@ from src.indicators.momentum.stochastic_rsi import calculate_stochastic_rsi
 from src.indicators.momentum.tsi import calculate_tsi
 from src.indicators.momentum.ultimate_oscillator import calculate_ultimate_oscillator
 from src.indicators.momentum.williams_r import calculate_williams_r
+from src.indicators.momentum.zscore import calculate_zscore
 from src.indicators.structure.fibonacci_retracement import calculate_fibonacci_retracement
 from src.indicators.structure.linear_regression_channel import calculate_linear_regression_channel
 from src.indicators.structure.pivot_points import calculate_pivot_points
@@ -53,6 +54,7 @@ from src.indicators.volume.ease_of_movement import calculate_ease_of_movement
 from src.indicators.volume.mfi import calculate_mfi
 from src.indicators.volume.obv import calculate_obv
 from src.indicators.volume.volume_roc import calculate_volume_roc
+from src.indicators.volume.rolling_vwap import calculate_rolling_vwap
 from src.indicators.volume.volume import calculate_volume_sma
 from src.indicators.volume.vwap import calculate_vwap
 
@@ -202,6 +204,7 @@ def _register_defaults() -> None:
         ("momentum", "momentum", calculate_momentum, {"period": 10, "source": "close"}),
         ("tsi", "momentum", calculate_tsi, {"long_period": 25, "short_period": 13, "source": "close"}),
         ("ultimate_oscillator", "momentum", calculate_ultimate_oscillator, {"short_period": 7, "medium_period": 14, "long_period": 28}),
+        ("zscore", "momentum", calculate_zscore, {"period": 20, "source": "close"}),
         ("atr", "volatility", calculate_atr, {"period": 14}),
         ("bollinger_bands", "volatility", calculate_bollinger, {"period": 20, "std_dev": 2.0}),
         ("keltner_channel", "volatility", calculate_keltner_channel, {"ema_period": 20, "atr_period": 10, "multiplier": 2.0}),
@@ -217,6 +220,7 @@ def _register_defaults() -> None:
         ("volume_roc", "volume", calculate_volume_roc, {"period": 12}),
         ("ease_of_movement", "volume", calculate_ease_of_movement, {"period": 14, "volume_divisor": 100000000.0}),
         ("volume_sma", "volume", calculate_volume_sma, {"period": 20}),
+        ("rolling_vwap", "volume", calculate_rolling_vwap, {"period": 96}),
         ("adx", "market_strength", calculate_adx, {"period": 14}),
         ("aroon", "market_strength", calculate_aroon, {"period": 25}),
         ("vortex", "market_strength", calculate_vortex, {"period": 14}),

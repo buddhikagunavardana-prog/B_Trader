@@ -13,9 +13,9 @@ from src.strategies.json_strategy_loader import load_json_strategy_file
 
 EXPECTED_CATEGORY_COUNTS = {
     "trend": 10,
-    "momentum": 10,
+    "momentum": 11,
     "volatility": 7,
-    "volume": 8,  # Seven target indicators plus backward-compatible volume SMA.
+    "volume": 9,  # Professional set plus rolling VWAP and compatible volume SMA.
     "market_strength": 6,
     "structure": 6,
     "candlestick": 1,
@@ -71,7 +71,7 @@ def _strategy(indicators: dict) -> dict:
 
 
 def test_professional_registry_inventory_and_categories():
-    assert len(indicator_registry.list_names()) == 48
+    assert len(indicator_registry.list_names()) == 50
     assert {
         category: len(indicator_registry.list_by_category(category))
         for category in indicator_registry.list_categories()
@@ -153,9 +153,14 @@ def test_all_nonlegacy_registry_indicators_are_pipeline_compatible():
         for name in indicator_registry.list_names()
         if name not in legacy
     })
-    result = calculate_indicators(_market_data(), strategy)
+    market = _market_data()
+    original_ohlcv = market.copy(deep=True)
+    result = calculate_indicators(market.copy(), strategy)
     assert len(result) == 120
     assert len(result.columns) > len(_market_data().columns)
+    pd.testing.assert_frame_equal(
+        result[list(original_ohlcv.columns)], original_ohlcv, check_exact=True,
+    )
 
 
 def test_representative_new_indicator_formulas():

@@ -48,17 +48,25 @@ def create_strategy_from_json_config(config: dict):
 
     for indicator, settings in config["indicators"].items():
         if indicator not in strategy.indicators:
-            continue
+            strategy.indicators[indicator] = {}
 
         strategy.indicators[indicator].update(settings)
         strategy.indicators[indicator]["enabled"] = settings.get("enabled", True)
 
     for rule, enabled in config["entry_rules"].items():
-        if rule in strategy.entry_rules:
+        if rule not in strategy.entry_rules:
+            strategy.entry_rules[rule] = enabled
+        elif isinstance(strategy.entry_rules[rule], bool):
             strategy.entry_rules[rule] = bool(enabled)
+        else:
+            strategy.entry_rules[rule] = enabled
 
     strategy.exit_rules.update(config["exit_rules"])
     strategy.risk.update(config["risk"])
+    strategy.strategy_id = config.get("strategy_id", config.get("id", strategy.name))
+    strategy.metadata = dict(config.get("metadata", {}))
+    strategy.parameters = dict(config.get("parameters", {}))
+    strategy.parameter_ranges = dict(config.get("parameter_ranges", {}))
 
     return strategy
 

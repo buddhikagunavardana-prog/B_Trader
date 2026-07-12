@@ -1,0 +1,1 @@
+{"template_name":"professional_mean_reversion","template_id":"PRO_MR","enabled":false,"max_candidates":12,"parameters":{"zscore_threshold":[-2.4,-2.0,-1.8],"rsi_threshold":[6,8,12],"stop_loss_pct":[1.0,1.2,1.5],"take_profit_pct":[1.0,1.5]}}

@@ -1,0 +1,10 @@
+{
+  "strategy_id": "PRO_TS_MOMENTUM_V1", "name": "Volatility-Scaled Time-Series Momentum", "version": "1.0.0", "timeframe": "15m", "enabled": false,
+  "indicators": {"ema": {"enabled": true, "fast": 32, "slow": 96, "trend": 192}, "atr": {"enabled": true, "period": 14}, "adx": {"enabled": true, "period": 14}, "donchian_channel": {"enabled": true, "period": 20}},
+  "entry_rules": {"professional_strategy": "volatility_scaled_time_series_momentum", "donchian_period": 20, "adx_min": 18},
+  "exit_rules": {"simulated_exit_mode": "fixed_percent_full_position", "stop_loss_type": "percent_fallback", "stop_loss_percent": 2.0, "take_profit_percent": 100.0, "initial_atr_stop": 1.8, "trailing_atr": 2.5, "indicator_exit": "close_below_ema_32", "time_exit_bars": 192, "partial_exits_supported": false},
+  "risk": {"risk_per_trade": 0.35, "max_open_trades": 3, "same_pair_cooldown_bars": 8},
+  "parameters": {"fast_ema": 32, "slow_ema": 96, "donchian_period": 20, "adx_threshold": 18, "initial_atr_stop": 1.8, "trailing_atr": 2.5},
+  "parameter_ranges": {"fast_ema": [24, 48], "slow_ema": [72, 120], "donchian_period": [16, 32], "adx_threshold": [16, 22], "initial_atr_stop": [1.5, 2.2], "trailing_atr": [2.0, 3.0]},
+  "metadata": {"category": "trend", "role": "core", "market_type": "spot", "status": "RESEARCH_CANDIDATE", "preferred_regimes": ["TRENDING", "HIGH_VOLATILITY"], "forbidden_regimes": [], "pairs": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"], "description": "CTA-style long-only trend following."}
+}

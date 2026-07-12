@@ -1,0 +1,10 @@
+{
+  "strategy_id": "PRO_TREND_PULLBACK_V1", "name": "Trend Pullback Continuation", "version": "1.0.0", "timeframe": "15m", "enabled": false,
+  "indicators": {"ema": {"enabled": true, "fast": 20, "slow": 48, "trend": 192}, "rsi": {"enabled": true, "period": 3}, "adx": {"enabled": true, "period": 14}, "atr": {"enabled": true, "period": 14}},
+  "entry_rules": {"professional_strategy": "trend_pullback_continuation", "previous_rsi_max": 20, "adx_min": 18},
+  "exit_rules": {"simulated_exit_mode": "fixed_percent_full_position", "stop_loss_type": "percent_fallback", "stop_loss_percent": 1.5, "take_profit_percent": 3.0, "preferred_partial_exit": "50_percent_at_2R", "trailing_atr": 2.0, "indicator_exit": "close_below_ema_48", "time_exit_bars": 64, "partial_exits_supported": false},
+  "risk": {"risk_per_trade": 0.30, "max_open_trades": 3, "same_pair_cooldown_bars": 8},
+  "parameters": {"entry_ema": 20, "trend_ema": 48, "structure_ema": 192, "rsi_threshold": 20, "adx_threshold": 18},
+  "parameter_ranges": {"entry_ema": [16, 24], "trend_ema": [40, 64], "structure_ema": [160, 224], "rsi_threshold": [15, 25], "adx_threshold": [16, 22]},
+  "metadata": {"category": "pullback", "role": "core", "market_type": "spot", "status": "RESEARCH_CANDIDATE", "preferred_regimes": ["TRENDING"], "forbidden_regimes": ["SIDEWAYS"], "pairs": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"], "description": "Bull-trend pullback and resumption strategy."}
+}

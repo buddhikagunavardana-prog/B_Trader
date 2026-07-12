@@ -1,0 +1,10 @@
+{
+  "strategy_id": "PRO_CROSS_SECTIONAL_ROTATION_V1", "name": "Cross-Sectional Relative Strength Rotation", "version": "1.0.0", "timeframe": "15m", "enabled": false,
+  "indicators": {"ema": {"enabled": true, "fast": 32, "slow": 96, "trend": 192}, "historical_volatility": {"enabled": true, "period": 96}, "atr": {"enabled": true, "period": 14}},
+  "entry_rules": {"portfolio_overlay": "cross_sectional_relative_strength", "short_horizon": 16, "medium_horizon": 96, "rebalance_period": 16, "top_count": 2},
+  "exit_rules": {"simulated_exit_mode": "portfolio_overlay_not_single_pair_backtested", "rebalance_exit": true, "indicator_exit": "close_below_ema_32", "trailing_atr": 2.0, "take_profit_percent": 100.0},
+  "risk": {"max_open_trades": 2, "max_notional_exposure": 1.0, "allocation_method": "inverse_volatility"},
+  "parameters": {"short_horizon": 16, "medium_horizon": 96, "rebalance_period": 16, "short_weight": 0.4, "medium_weight": 0.6, "top_count": 2},
+  "parameter_ranges": {"short_horizon": [12, 24], "medium_horizon": [72, 120], "rebalance_period": [12, 24], "short_weight": [0.3, 0.5], "top_count": [1, 2]},
+  "metadata": {"category": "cross_sectional", "role": "overlay", "market_type": "spot", "status": "RESEARCH_CANDIDATE", "preferred_regimes": ["TRENDING", "MIXED"], "forbidden_regimes": ["VOLATILITY_SHOCK"], "pairs": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"], "description": "Portfolio-level relative-strength selection overlay."}
+}

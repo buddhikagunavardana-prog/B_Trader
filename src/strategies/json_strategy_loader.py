@@ -17,6 +17,14 @@ REQUIRED_FIELDS = [
     "enabled",
 ]
 
+ENGINE_PARAMETER_KEYS = {
+    "ema": {"fast", "slow", "trend"},
+    "rsi": {"buy", "sell"},
+    "atr": {"multiplier"},
+    "volume": {"multiplier"},
+    "candlestick": {"confirmation_required"},
+}
+
 
 def validate_json_strategy_config(config: dict, source: Path) -> None:
     if not isinstance(config, dict):
@@ -42,7 +50,7 @@ def validate_json_strategy_config(config: dict, source: Path) -> None:
         params = {
             key: value
             for key, value in indicator_config.items()
-            if key != "enabled"
+            if key != "enabled" and key not in ENGINE_PARAMETER_KEYS.get(name, set())
         }
         try:
             indicator_registry.validate_parameters(name, params)

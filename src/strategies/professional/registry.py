@@ -1,0 +1,12 @@
+from src.strategies.professional.compression_expansion_breakout import generate_compression_breakout_signals
+from src.strategies.professional.regime_gated_mean_reversion import generate_regime_mean_reversion_signals
+from src.strategies.professional.trend_pullback_continuation import generate_trend_pullback_signals
+from src.strategies.professional.volatility_scaled_time_series_momentum import generate_time_series_momentum_signals
+
+
+PROFESSIONAL_STRATEGY_SIGNALS = {
+    "volatility_scaled_time_series_momentum": generate_time_series_momentum_signals,
+    "compression_expansion_donchian_breakout": generate_compression_breakout_signals,
+    "trend_pullback_continuation": generate_trend_pullback_signals,
+    "regime_gated_intraday_mean_reversion": generate_regime_mean_reversion_signals,
+}

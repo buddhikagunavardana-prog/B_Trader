@@ -1,6 +1,6 @@
 # B Trader Professional Indicator Library
 
-B Trader exposes 48 registered indicators through
+B Trader exposes 50 registered indicators through
 `src.indicators.registry.indicator_registry`. The registry validates JSON
 parameters, supplies documented defaults, resolves backward-compatible names,
 and attaches newly enabled indicators to the research DataFrame without manual
@@ -12,21 +12,22 @@ engine imports.
 
 EMA, SMA, WMA, VWMA, HMA, DEMA, TEMA, KAMA, SuperTrend, and Ichimoku Cloud.
 
-### Momentum (10)
+### Momentum (11)
 
 RSI, MACD, Stochastic, Stochastic RSI, CCI, Williams %R, ROC, Momentum, TSI,
-and Ultimate Oscillator.
+Ultimate Oscillator, and rolling Z-score.
 
 ### Volatility (7)
 
 ATR, Bollinger Bands, Keltner Channel, Donchian Channel, Historical
 Volatility, Standard Deviation, and Chaikin Volatility.
 
-### Volume (8)
+### Volume (9)
 
 OBV, VWAP, CMF, MFI, Accumulation/Distribution, Volume ROC, Ease of Movement,
-and the backward-compatible Volume SMA used by existing strategies. The first
-seven constitute the Phase 20.10B professional target set.
+rolling VWAP, and the backward-compatible Volume SMA used by existing
+strategies. The first seven constituted the Phase 20.10B library target set;
+rolling VWAP and Z-score support the professional strategy portfolio.
 
 ### Market strength (6)
 

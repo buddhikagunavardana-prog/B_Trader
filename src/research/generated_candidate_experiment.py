@@ -92,6 +92,10 @@ def _evaluate_strategy_pair(task):
         include_trade_details=True,
     )
     best = results.iloc[0]
+    simulated_exit_mode = record["strategy"].exit_rules.get(
+        "simulated_exit_mode",
+        "fixed_percent_full_position",
+    )
     trade_records = []
     for trade in best["_Trade Records"]:
         trade_records.append({
@@ -112,6 +116,7 @@ def _evaluate_strategy_pair(task):
             "PnL %": trade["pnl_pct"],
             "Fees": trade.get("total_fee", 0.0),
             "Exit Reason": trade["exit_reason"],
+            "Simulated Exit Mode": simulated_exit_mode,
             "Initial Balance": trade["balance_before"] if trade["trade_id"] == 1 else None,
         })
 
@@ -133,6 +138,7 @@ def _evaluate_strategy_pair(task):
         "Max Drawdown %": best["Max Drawdown %"],
         "Trades": best["Total Trades"],
         "Expectancy": best["Expectancy"],
+        "Simulated Exit Mode": simulated_exit_mode,
         "Runtime Seconds": round(time.perf_counter() - started_at, 2),
         "_trade_records": trade_records,
     }
@@ -346,6 +352,7 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
             "Template Type", "Pair", "Timeframe", "Trade ID", "Entry Time",
             "Exit Time", "Entry Price", "Exit Price", "Side", "PnL", "PnL %",
             "Fees", "Exit Reason", "Initial Balance",
+            "Simulated Exit Mode",
         ]
         save_csv_report(
             pd.DataFrame(candidate_trades, columns=trade_columns),

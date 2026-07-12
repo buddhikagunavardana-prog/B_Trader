@@ -1,0 +1,1 @@
+{"template_name":"professional_pullback","template_id":"PRO_PB","enabled":false,"max_candidates":12,"parameters":{"fast_ema":[16,20,24],"slow_ema":[40,48,64],"structure_ema":[160,192,224],"rsi_threshold":[15,20,25],"adx_threshold":[16,18,22],"stop_loss_pct":[1.2,1.5,1.8],"take_profit_pct":[2.0,3.0]}}

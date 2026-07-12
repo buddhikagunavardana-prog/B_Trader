@@ -4,6 +4,12 @@ from src.strategies.templates.mean_reversion_template import MeanReversionTempla
 from src.strategies.templates.pullback_template import PullbackTemplate
 from src.strategies.templates.trend_template import TrendTemplate
 from src.strategies.templates.volume_template import VolumeTemplate
+from src.strategies.templates.professional_template import (
+    ProfessionalBreakoutTemplate,
+    ProfessionalMeanReversionTemplate,
+    ProfessionalMomentumTemplate,
+    ProfessionalPullbackTemplate,
+)
 
 
 TEMPLATE_REGISTRY = {
@@ -13,6 +19,10 @@ TEMPLATE_REGISTRY = {
     "mean_reversion": MeanReversionTemplate,
     "volume": VolumeTemplate,
     "hybrid": HybridTemplate,
+    "professional_momentum": ProfessionalMomentumTemplate,
+    "professional_breakout": ProfessionalBreakoutTemplate,
+    "professional_pullback": ProfessionalPullbackTemplate,
+    "professional_mean_reversion": ProfessionalMeanReversionTemplate,
 }
 
 

@@ -18,11 +18,28 @@ LEGACY_ENGINE_INDICATORS = {
     "supertrend",
 }
 
+MULTI_OUTPUT_COLUMNS = {
+    "stochastic": ["STOCHASTIC_K", "STOCHASTIC_D"],
+    "stochastic_rsi": ["STOCHASTIC_RSI_K", "STOCHASTIC_RSI_D"],
+    "keltner_channel": ["KELTNER_UPPER", "KELTNER_MIDDLE", "KELTNER_LOWER"],
+    "donchian_channel": ["DONCHIAN_UPPER", "DONCHIAN_MIDDLE", "DONCHIAN_LOWER"],
+    "aroon": ["AROON_UP", "AROON_DOWN"],
+    "vortex": ["VORTEX_POSITIVE", "VORTEX_NEGATIVE"],
+    "dmi": ["DMI_PLUS", "DMI_MINUS"],
+    "elder_ray_index": ["BULL_POWER", "BEAR_POWER"],
+    "price_channels": ["PRICE_CHANNEL_UPPER", "PRICE_CHANNEL_MIDDLE", "PRICE_CHANNEL_LOWER"],
+    "linear_regression_channel": ["LINEAR_REGRESSION_UPPER", "LINEAR_REGRESSION_MIDDLE", "LINEAR_REGRESSION_LOWER"],
+    "ichimoku_cloud": ["ICHIMOKU_CONVERSION", "ICHIMOKU_BASE", "ICHIMOKU_SPAN_A", "ICHIMOKU_SPAN_B", "ICHIMOKU_LAGGING"],
+    "pivot_points": ["PIVOT", "PIVOT_R1", "PIVOT_R2", "PIVOT_R3", "PIVOT_S1", "PIVOT_S2", "PIVOT_S3"],
+    "swing_high_low": ["SWING_HIGH", "SWING_LOW"],
+}
+
 
 def _attach_registry_output(df, name, output):
     if isinstance(output, tuple):
+        columns = MULTI_OUTPUT_COLUMNS.get(name, [])
         for index, item in enumerate(output, start=1):
-            column = item.name or f"{name.upper()}_{index}"
+            column = columns[index - 1] if index <= len(columns) else f"{name.upper()}_{index}"
             df[column] = item
     elif isinstance(output, dict):
         prefix = name.upper()
@@ -32,7 +49,7 @@ def _attach_registry_output(df, name, output):
         for column in output.columns:
             df[column] = output[column]
     else:
-        column = output.name or name.upper()
+        column = output.name if output.name and output.name not in df.columns else name.upper()
         df[column] = output
 
 def calculate_indicators(df, strategy):

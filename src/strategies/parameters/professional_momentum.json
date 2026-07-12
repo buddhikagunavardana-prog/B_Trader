@@ -1,0 +1,1 @@
+{"template_name":"professional_momentum","template_id":"PRO_MOM","enabled":false,"max_candidates":12,"parameters":{"fast_ema":[24,32,48],"slow_ema":[72,96,120],"donchian_period":[16,20,32],"adx_threshold":[16,18,22],"stop_loss_pct":[1.5,2.0,2.2],"take_profit_pct":[100.0]}}

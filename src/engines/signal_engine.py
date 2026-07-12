@@ -106,6 +106,14 @@ def _supertrend_condition(df, strategy):
 
 
 def generate_signals(df, strategy):
+    professional_id = strategy.entry_rules.get("professional_strategy")
+    if professional_id:
+        if professional_id not in PROFESSIONAL_STRATEGY_SIGNALS:
+            raise ValueError(f"Unknown professional strategy: {professional_id}")
+        result = df.copy()
+        result["SIGNAL"] = PROFESSIONAL_STRATEGY_SIGNALS[professional_id](result, strategy)
+        return result
+
     df["SIGNAL"] = "HOLD"
 
     conditions = []
@@ -159,3 +167,4 @@ def generate_signals(df, strategy):
     df.loc[buy_condition, "SIGNAL"] = "BUY"
 
     return df
+from src.strategies.professional.registry import PROFESSIONAL_STRATEGY_SIGNALS

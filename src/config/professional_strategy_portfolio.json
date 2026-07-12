@@ -1,0 +1,29 @@
+{
+  "schema_version": "1",
+  "market_type": "spot",
+  "timeframe": "15m",
+  "pairs": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"],
+  "roles": {
+    "core": ["PRO_TS_MOMENTUM_V1", "PRO_COMPRESSION_BREAKOUT_V1", "PRO_TREND_PULLBACK_V1"],
+    "overlay": ["PRO_CROSS_SECTIONAL_ROTATION_V1"],
+    "satellite": ["PRO_REGIME_MEAN_REVERSION_V1"]
+  },
+  "risk": {
+    "maximum_simultaneous_positions": 3,
+    "maximum_portfolio_open_risk_pct": 1.20,
+    "maximum_notional_exposure": 1.0,
+    "correlation_cap": 0.75,
+    "drawdown_reduce_at_pct": 6.0,
+    "drawdown_suspend_at_pct": 10.0,
+    "recovery_rule": "resume_below_6_pct_after_new_equity_high"
+  },
+  "regime_routing": {
+    "TRENDING": {"enabled_strategies": ["PRO_TS_MOMENTUM_V1", "PRO_TREND_PULLBACK_V1", "PRO_CROSS_SECTIONAL_ROTATION_V1"], "risk_multiplier": 1.0},
+    "HIGH_VOLATILITY": {"enabled_strategies": ["PRO_COMPRESSION_BREAKOUT_V1", "PRO_TS_MOMENTUM_V1"], "risk_multiplier": 0.75},
+    "SIDEWAYS": {"enabled_strategies": ["PRO_REGIME_MEAN_REVERSION_V1"], "risk_multiplier": 1.0},
+    "LOW_VOLATILITY": {"enabled_strategies": ["PRO_REGIME_MEAN_REVERSION_V1"], "risk_multiplier": 0.75},
+    "MIXED": {"enabled_strategies": ["PRO_TS_MOMENTUM_V1", "PRO_CROSS_SECTIONAL_ROTATION_V1"], "risk_multiplier": 0.5},
+    "VOLATILITY_SHOCK": {"enabled_strategies": [], "risk_multiplier": 0.0},
+    "UNKNOWN": {"enabled_strategies": ["PRO_TS_MOMENTUM_V1"], "risk_multiplier": 0.5}
+  }
+}
