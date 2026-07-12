@@ -13,6 +13,7 @@ def run_generated_candidate_stage(context, stage, state):
     benchmark = benchmark_settings(context)
     output_report = context.run_directory() / "generated_candidate_comparison.csv"
     summary_report = context.run_directory() / "generated_candidate_summary.json"
+    trade_report = context.run_directory() / "candidate_trades.csv"
     limit = int(benchmark.get("generated_candidate_limit", 5))
     if benchmark.get("mode") == "SMALL_BENCHMARK":
         limit = min(limit, 2)
@@ -29,12 +30,30 @@ def run_generated_candidate_stage(context, stage, state):
         "lookback": configured_lookback(context),
         "output_report": str(output_report),
         "summary_report": str(summary_report),
+        "trade_output_report": str(trade_report),
         })
     finally:
         generated_candidate_experiment.MAX_WORKERS = previous_workers
     artifacts = [
-        make_artifact(output_report, "generated_candidate_results", stage.name, "CSV"),
-        make_artifact(summary_report, "generated_candidate_summary", stage.name, "JSON"),
+        make_artifact(
+            output_report, "generated_candidate_results", stage.name, "CSV",
+            metadata={"contract_version": "2"},
+        ),
+        make_artifact(
+            summary_report, "generated_candidate_summary", stage.name, "JSON",
+            metadata={"contract_version": "2"},
+        ),
+        make_artifact(
+            trade_report,
+            "candidate_trades",
+            stage.name,
+            "CSV",
+            metadata={
+                "schema_version": "1",
+                "contract_version": "2",
+                "real_backtest_trades": True,
+            },
+        ),
     ]
     return stage_payload(
         stage.name,

@@ -100,7 +100,11 @@ def load_state(path: Path, expected_config_hash: str | None = None) -> Orchestra
     return state
 
 
-def validate_completed_stage_artifacts(state: OrchestratorState, stage_name: str) -> bool:
+def validate_completed_stage_artifacts(
+    state: OrchestratorState,
+    stage_name: str,
+    expected_contract_version: str | None = None,
+) -> bool:
     artifacts = [
         artifact
         for artifact in state.artifact_manifest
@@ -108,4 +112,10 @@ def validate_completed_stage_artifacts(state: OrchestratorState, stage_name: str
         and artifact.get("required", False)
     ]
 
+    if expected_contract_version is not None and any(
+        str(artifact.get("metadata", {}).get("contract_version"))
+        != str(expected_contract_version)
+        for artifact in artifacts
+    ):
+        return False
     return all(Path(artifact["path"]).exists() for artifact in artifacts)

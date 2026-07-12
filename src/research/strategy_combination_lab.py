@@ -127,7 +127,13 @@ def _filter_tasks_by_regime(tasks: list, regime_map: dict, config: dict) -> list
     return filtered_tasks or tasks
 
 
-def _run_backtest_grid(df, strategy, sl_values, tp_values):
+def _run_backtest_grid(
+    df,
+    strategy,
+    sl_values,
+    tp_values,
+    include_trade_details=False,
+):
     results = []
     signal_strategy = copy.deepcopy(strategy)
     signal_df = calculate_indicators(df.copy(), signal_strategy)
@@ -151,7 +157,7 @@ def _run_backtest_grid(df, strategy, sl_values, tp_values):
             result = backtest.run(signal_df, signals)
             result_dict = result.to_dict()
 
-            results.append({
+            row = {
                 "SL %": sl,
                 "TP %": tp,
                 "Initial Balance": result_dict["initial_balance"],
@@ -173,7 +179,10 @@ def _run_backtest_grid(df, strategy, sl_values, tp_values):
                 "Largest Win": result_dict["largest_win"],
                 "Largest Loss": result_dict["largest_loss"],
                 "Expectancy": result_dict["expectancy"],
-            })
+            }
+            if include_trade_details:
+                row["_Trade Records"] = result_dict["trades"]
+            results.append(row)
 
     results_df = pd.DataFrame(results)
 

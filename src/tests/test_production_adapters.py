@@ -18,6 +18,7 @@ from src.research.orchestrator.adapters import robustness_adapter
 from src.research.orchestrator.adapters import walk_forward_adapter
 from src.research.orchestrator.adapters import best_selector_adapter
 from src.research.orchestrator.adapters import final_summary_adapter
+from src.research.orchestrator.adapters import monte_carlo_adapter
 from src.research.orchestrator.adapters.load_data_adapter import _validate_ohlcv
 from src.research.orchestrator.orchestrator_registry import (
     PRODUCTION,
@@ -68,7 +69,8 @@ def _stage(name: str):
 
 
 def _add_artifact(state, path: Path, name: str, stage_name: str = "source"):
-    artifact = make_artifact(path, name, stage_name, "CSV")
+    artifact_type = "JSON" if path.suffix == ".json" else "CSV"
+    artifact = make_artifact(path, name, stage_name, artifact_type)
     state.artifact_manifest.append(artifact)
     return artifact
 
@@ -237,6 +239,12 @@ def test_best_selector_and_final_summary_empty_outputs():
     with TemporaryDirectory() as directory:
         context = FakeContext(directory)
         state = FakeState()
+        robustness = context.run_directory() / "generated_strategy_shortlist.json"
+        monte_carlo = context.run_directory() / "monte_carlo_summary.json"
+        robustness.write_text("[]", encoding="utf-8")
+        monte_carlo.write_text('{"schema_version":"1","candidates":[]}', encoding="utf-8")
+        _add_artifact(state, robustness, "robustness_shortlist")
+        _add_artifact(state, monte_carlo, "monte_carlo_summary")
         best_payload = best_selector_adapter.run_best_selector_stage(
             context,
             _stage("best_strategy_selection"),
@@ -251,6 +259,74 @@ def test_best_selector_and_final_summary_empty_outputs():
 
     assert best_payload["metadata"]["adapter_result"]["metrics"]["paper_ready_count"] == 0
     assert final_payload["metadata"]["adapter_result"]["metrics"]["paper_trading_ready"] is False
+
+
+def test_real_candidate_trades_feed_monte_carlo_and_selector():
+    with TemporaryDirectory() as directory:
+        context = FakeContext(directory)
+        state = FakeState()
+        robustness = context.run_directory() / "generated_strategy_shortlist.json"
+        robustness.write_text(
+            '[{"strategy_id":"G1","name":"Generated 1","template_type":"trend",'
+            '"recommended_pairs":["BTCUSDT"],"recommended_regimes":["TRENDING"],'
+            '"robustness_score":70,"overfitting_risk_score":25,'
+            '"walk_forward_score":72,"walk_forward_pass_rate":0.7,'
+            '"pair_consistency_score":65,"regime_consistency_score":60,'
+            '"minimum_expected_metrics":{"profit_factor":1.3,"roi_pct":8,'
+            '"max_drawdown_pct":-10,"trades":3,"expectancy":10}}]',
+            encoding="utf-8",
+        )
+        trades = context.run_directory() / "candidate_trades.csv"
+        pd.DataFrame([
+            {
+                "Candidate ID": "G1", "Strategy ID": "G1", "Strategy Name": "Generated 1",
+                "Template Type": "trend", "Pair": "BTCUSDT", "Timeframe": "15m",
+                "Trade ID": index + 1, "Entry Time": f"2026-01-0{index + 1}",
+                "Exit Time": f"2026-01-0{index + 2}", "PnL": pnl, "PnL %": pnl / 100,
+                "Fees": 1.0, "Initial Balance": 10000 if index == 0 else None,
+            }
+            for index, pnl in enumerate([100, -50, 125])
+        ]).to_csv(trades, index=False)
+        _add_artifact(state, robustness, "robustness_shortlist")
+        _add_artifact(state, trades, "candidate_trades")
+        mc_payload = monte_carlo_adapter.run_monte_carlo_stage(
+            context, _stage("monte_carlo"), state,
+        )
+        state.artifact_manifest.extend(mc_payload["artifacts"])
+        best_payload = best_selector_adapter.run_best_selector_stage(
+            context, _stage("best_strategy_selection"), state,
+        )
+
+        summary = pd.read_json(context.run_directory() / "monte_carlo_summary.json")
+        ranking = pd.read_csv(context.run_directory() / "final_benchmark_ranking.csv")
+
+    assert mc_payload["metadata"]["adapter_result"]["status"] == "COMPLETED"
+    assert mc_payload["metadata"]["adapter_result"]["metrics"]["candidate_count"] == 1
+    assert best_payload["metadata"]["adapter_result"]["metrics"]["candidate_count"] == 1
+    assert ranking.iloc[0]["Candidate ID"] == "G1"
+    assert "INTEGRATION_CANDIDATE" not in summary.to_json()
+
+
+def test_monte_carlo_missing_or_malformed_trade_contract_is_blocked():
+    with TemporaryDirectory() as directory:
+        context = FakeContext(directory)
+        state = FakeState()
+        robustness = context.run_directory() / "generated_strategy_shortlist.json"
+        robustness.write_text('[{"strategy_id":"G1"}]', encoding="utf-8")
+        _add_artifact(state, robustness, "robustness_shortlist")
+        missing = monte_carlo_adapter.run_monte_carlo_stage(
+            context, _stage("monte_carlo"), state,
+        )
+        trades = context.run_directory() / "candidate_trades.csv"
+        pd.DataFrame([{"Candidate ID": "G1", "Strategy ID": "G1", "PnL": float("inf")}]).to_csv(trades, index=False)
+        _add_artifact(state, trades, "candidate_trades")
+        malformed = monte_carlo_adapter.run_monte_carlo_stage(
+            context, _stage("monte_carlo"), state,
+        )
+
+    assert missing["metadata"]["adapter_result"]["status"] == "BLOCKED"
+    assert malformed["metadata"]["adapter_result"]["status"] == "BLOCKED"
+    assert "ARTIFACT_CONTRACT_FAILURE" in malformed["message"]
 
 
 def test_failure_classification_and_adapter_result_contract():
@@ -278,6 +354,8 @@ if __name__ == "__main__":
     test_parameter_optimization_and_walk_forward_contracts()
     test_robustness_empty_shortlist_and_portfolio_no_valid_contracts()
     test_best_selector_and_final_summary_empty_outputs()
+    test_real_candidate_trades_feed_monte_carlo_and_selector()
+    test_monte_carlo_missing_or_malformed_trade_contract_is_blocked()
     test_failure_classification_and_adapter_result_contract()
     test_backward_compatible_default_registry_is_smoke()
     print("test_production_adapters passed")

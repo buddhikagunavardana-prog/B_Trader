@@ -51,6 +51,7 @@ def _stage(
     required: bool = True,
     output_artifacts: list[str] | None = None,
     adapter_mode: str = SMOKE,
+    contract_version: str | None = None,
 ) -> OrchestratorStage:
     return OrchestratorStage(
         name=name,
@@ -59,7 +60,10 @@ def _stage(
         runner=runner,
         required=required,
         output_artifacts=list(output_artifacts or []),
-        metadata={"adapter_mode": adapter_mode},
+        metadata={
+            "adapter_mode": adapter_mode,
+            **({"contract_version": contract_version} if contract_version else {}),
+        },
     )
 
 
@@ -171,8 +175,9 @@ def _build_production_stage_registry() -> dict[str, OrchestratorStage]:
             "Generated Candidate Research",
             ["fixed_strategy_research"],
             runner=run_generated_candidate_stage,
-            output_artifacts=["generated_candidate_results"],
+            output_artifacts=["generated_candidate_results", "candidate_trades"],
             adapter_mode=PRODUCTION,
+            contract_version="2",
         ),
         "optimization_search": _stage(
             "optimization_search",
@@ -229,6 +234,7 @@ def _build_production_stage_registry() -> dict[str, OrchestratorStage]:
             runner=run_monte_carlo_stage,
             output_artifacts=["monte_carlo_results", "monte_carlo_summary"],
             adapter_mode=PRODUCTION,
+            contract_version="2",
         ),
         "best_strategy_selection": _stage(
             "best_strategy_selection",
@@ -237,6 +243,7 @@ def _build_production_stage_registry() -> dict[str, OrchestratorStage]:
             runner=run_best_selector_stage,
             output_artifacts=["final_ranking", "paper_trading_shortlist"],
             adapter_mode=PRODUCTION,
+            contract_version="2",
         ),
         "final_summary": _stage(
             "final_summary",

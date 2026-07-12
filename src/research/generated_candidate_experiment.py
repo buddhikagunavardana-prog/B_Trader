@@ -84,8 +84,36 @@ def _evaluate_strategy_pair(task):
     timeframe = task.timeframe
     started_at = time.perf_counter()
     df = get_worker_market_data(symbol).copy()
-    results = _run_backtest_grid(df, record["strategy"], SL_VALUES, TP_VALUES)
+    results = _run_backtest_grid(
+        df,
+        record["strategy"],
+        SL_VALUES,
+        TP_VALUES,
+        include_trade_details=True,
+    )
     best = results.iloc[0]
+    trade_records = []
+    for trade in best["_Trade Records"]:
+        trade_records.append({
+            "Candidate ID": record["strategy_id"],
+            "Strategy ID": record["strategy_id"],
+            "Strategy Name": record["strategy_name"],
+            "Strategy Source": record["strategy_source"],
+            "Template Type": record["template_type"],
+            "Pair": symbol,
+            "Timeframe": timeframe,
+            "Trade ID": trade["trade_id"],
+            "Entry Time": trade["entry_time"],
+            "Exit Time": trade["exit_time"],
+            "Entry Price": trade["entry_price"],
+            "Exit Price": trade["exit_price"],
+            "Side": trade["direction"],
+            "PnL": trade["pnl_amount"],
+            "PnL %": trade["pnl_pct"],
+            "Fees": trade.get("total_fee", 0.0),
+            "Exit Reason": trade["exit_reason"],
+            "Initial Balance": trade["balance_before"] if trade["trade_id"] == 1 else None,
+        })
 
     return {
         "strategy_index": strategy_index,
@@ -106,6 +134,7 @@ def _evaluate_strategy_pair(task):
         "Trades": best["Total Trades"],
         "Expectancy": best["Expectancy"],
         "Runtime Seconds": round(time.perf_counter() - started_at, 2),
+        "_trade_records": trade_records,
     }
 
 
@@ -118,6 +147,7 @@ def _run_records(
     market_data: dict,
     pairs: list[str],
     timeframe: str,
+    trade_records: list[dict] | None = None,
 ) -> tuple[pd.DataFrame, float]:
     started_at = time.perf_counter()
     tasks = _build_tasks(records, pairs, timeframe)
@@ -136,6 +166,13 @@ def _run_records(
                 f"{task.payload['strategy_name']} | {task.pair} | "
                 f"{failure['error']}"
             )
+
+    if trade_records is not None:
+        for row in rows:
+            trade_records.extend(row.pop("_trade_records", []))
+    else:
+        for row in rows:
+            row.pop("_trade_records", None)
 
     report = pd.DataFrame(rows)
 
@@ -279,17 +316,20 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
     print(f"Generated strategy count: {len(generated_records)}")
     print(f"Pairs: {', '.join(pairs)}")
 
+    candidate_trades = []
     fixed_report, fixed_runtime = _run_records(
         fixed_records,
         market_data,
         pairs,
         timeframe,
+        candidate_trades,
     )
     generated_report, generated_runtime = _run_records(
         generated_records,
         market_data,
         pairs,
         timeframe,
+        candidate_trades,
     )
 
     report = pd.concat([fixed_report, generated_report], ignore_index=True)
@@ -299,6 +339,18 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
     )
 
     save_csv_report(report, config["output_report"])
+    trade_output_report = config.get("trade_output_report")
+    if trade_output_report:
+        trade_columns = [
+            "Candidate ID", "Strategy ID", "Strategy Name", "Strategy Source",
+            "Template Type", "Pair", "Timeframe", "Trade ID", "Entry Time",
+            "Exit Time", "Entry Price", "Exit Price", "Side", "PnL", "PnL %",
+            "Fees", "Exit Reason", "Initial Balance",
+        ]
+        save_csv_report(
+            pd.DataFrame(candidate_trades, columns=trade_columns),
+            trade_output_report,
+        )
 
     summary = _build_summary(
         fixed_report,

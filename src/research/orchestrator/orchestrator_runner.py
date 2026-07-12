@@ -270,7 +270,11 @@ def run_research_orchestrator(
             context.resume_enabled
             and stage.allow_resume
             and stage.name in state.completed_stages
-            and validate_completed_stage_artifacts(state, stage.name)
+            and validate_completed_stage_artifacts(
+                state,
+                stage.name,
+                stage.metadata.get("contract_version"),
+            )
         ):
             _append_unique(state.skipped_stages, stage.name)
             _record_stage_result(
