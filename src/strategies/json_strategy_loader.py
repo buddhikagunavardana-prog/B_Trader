@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from src.indicators.registry import indicator_registry
+
 
 DEFINITIONS_DIR = Path("src/strategies/definitions")
 
@@ -33,6 +35,19 @@ def validate_json_strategy_config(config: dict, source: Path) -> None:
     for field in ["indicators", "entry_rules", "exit_rules", "risk"]:
         if not isinstance(config[field], dict):
             raise ValueError(f"{field} must be a dictionary in {source}")
+
+    for name, indicator_config in config["indicators"].items():
+        if not isinstance(indicator_config, dict):
+            raise ValueError(f"indicator '{name}' must be a dictionary in {source}")
+        params = {
+            key: value
+            for key, value in indicator_config.items()
+            if key != "enabled"
+        }
+        try:
+            indicator_registry.validate_parameters(name, params)
+        except ValueError as error:
+            raise ValueError(f"Invalid indicator '{name}' in {source}: {error}") from error
 
 
 def load_json_strategy_file(path: Path) -> dict:

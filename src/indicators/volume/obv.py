@@ -1,4 +1,9 @@
+import pandas as pd
+
+
 def calculate_obv(df):
+    if df.empty:
+        return pd.Series(dtype=float, index=df.index, name="OBV")
     obv = [0]
 
     for i in range(1, len(df)):
