@@ -36,7 +36,11 @@ from src.research.orchestrator.adapters.smoke_adapter import (
 from src.research.orchestrator.adapters.walk_forward_adapter import (
     run_walk_forward_stage,
 )
+from src.research.orchestrator.adapters.progressive_funnel_adapter import (
+    run_progressive_funnel_stage,
+)
 from src.research.orchestrator.orchestrator_stage import OrchestratorStage
+from src.research.progressive_funnel import funnel_config_hash, load_funnel_config
 
 
 SMOKE = "SMOKE"
@@ -154,7 +158,8 @@ def _build_smoke_stage_registry() -> dict[str, OrchestratorStage]:
 
 
 def _build_production_stage_registry() -> dict[str, OrchestratorStage]:
-    return {
+    funnel_hash = funnel_config_hash(load_funnel_config())
+    registry = {
         "load_data": _stage(
             "load_data",
             "Load Historical Data",
@@ -182,7 +187,7 @@ def _build_production_stage_registry() -> dict[str, OrchestratorStage]:
         "optimization_search": _stage(
             "optimization_search",
             "Optimization Search",
-            ["generated_candidate_research"],
+            ["funnel_1y"],
             runner=run_optimization_search_stage,
             output_artifacts=["selected_optimizer_candidates"],
             adapter_mode=PRODUCTION,
@@ -254,6 +259,25 @@ def _build_production_stage_registry() -> dict[str, OrchestratorStage]:
             adapter_mode=PRODUCTION,
         ),
     }
+    previous = "generated_candidate_results"
+    dependency = "generated_candidate_research"
+    for name, label, output in [
+        ("funnel_3m", "Progressive Funnel - 3 Months", "funnel_3m_survivors"),
+        ("funnel_6m", "Progressive Funnel - 6 Months", "funnel_6m_survivors"),
+        ("funnel_1y", "Progressive Funnel - 1 Year", "funnel_final_survivors"),
+    ]:
+        registry[name] = _stage(
+            name, label, [dependency], runner=run_progressive_funnel_stage,
+            output_artifacts=[output, f"{name}_audit"],
+            adapter_mode=PRODUCTION,
+            contract_version="1",
+        ).with_updates(metadata={
+            "adapter_mode": PRODUCTION, "contract_version": "1",
+            "input_artifact": previous, "output_artifact": output,
+            "artifact_metadata": {"funnel_config_hash": funnel_hash},
+        })
+        dependency, previous = name, output
+    return registry
 
 
 def build_default_stage_registry(mode: str = SMOKE) -> dict[str, OrchestratorStage]:

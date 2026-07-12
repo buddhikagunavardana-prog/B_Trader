@@ -1,0 +1,11 @@
+{
+    "enabled": true,
+    "minimum_trades": 3,
+    "minimum_profit_factor": 1.05,
+    "maximum_drawdown_pct": 35.0,
+    "stages": [
+        {"name": "funnel_3m", "history_months": 3, "partitions": [{"name": "train", "months": 2}, {"name": "walk_forward", "months": 1, "required_to_pass": true}]},
+        {"name": "funnel_6m", "history_months": 6, "partitions": [{"name": "train", "months": 4}, {"name": "walk_forward", "months": 2, "required_to_pass": true}]},
+        {"name": "funnel_1y", "history_months": 12, "partitions": [{"name": "train", "months": 8}, {"name": "validation", "months": 2, "required_to_pass": true}, {"name": "out_of_sample", "months": 2, "required_to_pass": true}]}
+    ]
+}

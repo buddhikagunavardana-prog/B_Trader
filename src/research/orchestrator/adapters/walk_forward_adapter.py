@@ -10,7 +10,10 @@ from src.research.pipeline.pipeline_reporter import save_csv_report
 
 
 def run_walk_forward_stage(context, stage, state):
-    source_path = artifact_path_from_state(state, "generated_candidate_results")
+    source_path = (
+        artifact_path_from_state(state, "funnel_final_survivors")
+        or artifact_path_from_state(state, "generated_candidate_results")
+    )
     if not source_path:
         return blocked_payload(stage.name, "Generated candidate result artifact is missing")
 

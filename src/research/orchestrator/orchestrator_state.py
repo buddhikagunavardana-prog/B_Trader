@@ -104,6 +104,7 @@ def validate_completed_stage_artifacts(
     state: OrchestratorState,
     stage_name: str,
     expected_contract_version: str | None = None,
+    expected_metadata: dict | None = None,
 ) -> bool:
     artifacts = [
         artifact
@@ -115,6 +116,14 @@ def validate_completed_stage_artifacts(
     if expected_contract_version is not None and any(
         str(artifact.get("metadata", {}).get("contract_version"))
         != str(expected_contract_version)
+        for artifact in artifacts
+    ):
+        return False
+    if expected_metadata and any(
+        any(
+            artifact.get("metadata", {}).get(key) != value
+            for key, value in expected_metadata.items()
+        )
         for artifact in artifacts
     ):
         return False

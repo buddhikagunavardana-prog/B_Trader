@@ -12,7 +12,10 @@ from src.research.orchestrator.adapters.adapter_result import (
 
 def run_robustness_stage(context, stage, state):
     benchmark = benchmark_settings(context)
-    comparison_report = artifact_path_from_state(state, "generated_candidate_results")
+    comparison_report = (
+        artifact_path_from_state(state, "funnel_final_survivors")
+        or artifact_path_from_state(state, "generated_candidate_results")
+    )
     if not comparison_report:
         from src.research.orchestrator.adapters.adapter_result import blocked_payload
         return blocked_payload(stage.name, "Generated candidate comparison report is missing")

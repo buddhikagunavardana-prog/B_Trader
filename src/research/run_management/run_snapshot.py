@@ -17,6 +17,7 @@ DEFAULT_CONFIG_FILES = [
     "market_regime.json",
     "strategy.json",
     "walk_forward.json",
+    "progressive_research_funnel.json",
 ]
 
 

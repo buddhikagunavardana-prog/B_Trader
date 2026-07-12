@@ -274,6 +274,7 @@ def run_research_orchestrator(
                 state,
                 stage.name,
                 stage.metadata.get("contract_version"),
+                stage.metadata.get("artifact_metadata"),
             )
         ):
             _append_unique(state.skipped_stages, stage.name)
