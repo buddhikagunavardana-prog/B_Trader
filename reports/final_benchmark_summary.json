@@ -2,7 +2,7 @@
     "benchmark_name": "b_trader_full_benchmark_v1",
     "mode": "FULL_BENCHMARK",
     "status": "COMPLETED",
-    "run_id": "b_trader_full_benchmark_v1_20260713_060612_d61ee9153c",
+    "run_id": "b_trader_full_benchmark_v1_20260713_062645_d61ee9153c",
     "pairs": [
         "BTCUSDT",
         "ETHUSDT",
@@ -98,10 +98,10 @@
     "monte_carlo_simulations": 1000,
     "portfolio_max_strategies": 10,
     "paper_trading_ready_count": 0,
-    "promising_review_count": 0,
+    "promising_review_count": 2,
     "rejected_count": 0,
-    "task_usage": 591,
-    "runtime_usage": 194.55598780003493,
+    "task_usage": 2619,
+    "runtime_usage": 223.76150310007506,
     "completed_stages": [
         "load_data",
         "fixed_strategy_research",

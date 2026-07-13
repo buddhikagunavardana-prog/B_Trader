@@ -76,6 +76,27 @@ def _score_report(report: pd.DataFrame) -> pd.DataFrame:
     return add_research_score_columns(report)
 
 
+def _resolve_trade_timestamp(
+    market_data: pd.DataFrame,
+    trade: dict,
+    time_key: str,
+    index_key: str,
+):
+    if "open_time" not in market_data.columns or index_key not in trade:
+        return trade[time_key]
+
+    position = int(trade[index_key])
+    if position < 0 or position >= len(market_data):
+        raise ValueError(
+            f"Trade {index_key} {position} is outside market data bounds"
+        )
+
+    return pd.to_datetime(
+        market_data.iloc[position]["open_time"],
+        utc=True,
+    ).isoformat()
+
+
 def _evaluate_strategy_pair(task):
     strategy_index = task.item_index
     pair_index = task.pair_index
@@ -107,8 +128,18 @@ def _evaluate_strategy_pair(task):
             "Pair": symbol,
             "Timeframe": timeframe,
             "Trade ID": trade["trade_id"],
-            "Entry Time": trade["entry_time"],
-            "Exit Time": trade["exit_time"],
+            "Entry Time": _resolve_trade_timestamp(
+                df,
+                trade,
+                "entry_time",
+                "entry_index",
+            ),
+            "Exit Time": _resolve_trade_timestamp(
+                df,
+                trade,
+                "exit_time",
+                "exit_index",
+            ),
             "Entry Price": trade["entry_price"],
             "Exit Price": trade["exit_price"],
             "Side": trade["direction"],

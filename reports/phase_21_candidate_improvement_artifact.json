@@ -1,0 +1,185 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Phase 21 Candidate Improvement",
+    "description": "Technical diagnosis and validation of the B Trader research funnel candidate-survivor bottleneck.",
+    "generatedAt": "2026-07-13T06:31:00Z",
+    "cards": [],
+    "charts": [
+      {
+        "id": "funnel_survivor_comparison",
+        "title": "Research funnel survivors before and after calendar correction",
+        "subtitle": "Same 200 candidate-pair inputs and unchanged validation thresholds",
+        "type": "bar",
+        "dataset": "funnel_comparison",
+        "sourceId": "benchmark_comparison",
+        "encodings": {
+          "x": {
+            "field": "Stage",
+            "type": "ordinal",
+            "label": "Funnel stage"
+          },
+          "y": {
+            "field": "Survivors",
+            "type": "quantitative",
+            "label": "Surviving candidate-pairs"
+          },
+          "color": {
+            "field": "Scenario",
+            "type": "nominal",
+            "label": "Benchmark"
+          },
+          "tooltip": [
+            {"field": "Input", "type": "quantitative", "label": "Stage input"},
+            {"field": "Pass Rate %", "type": "quantitative", "label": "Pass rate", "unit": "%"}
+          ]
+        },
+        "xAxisTitle": "Funnel stage",
+        "yAxisTitle": "Surviving candidate-pairs",
+        "layout": "full",
+        "maxRows": 6
+      }
+    ],
+    "tables": [
+      {
+        "id": "diagnostic_assessment",
+        "title": "Candidate-quality bottleneck assessment",
+        "subtitle": "Evidence from the corrected full benchmark and current research configuration",
+        "dataset": "diagnostics",
+        "sourceId": "benchmark_comparison",
+        "density": "spacious",
+        "defaultSort": {"field": "Area", "direction": "asc"},
+        "columns": [
+          {"field": "Area", "label": "Area", "type": "text"},
+          {"field": "Evidence", "label": "Evidence", "type": "text"},
+          {"field": "Assessment", "label": "Assessment", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "benchmark_comparison",
+        "label": "B Trader full benchmark funnel artifacts",
+        "path": "reports/research_runs"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "report_title",
+        "type": "markdown",
+        "body": "# Phase 21 Candidate Improvement"
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "sourceId": "benchmark_comparison",
+        "body": "## Technical summary\n\nThe zero-survivor result was not evidence that every strategy failed realistic validation. Candidate trade artifacts stored DataFrame row indices as timestamps, so the twelve-month funnel interpreted all 78,071 trades as occurring within 35 microseconds after January 1, 1970. The required two-month validation partition therefore contained zero trades for all 63 candidates entering the final stage.\n\nResolving each trade index through its market's OHLCV `open_time` restored real calendar partitions without changing a single threshold, strategy, parameter, or acceptance rule. The corrected benchmark produced 12 final one-year survivors, 6 unique robustness evaluations, 2 `PROMISING` strategies, and a 2-row final ranking. Paper trading remains correctly `NOT_READY`."
+      },
+      {
+        "id": "funnel_finding",
+        "type": "markdown",
+        "sourceId": "benchmark_comparison",
+        "body": "## Correct calendar partitions restore meaningful attrition\n\nThe original stage sequence was 200 inputs, 63 three-month survivors, 63 six-month survivors, and zero one-year survivors. After correcting timestamps, the same cohort and thresholds produced 109, 13, and 12 survivors. The chart shows that the correction did not make the funnel permissive: the six-month stage still rejected 96 of 109 inputs, while the final stage accepted 12 of 13 candidates that had already demonstrated medium-term consistency."
+      },
+      {
+        "id": "funnel_chart",
+        "type": "chart",
+        "chartId": "funnel_survivor_comparison"
+      },
+      {
+        "id": "scope_definitions",
+        "type": "markdown",
+        "body": "## Scope and metric definitions\n\nThe comparison uses two full Binance Spot research runs over BTCUSDT, ETHUSDT, BNBUSDT, SOLUSDT, and XRPUSDT at 15-minute resolution. A survivor is a unique strategy-and-pair row meeting the existing minimum of three trades, profit factor of at least 1.05, and maximum drawdown of at most 35% in every partition marked `required_to_pass`. No threshold sensitivity result was used to select or approve a strategy."
+      },
+      {
+        "id": "diagnostic_finding",
+        "type": "markdown",
+        "sourceId": "benchmark_comparison",
+        "body": "## Thresholds were not the primary bottleneck\n\nBecause 12 candidates survived after correcting time while every validation threshold remained unchanged, the evidence does not support weakening the funnel. Strategy diversity and regime coverage remain secondary improvement opportunities, but neither explains the former all-or-nothing rejection pattern. The exact assessment is summarized below."
+      },
+      {
+        "id": "diagnostic_table",
+        "type": "table",
+        "tableId": "diagnostic_assessment"
+      },
+      {
+        "id": "methodology",
+        "type": "markdown",
+        "body": "## Methodology\n\nThe diagnosis first reproduced attrition from the saved funnel audit CSVs, then decomposed rejection reasons and partition metrics. Every final-stage row had `validation_trades = 0` and `validation_profit_factor = 0`, while its stored window was in 1969–1970. A read-only counterfactual mapped the numeric trade indices to the corresponding cached OHLCV `open_time`; it predicted 12 final survivors. The implementation then serialized those calendar timestamps at the producer boundary and added a funnel guard that rejects ambiguous numeric timestamps. A fresh full benchmark reproduced the predicted 12 survivors."
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "body": "## Limitations and robustness checks\n\nThe improvement corrects research evidence; it does not prove profitability or paper-trading readiness. The final survivors are concentrated in hybrid, breakout, volume, and pullback templates, and only SOLUSDT, BNBUSDT, and ETHUSDT are represented. Robustness validation still rejected or marked fragile four of six unique strategies. The market-regime engine currently classifies the latest state rather than historical regimes within each validation window, so regime consistency remains an approximation."
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## Recommended next step\n\nKeep the current funnel thresholds. The next candidate-quality milestone should target the remaining robustness failures, especially walk-forward pass rate and parameter sensitivity, using the now-valid calendar evidence. A regime-aware generation or volatility-scaled exit experiment would be justified only after comparing the two promising strategies against the four fragile or rejected robustness results."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further questions\n\n- Do volatility-scaled exits improve the two promising strategies without increasing parameter sensitivity?\n- Can historical, candle-level regime labels replace the current latest-regime proxy?\n- Why do no corrected final survivors represent BTCUSDT, XRPUSDT, trend, or mean-reversion candidates?"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-13T06:31:00Z",
+    "status": "ready",
+    "datasets": {
+      "funnel_comparison": [
+        {"Stage": "3 months", "Scenario": "Before correction", "Input": 200, "Survivors": 63, "Pass Rate %": 31.5},
+        {"Stage": "3 months", "Scenario": "After correction", "Input": 200, "Survivors": 109, "Pass Rate %": 54.5},
+        {"Stage": "6 months", "Scenario": "Before correction", "Input": 63, "Survivors": 63, "Pass Rate %": 100.0},
+        {"Stage": "6 months", "Scenario": "After correction", "Input": 109, "Survivors": 13, "Pass Rate %": 11.9},
+        {"Stage": "1 year", "Scenario": "Before correction", "Input": 63, "Survivors": 0, "Pass Rate %": 0.0},
+        {"Stage": "1 year", "Scenario": "After correction", "Input": 13, "Survivors": 12, "Pass Rate %": 92.3}
+      ],
+      "diagnostics": [
+        {"Area": "Market-regime coverage", "Evidence": "Latest-state classification only; filtering disabled in the combination lab", "Assessment": "Insufficient for historical regime attribution, but not the zero-survivor cause"},
+        {"Area": "Parameter ranges", "Evidence": "Thirty generated candidates across six basic templates, capped at five per template", "Assessment": "Narrow structural search; a secondary research limitation"},
+        {"Area": "Strategy diversity", "Evidence": "Twelve final survivors span four templates; trend and mean-reversion are absent", "Assessment": "Moderate diversity, with clear remaining coverage gaps"},
+        {"Area": "Validation thresholds", "Evidence": "Twelve survivors under the unchanged 3-trade, 1.05 profit-factor, 35% drawdown gates", "Assessment": "Not too strict based on current evidence"},
+        {"Area": "Timestamp contract", "Evidence": "All 63 former final inputs had zero validation trades because row indices parsed as 1970 nanoseconds", "Assessment": "Primary bottleneck and verified root cause"}
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "benchmark_comparison",
+      "label": "B Trader full benchmark funnel artifacts",
+      "path": "reports/research_runs",
+      "query": {
+        "engine": "local-python",
+        "language": "python",
+        "description": "Compared saved candidate, funnel, robustness, and ranking artifacts before and after calendar timestamp correction.",
+        "executed_at": "2026-07-13T06:31:00Z",
+        "tables_used": [
+          "reports/research_runs/b_trader_full_benchmark_v1_20260713_060612_d61ee9153c/funnel_3m_survivors.csv",
+          "reports/research_runs/b_trader_full_benchmark_v1_20260713_060612_d61ee9153c/funnel_6m_survivors.csv",
+          "reports/research_runs/b_trader_full_benchmark_v1_20260713_060612_d61ee9153c/funnel_1y_audit.csv",
+          "reports/research_runs/b_trader_full_benchmark_v1_20260713_062645_d61ee9153c/funnel_3m_survivors.csv",
+          "reports/research_runs/b_trader_full_benchmark_v1_20260713_062645_d61ee9153c/funnel_6m_survivors.csv",
+          "reports/research_runs/b_trader_full_benchmark_v1_20260713_062645_d61ee9153c/funnel_1y_survivors.csv",
+          "reports/research_runs/b_trader_full_benchmark_v1_20260713_062645_d61ee9153c/generated_strategy_robustness.csv",
+          "reports/research_runs/b_trader_full_benchmark_v1_20260713_062645_d61ee9153c/final_benchmark_ranking.csv"
+        ],
+        "filters": [
+          "Binance Spot pairs: BTCUSDT, ETHUSDT, BNBUSDT, SOLUSDT, XRPUSDT",
+          "Timeframe: 15 minutes",
+          "Same 200 candidate-pair inputs and unchanged progressive-funnel thresholds"
+        ],
+        "metric_definitions": [
+          "Survivors are unique Strategy ID and Pair rows with Funnel Status equal to PASS.",
+          "Stage pass rate equals survivor rows divided by input rows for that stage.",
+          "Required partitions use minimum 3 trades, profit factor 1.05, and maximum drawdown 35%."
+        ]
+      }
+    }
+  ]
+}

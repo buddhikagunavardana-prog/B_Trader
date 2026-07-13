@@ -3,6 +3,7 @@ import pandas as pd
 from src.research.generated_candidate_experiment import (
     _build_summary,
     _prevent_duplicate_strategy_ids,
+    _resolve_trade_timestamp,
     _score_report,
     load_experiment_config,
     load_fixed_strategy_records,
@@ -126,6 +127,28 @@ def test_experiment_disabled_behavior():
     assert summary == {}
 
 
+def test_trade_timestamps_resolve_from_market_calendar():
+    market_data = pd.DataFrame({
+        "open_time": pd.to_datetime([
+            "2025-01-01T00:00:00Z",
+            "2025-01-01T00:15:00Z",
+        ]),
+    })
+    trade = {
+        "entry_index": 0,
+        "exit_index": 1,
+        "entry_time": 0,
+        "exit_time": 1,
+    }
+
+    assert _resolve_trade_timestamp(
+        market_data, trade, "entry_time", "entry_index"
+    ) == "2025-01-01T00:00:00+00:00"
+    assert _resolve_trade_timestamp(
+        market_data, trade, "exit_time", "exit_index"
+    ) == "2025-01-01T00:15:00+00:00"
+
+
 def test_factory_default_behavior_unchanged():
     assert len(get_strategy_combinations()) == 10
 
@@ -142,6 +165,7 @@ if __name__ == "__main__":
     test_report_schema_and_source_labels()
     test_comparison_summary()
     test_experiment_disabled_behavior()
+    test_trade_timestamps_resolve_from_market_calendar()
     test_factory_default_behavior_unchanged()
     test_factory_generated_limit()
     print("test_generated_candidate_experiment passed")

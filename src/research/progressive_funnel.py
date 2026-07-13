@@ -96,6 +96,11 @@ def evaluate_funnel_stage(
         raise ValueError("Candidate artifact is missing Strategy ID or Pair")
     if not required_trade.issubset(trades.columns):
         raise ValueError("Trade artifact is missing funnel contract columns")
+    if pd.api.types.is_numeric_dtype(trades["Entry Time"]):
+        raise ValueError(
+            "Trade artifact Entry Time must contain calendar timestamps, "
+            "not row indices"
+        )
 
     work = trades.copy()
     work["Entry Time"] = pd.to_datetime(work["Entry Time"], utc=True, errors="coerce")

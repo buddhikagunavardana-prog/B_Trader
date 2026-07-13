@@ -53,6 +53,24 @@ def test_empty_trades_reject_and_validation():
             assert "Partition months" in str(error)
 
 
+def test_numeric_trade_indices_are_rejected_as_timestamps():
+    config = load_funnel_config()
+    candidates = pd.DataFrame([{"Strategy ID": "A", "Pair": "BTCUSDT"}])
+    trades = pd.DataFrame({
+        "Strategy ID": ["A"],
+        "Pair": ["BTCUSDT"],
+        "Entry Time": [42],
+        "PnL %": [1.0],
+    })
+
+    try:
+        evaluate_funnel_stage(candidates, trades, config["stages"][0], config)
+    except ValueError as error:
+        assert "calendar timestamps" in str(error)
+    else:
+        raise AssertionError("Numeric trade row index was accepted as a timestamp")
+
+
 def test_production_registry_contract():
     registry = build_default_stage_registry(PRODUCTION)
     assert registry["funnel_3m"].dependencies == ["generated_candidate_research"]
@@ -79,6 +97,7 @@ def test_resume_rejects_stale_funnel_config():
 if __name__ == "__main__":
     test_stage_contracts_and_progressive_filtering()
     test_empty_trades_reject_and_validation()
+    test_numeric_trade_indices_are_rejected_as_timestamps()
     test_production_registry_contract()
     test_resume_rejects_stale_funnel_config()
     print("test_progressive_funnel passed")

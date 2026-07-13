@@ -1,6 +1,47 @@
 {
     "paper_trading_ready": [],
-    "promising_review": [],
+    "promising_review": [
+        {
+            "Candidate ID": "VOL001_EMA20_100_VOL1P5_SL1P0_TP2P0",
+            "Strategy ID": "VOL001_EMA20_100_VOL1P5_SL1P0_TP2P0",
+            "Pair": "SOLUSDT",
+            "Final Benchmark Score": 57.74,
+            "Status": "PROMISING_REVIEW",
+            "Robustness Score": 73.29,
+            "Walk Forward Score": 82.63,
+            "Monte Carlo Stability": 62.22,
+            "Profit Factor": 1.09,
+            "Max Drawdown %": -32.0,
+            "Expectancy": 12.19,
+            "Trades": 463,
+            "Rejection Reasons": "Profit factor below 1.20 | Walk-forward pass rate below 0.60 | Overfitting risk above 50 | Monte Carlo positive-run rate below 0.70 | Monte Carlo ruin probability above 0.05 | Max drawdown above 20% | Fewer than 2 profitable regimes",
+            "Profit Factor Score": 54.5,
+            "Drawdown Score": 0.0,
+            "Expectancy Score": 100.0,
+            "Pair Consistency": 0.0,
+            "Regime Consistency": 0.0
+        },
+        {
+            "Candidate ID": "BRK001_EMA50_100_ATR14_SL1P5_TP3P0",
+            "Strategy ID": "BRK001_EMA50_100_ATR14_SL1P5_TP3P0",
+            "Pair": "ETHUSDT",
+            "Final Benchmark Score": 55.53,
+            "Status": "PROMISING_REVIEW",
+            "Robustness Score": 74.84,
+            "Walk Forward Score": 73.0,
+            "Monte Carlo Stability": 58.59,
+            "Profit Factor": 1.1,
+            "Max Drawdown %": -29.61,
+            "Expectancy": 18.18,
+            "Trades": 187,
+            "Rejection Reasons": "Profit factor below 1.20 | Walk-forward pass rate below 0.60 | Overfitting risk above 50 | Monte Carlo positive-run rate below 0.70 | Monte Carlo ruin probability above 0.05 | Max drawdown above 20% | Fewer than 2 profitable regimes",
+            "Profit Factor Score": 55.0,
+            "Drawdown Score": 0.0,
+            "Expectancy Score": 100.0,
+            "Pair Consistency": 0.0,
+            "Regime Consistency": 0.0
+        }
+    ],
     "rejected_count": 0,
     "formula": {
         "Robustness Score": 25,
