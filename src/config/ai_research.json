@@ -1,0 +1,22 @@
+{
+    "enabled": false,
+    "provider": "mock",
+    "model": "models/gemini-3.5-flash",
+    "advisory_only": true,
+    "allow_trade_execution": false,
+    "allow_threshold_changes": false,
+    "allow_configuration_changes": false,
+    "max_candidates": 6,
+    "max_recommendations": 3,
+    "timeout_seconds": 30,
+    "retry_count": 2,
+    "output_path": "reports/ai_research_analysis.json",
+    "input_report_paths": {
+        "benchmark_summary": "reports/final_benchmark_summary.json",
+        "benchmark_shortlist": "reports/final_benchmark_shortlist.json",
+        "benchmark_stages": "reports/benchmark_stage_summary.csv",
+        "phase_21_1": "reports/phase_21_1_candidate_failure_attribution.json",
+        "phase_21_2": "reports/phase_21_2_volatility_normalized_exit_report.json",
+        "phase_21_3": "reports/phase_21_3_risk_normalized_position_sizing_report.json"
+    }
+}

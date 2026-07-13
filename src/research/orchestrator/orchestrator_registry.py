@@ -1,6 +1,9 @@
 from src.research.orchestrator.adapters.best_selector_adapter import (
     run_best_selector_stage,
 )
+from src.research.orchestrator.adapters.ai_research_adapter import (
+    run_ai_research_stage,
+)
 from src.research.orchestrator.adapters.final_summary_adapter import (
     run_final_summary_stage as run_production_final_summary_stage,
 )
@@ -166,6 +169,16 @@ def _build_production_stage_registry() -> dict[str, OrchestratorStage]:
             runner=run_load_data_stage,
             output_artifacts=["market_data_manifest", "data_coverage_audit"],
             adapter_mode=PRODUCTION,
+        ),
+        "ai_research_review": _stage(
+            "ai_research_review",
+            "Advisory AI Research Review",
+            ["final_summary"],
+            runner=run_ai_research_stage,
+            required=False,
+            output_artifacts=["ai_research_analysis"],
+            adapter_mode=PRODUCTION,
+            contract_version="1",
         ),
         "fixed_strategy_research": _stage(
             "fixed_strategy_research",

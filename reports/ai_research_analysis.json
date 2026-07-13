@@ -1,0 +1,212 @@
+{
+    "analysis_version": "1.0",
+    "candidate_findings": [
+        {
+            "candidate_id": "VOL001_EMA20_100_VOL1P5_SL1P0_TP2P0_RISK1P0_CAP25P0",
+            "dominant_failure": "Profit factor is below the deterministic gate",
+            "evidence": [
+                {
+                    "metric": "profit_factor",
+                    "observed": 1.12,
+                    "required": 1.2
+                },
+                {
+                    "metric": "walk_forward_pass_rate",
+                    "observed": 0.5,
+                    "required": 0.6
+                }
+            ],
+            "failed_gates": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate"
+            ],
+            "strengths": [
+                "Passed deterministic robustness review"
+            ],
+            "weaknesses": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate"
+            ]
+        },
+        {
+            "candidate_id": "VOL001_EMA20_100_VOL1P5_SL1P0_TP3P0_RISK1P0_CAP25P0",
+            "dominant_failure": "Profit factor is below the deterministic gate",
+            "evidence": [
+                {
+                    "metric": "profit_factor",
+                    "observed": 1.12,
+                    "required": 1.2
+                },
+                {
+                    "metric": "walk_forward_pass_rate",
+                    "observed": 0.5,
+                    "required": 0.6
+                }
+            ],
+            "failed_gates": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate"
+            ],
+            "strengths": [
+                "Passed deterministic robustness review"
+            ],
+            "weaknesses": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate"
+            ]
+        },
+        {
+            "candidate_id": "HYB001_EMA20_200_RSI14_VOL1P2_SL1P5_TP3P0_RISK1P0_CAP25P0",
+            "dominant_failure": "Profit factor is below the deterministic gate",
+            "evidence": [
+                {
+                    "metric": "profit_factor",
+                    "observed": 1.1,
+                    "required": 1.2
+                },
+                {
+                    "metric": "walk_forward_pass_rate",
+                    "observed": 0.5,
+                    "required": 0.6
+                }
+            ],
+            "failed_gates": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate",
+                "Profitable-regime coverage is below the deterministic gate"
+            ],
+            "strengths": [
+                "Passed deterministic robustness review"
+            ],
+            "weaknesses": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate",
+                "Profitable-regime coverage is below the deterministic gate"
+            ]
+        },
+        {
+            "candidate_id": "BRK001_EMA50_100_ATR14_SL1P5_TP3P0_RISK1P0_CAP25P0",
+            "dominant_failure": "Profit factor is below the deterministic gate",
+            "evidence": [
+                {
+                    "metric": "profit_factor",
+                    "observed": 1.14,
+                    "required": 1.2
+                },
+                {
+                    "metric": "walk_forward_pass_rate",
+                    "observed": 0.5,
+                    "required": 0.6
+                }
+            ],
+            "failed_gates": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate",
+                "Profitable-regime coverage is below the deterministic gate"
+            ],
+            "strengths": [
+                "Passed deterministic robustness review"
+            ],
+            "weaknesses": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate",
+                "Profitable-regime coverage is below the deterministic gate"
+            ]
+        },
+        {
+            "candidate_id": "VOL001_EMA20_100_VOL1P5_SL1P0_TP2P0",
+            "dominant_failure": "Profit factor is below the deterministic gate",
+            "evidence": [
+                {
+                    "metric": "profit_factor",
+                    "observed": 1.09,
+                    "required": 1.2
+                },
+                {
+                    "metric": "max_drawdown_pct",
+                    "observed": -32.0,
+                    "required": 20.0
+                }
+            ],
+            "failed_gates": [
+                "Profit factor is below the deterministic gate",
+                "Maximum drawdown exceeds the deterministic gate"
+            ],
+            "strengths": [
+                "Passed deterministic robustness review"
+            ],
+            "weaknesses": [
+                "Profit factor is below the deterministic gate",
+                "Maximum drawdown exceeds the deterministic gate"
+            ]
+        },
+        {
+            "candidate_id": "BRK001_EMA50_100_ATR14_SL1P5_TP3P0",
+            "dominant_failure": "Profit factor is below the deterministic gate",
+            "evidence": [
+                {
+                    "metric": "profit_factor",
+                    "observed": 1.1,
+                    "required": 1.2
+                },
+                {
+                    "metric": "walk_forward_pass_rate",
+                    "observed": 0.5,
+                    "required": 0.6
+                }
+            ],
+            "failed_gates": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate",
+                "Maximum drawdown exceeds the deterministic gate",
+                "Profitable-regime coverage is below the deterministic gate"
+            ],
+            "strengths": [
+                "Passed deterministic robustness review"
+            ],
+            "weaknesses": [
+                "Profit factor is below the deterministic gate",
+                "Walk-forward stability is below the deterministic gate",
+                "Maximum drawdown exceeds the deterministic gate",
+                "Profitable-regime coverage is below the deterministic gate"
+            ]
+        }
+    ],
+    "confidence": 0.82,
+    "data_quality_issues": [
+        "Reproducibility status is PARTIALLY_REPRODUCIBLE"
+    ],
+    "model": "mock-research-analyst-v1",
+    "overall_assessment": "The benchmark is operationally stable but candidate edge remains below deterministic readiness requirements",
+    "paper_trading_recommendation": "NOT_READY",
+    "provider": "mock",
+    "recommended_experiments": [
+        {
+            "do_not_change": [
+                "Readiness thresholds",
+                "Deterministic candidate status",
+                "Trade execution authority"
+            ],
+            "expected_benefit": "Reduce low-quality trades without relaxing gates",
+            "hypothesis": "Regime-aware entry suppression may improve weak raw edge after realistic execution costs",
+            "overfitting_risk": "Moderate if variants are not predeclared",
+            "priority": 1,
+            "required_changes": [
+                "Add an isolated execution-cost research variant",
+                "Add one predeclared regime-aware entry variant"
+            ],
+            "title": "Post-cost signal selectivity experiment",
+            "validation_plan": [
+                "Run the unchanged progressive funnel",
+                "Run unchanged robustness and walk-forward validation"
+            ]
+        }
+    ],
+    "run_id": "b_trader_full_benchmark_v1_20260713_092334_87d0ecd161",
+    "warnings": [
+        "Advisory output cannot change deterministic results"
+    ],
+    "status": "COMPLETED",
+    "generated_at": "2026-07-13T09:29:59Z",
+    "advisory_only": true
+}

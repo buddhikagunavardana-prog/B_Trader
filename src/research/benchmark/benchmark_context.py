@@ -129,6 +129,10 @@ class BenchmarkContext:
         )
 
     def to_orchestrator_override(self, dry_run: bool = False) -> dict:
+        stages = list(BENCHMARK_STAGE_ORDER)
+        ai_override = dict(self.metadata.get("ai_research", {}))
+        if ai_override.get("enabled", False):
+            stages.append("ai_research_review")
         return {
             "enabled": bool(self.enabled),
             "run_id": self.run_id,
@@ -141,11 +145,12 @@ class BenchmarkContext:
             "global_runtime_budget_seconds": self.global_runtime_budget_seconds,
             "output_directory": self.output_directory,
             "smoke_mode": False,
-            "enabled_stages": list(BENCHMARK_STAGE_ORDER),
-            "stage_order": list(BENCHMARK_STAGE_ORDER),
+            "enabled_stages": stages,
+            "stage_order": stages,
             "metadata": {
                 "adapter_mode": "PRODUCTION",
                 "benchmark": self.to_dict(),
+                "ai_research": ai_override,
             },
         }
 

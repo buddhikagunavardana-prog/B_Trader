@@ -28,7 +28,8 @@
         "portfolio_builder",
         "monte_carlo",
         "best_strategy_selection",
-        "final_summary"
+        "final_summary",
+        "ai_research_review"
     ],
     "enabled_stages": [],
     "stage_overrides": {},
