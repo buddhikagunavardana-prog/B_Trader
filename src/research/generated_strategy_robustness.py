@@ -712,6 +712,13 @@ def run_generated_strategy_robustness(config_override: dict | None = None):
         int(config["top_candidate_count"]),
         config["pairs"],
     )
+    if top_candidates.empty:
+        report = pd.DataFrame(columns=REPORT_COLUMNS)
+        shortlist = []
+        save_csv_report(report, config["output_report"])
+        save_json_report(shortlist, config["shortlist_report"])
+        return report, shortlist
+
     generator_limit = max(
         int(config["top_candidate_count"]) * 4,
         int(config.get("generated_candidate_limit", 30)),

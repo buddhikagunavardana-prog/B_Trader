@@ -1,4 +1,16 @@
 Stage,Status,Task Usage,Runtime Seconds,Message
-load_data,COMPLETED,1,0.0,
-optimization_search,COMPLETED,1,0.0,
-monte_carlo,COMPLETED,1,0.0,
+load_data,COMPLETED,5,1.421461,Loaded and validated cached market data
+fixed_strategy_research,COMPLETED,50,38.402588,Fixed strategy research completed
+generated_candidate_research,COMPLETED,200,150.926766,Generated candidate experiment completed
+funnel_3m,COMPLETED,200,1.666283,Progressive funnel funnel_3m completed
+funnel_6m,COMPLETED,63,0.709984,Progressive funnel funnel_6m completed
+funnel_1y,COMPLETED,63,0.693732,Progressive funnel funnel_1y completed
+optimization_search,COMPLETED,0,0.00951,Optimization search completed
+parameter_optimization,COMPLETED,0,0.002105,Parameter optimization candidate selection normalized
+walk_forward,COMPLETED,0,0.003365,Walk-forward adapter registered candidate handoff artifact
+market_regime,COMPLETED,5,0.674514,Market regime detection completed
+robustness_validation,COMPLETED,1,0.005169,Robustness validation completed
+portfolio_builder,COMPLETED,1,0.029904,Portfolio builder completed
+monte_carlo,COMPLETED,1,0.003656,Monte Carlo completed with empty robustness shortlist
+best_strategy_selection,COMPLETED,1,0.004688,Best selector completed from production candidate artifacts
+final_summary,COMPLETED,1,0.002262,Production final summary completed

@@ -368,6 +368,23 @@ def test_resume_completed_stage_and_missing_artifact_invalidation():
         assert validate_completed_stage_artifacts(state, "alpha") is False
 
 
+def test_resume_success_clears_previous_stage_failure():
+    with TemporaryDirectory() as directory:
+        override = _base_override(directory, enabled_stages=["alpha"])
+        failed = run_research_orchestrator(
+            override,
+            registry=_registry(alpha_runner=_failure_runner),
+        )
+        resumed = run_research_orchestrator(override, registry=_registry())
+
+        assert failed.status == "FAILED"
+        assert failed.failed_stages == ["alpha"]
+        assert resumed.status == "COMPLETED"
+        assert resumed.failed_stages == []
+        assert resumed.completed_stages == ["alpha"]
+        assert resumed.stage_results["alpha"]["status"] == "COMPLETED"
+
+
 def test_incompatible_state_version_rejected():
     with TemporaryDirectory() as directory:
         state_path = Path(directory, "bad_state.json")
@@ -468,6 +485,7 @@ if __name__ == "__main__":
     test_global_runtime_budget_handling()
     test_state_creation_atomic_load_and_hash_validation()
     test_resume_completed_stage_and_missing_artifact_invalidation()
+    test_resume_success_clears_previous_stage_failure()
     test_incompatible_state_version_rejected()
     test_result_serialization_and_report_schema()
     test_smoke_mode_limits_default_plan_to_three_stages()

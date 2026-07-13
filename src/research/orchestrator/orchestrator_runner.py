@@ -178,6 +178,10 @@ def _execute_stage(context, stage, state: OrchestratorState) -> tuple[str, str]:
 
     state.task_usage += task_usage
     state.runtime_usage += runtime_seconds
+    if stage.name in state.failed_stages:
+        state.failed_stages.remove(stage.name)
+    if stage.name in state.blocked_stages:
+        state.blocked_stages.remove(stage.name)
     _append_unique(state.completed_stages, stage.name)
     _record_stage_result(
         state,

@@ -1,4 +1,6 @@
 import pandas as pd
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from src.research.generated_strategy_robustness import (
     REPORT_COLUMNS,
@@ -216,6 +218,30 @@ def test_disabled_run_returns_empty_report_schema():
     assert shortlist == []
 
 
+def test_fixed_only_survivor_artifact_returns_valid_empty_shortlist():
+    survivor = _sample_comparison_report().query(
+        "`Strategy Source` == 'FIXED'"
+    )
+    with TemporaryDirectory() as directory:
+        comparison = Path(directory, "funnel_1y_survivors.csv")
+        output = Path(directory, "robustness.csv")
+        shortlist_path = Path(directory, "shortlist.json")
+        survivor.to_csv(comparison, index=False)
+        report, shortlist = run_generated_strategy_robustness({
+            "enabled": True,
+            "comparison_report": str(comparison),
+            "output_report": str(output),
+            "shortlist_report": str(shortlist_path),
+            "pairs": ["BTCUSDT"],
+        })
+
+        assert list(report.columns) == REPORT_COLUMNS
+        assert report.empty
+        assert shortlist == []
+        assert pd.read_csv(output).empty
+        assert shortlist_path.read_text(encoding="utf-8").strip() == "[]"
+
+
 if __name__ == "__main__":
     test_config_loading_disabled_by_default()
     test_top_selection_uses_generated_only_and_unique_ids()
@@ -226,4 +252,5 @@ if __name__ == "__main__":
     test_score_outputs_are_bounded()
     test_status_rejects_low_walk_forward_pass_rate()
     test_disabled_run_returns_empty_report_schema()
+    test_fixed_only_survivor_artifact_returns_valid_empty_shortlist()
     print("test_generated_strategy_robustness passed")
