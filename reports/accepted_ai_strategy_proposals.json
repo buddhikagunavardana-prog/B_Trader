@@ -1,0 +1,97 @@
+{
+    "status": "REVIEWED",
+    "human_review_required": true,
+    "production_activation_allowed": false,
+    "accepted_proposals": [
+        {
+            "review_status": "REVIEWED",
+            "activation_status": "RESEARCH_ONLY",
+            "estimated_search_space": 1,
+            "proposal": {
+                "confirmation_conditions": [
+                    {
+                        "indicator": "VOLUME",
+                        "operator": "above_multiplier",
+                        "parameters": {
+                            "multiplier": 1.5,
+                            "period": 20
+                        }
+                    }
+                ],
+                "confirmation_timeframes": [],
+                "do_not_change": [
+                    "Readiness thresholds",
+                    "Final validation period",
+                    "Production configuration"
+                ],
+                "entry_conditions": [
+                    {
+                        "indicator": "EMA",
+                        "operator": "cross_above",
+                        "parameters": {
+                            "fast": 20,
+                            "slow": 100
+                        }
+                    },
+                    {
+                        "indicator": "MACD",
+                        "operator": "above_signal",
+                        "parameters": {
+                            "fast": 12,
+                            "signal": 9,
+                            "slow": 26
+                        }
+                    }
+                ],
+                "entry_timeframe": "15m",
+                "exit_mode": "fixed",
+                "expected_benefit": "Improve entry selectivity without relaxing validation",
+                "expected_market_regimes": [
+                    "TRENDING",
+                    "HIGH_VOLATILITY"
+                ],
+                "hypothesis": "Volume confirmation may suppress weak momentum entries in the existing EMA MACD family",
+                "known_risks": [
+                    "Lower trade frequency",
+                    "Volume confirmation may lag"
+                ],
+                "market_scope": [
+                    "BTCUSDT",
+                    "ETHUSDT",
+                    "BNBUSDT",
+                    "SOLUSDT",
+                    "XRPUSDT"
+                ],
+                "overfitting_risk": "Low when tested as one predeclared bounded proposal",
+                "parameter_ranges": {
+                    "ema.fast": [
+                        20
+                    ],
+                    "ema.slow": [
+                        100
+                    ],
+                    "stop_loss_pct": [
+                        1.5
+                    ],
+                    "take_profit_pct": [
+                        3.0
+                    ],
+                    "volume.multiplier": [
+                        1.5
+                    ]
+                },
+                "proposal_id": "AIPROP_EMA_MACD_VOLUME_001",
+                "proposal_version": "1.0",
+                "risk_mode": "risk_normalized",
+                "strategy_family": "trend_momentum",
+                "title": "EMA MACD trend with volume selectivity",
+                "validation_plan": [
+                    "Compare with the matched EMA MACD baseline",
+                    "Run unchanged funnel and robustness gates"
+                ]
+            },
+            "reviewed_by": "USER_AUTHORIZED_PHASE_22_1",
+            "review_basis": "Explicit Phase 22.1 controlled-research authorization"
+        }
+    ]
+}

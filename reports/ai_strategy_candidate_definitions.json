@@ -1,0 +1,89 @@
+{
+    "status": "RESEARCH_ONLY",
+    "production_activation_allowed": false,
+    "candidate_count": 1,
+    "candidate_definitions": [
+        {
+            "strategy_id": "AI_AIPROP_EMA_MACD_VOLUME_001",
+            "name": "EMA MACD trend with volume selectivity",
+            "timeframe": "15m",
+            "indicators": {
+                "ema": {
+                    "enabled": true,
+                    "fast": 20,
+                    "slow": 100,
+                    "trend": 100
+                },
+                "macd": {
+                    "enabled": true,
+                    "fast": 12,
+                    "signal": 9,
+                    "slow": 26
+                },
+                "volume": {
+                    "enabled": true,
+                    "multiplier": 1.5,
+                    "period": 20
+                }
+            },
+            "entry_rules": {
+                "ema_cross": true,
+                "macd_confirmation": true,
+                "volume_confirmation": true
+            },
+            "exit_rules": {
+                "simulated_exit_mode": "fixed_percent_full_position",
+                "stop_loss_percent": 1.5,
+                "take_profit_percent": 3.0
+            },
+            "risk": {
+                "position_sizing_mode": "risk_normalized",
+                "risk_per_trade_fraction": 0.01,
+                "max_capital_allocation_fraction": 0.25,
+                "leverage_allowed": false,
+                "risk_per_trade": 1.0
+            },
+            "enabled": false,
+            "template": "ai_reviewed",
+            "parameters": {
+                "ema.fast": 20,
+                "ema.slow": 100,
+                "stop_loss_pct": 1.5,
+                "take_profit_pct": 3.0,
+                "volume.multiplier": 1.5
+            },
+            "parameter_ranges": {
+                "ema.fast": [
+                    20
+                ],
+                "ema.slow": [
+                    100
+                ],
+                "stop_loss_pct": [
+                    1.5
+                ],
+                "take_profit_pct": [
+                    3.0
+                ],
+                "volume.multiplier": [
+                    1.5
+                ]
+            },
+            "metadata": {
+                "proposal_id": "AIPROP_EMA_MACD_VOLUME_001",
+                "market_scope": [
+                    "BTCUSDT",
+                    "ETHUSDT",
+                    "BNBUSDT",
+                    "SOLUSDT",
+                    "XRPUSDT"
+                ],
+                "origin": "AI_REVIEWED_PROPOSAL",
+                "reviewed_by": "USER_AUTHORIZED_PHASE_22_1",
+                "activation_status": "RESEARCH_ONLY",
+                "production_activation_allowed": false,
+                "advisory_source_only": true
+            }
+        }
+    ]
+}

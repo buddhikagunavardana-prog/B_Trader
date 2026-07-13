@@ -1,0 +1,42 @@
+{
+    "status": "COMPLETED",
+    "experiment_type": "CONTROLLED_RESEARCH_ONLY",
+    "proposal_id": "AIPROP_EMA_MACD_VOLUME_001",
+    "matched_baseline_strategy_id": "MATCHED_AI_AIPROP_EMA_MACD_VOLUME_001_NO_VOLUME",
+    "pairs": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT",
+        "XRPUSDT"
+    ],
+    "timeframe": "15m",
+    "runtime_seconds": 3.3718,
+    "matched_baseline": {
+        "rows": 5,
+        "mean_profit_factor": 1.09,
+        "mean_raw_profit_factor": 1.098,
+        "mean_raw_expectancy_pct": 0.0893,
+        "mean_roi_pct": 7.408,
+        "mean_max_drawdown_pct": -7.586,
+        "mean_trades": 319.2
+    },
+    "reviewed_proposal": {
+        "rows": 5,
+        "mean_profit_factor": 1.092,
+        "mean_raw_profit_factor": 1.1,
+        "mean_raw_expectancy_pct": 0.0906,
+        "mean_roi_pct": 5.772,
+        "mean_max_drawdown_pct": -7.168,
+        "mean_trades": 275.0
+    },
+    "difference": {
+        "mean_profit_factor": 0.002,
+        "mean_raw_expectancy_pct": 0.0013,
+        "mean_roi_pct": -1.636,
+        "mean_max_drawdown_pct": 0.418
+    },
+    "paper_trading_readiness": "UNCHANGED_NOT_READY",
+    "production_activation_allowed": false,
+    "conclusion": "Initial matched backtest only; unchanged funnel and robustness validation are still required before any promotion claim."
+}

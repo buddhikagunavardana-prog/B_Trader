@@ -18,6 +18,63 @@ class MockProvider(BaseProvider):
 
     def generate(self, prompt: str, context: dict) -> str:
         self.call_count += 1
+        if "STRATEGY_PROPOSAL_REQUEST" in prompt:
+            return json.dumps({
+                "proposals": [{
+                    "proposal_version": "1.0",
+                    "proposal_id": "AIPROP_EMA_MACD_VOLUME_001",
+                    "title": "EMA MACD trend with volume selectivity",
+                    "hypothesis": (
+                        "Volume confirmation may suppress weak momentum entries "
+                        "in the existing EMA MACD family"
+                    ),
+                    "strategy_family": "trend_momentum",
+                    "market_scope": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"],
+                    "entry_timeframe": "15m",
+                    "confirmation_timeframes": [],
+                    "entry_conditions": [
+                        {
+                            "indicator": "EMA",
+                            "parameters": {"fast": 20, "slow": 100},
+                            "operator": "cross_above"
+                        },
+                        {
+                            "indicator": "MACD",
+                            "parameters": {"fast": 12, "slow": 26, "signal": 9},
+                            "operator": "above_signal"
+                        }
+                    ],
+                    "confirmation_conditions": [
+                        {
+                            "indicator": "VOLUME",
+                            "parameters": {"period": 20, "multiplier": 1.5},
+                            "operator": "above_multiplier"
+                        }
+                    ],
+                    "exit_mode": "fixed",
+                    "risk_mode": "risk_normalized",
+                    "parameter_ranges": {
+                        "ema.fast": [20],
+                        "ema.slow": [100],
+                        "volume.multiplier": [1.5],
+                        "stop_loss_pct": [1.5],
+                        "take_profit_pct": [3.0]
+                    },
+                    "expected_market_regimes": ["TRENDING", "HIGH_VOLATILITY"],
+                    "expected_benefit": "Improve entry selectivity without relaxing validation",
+                    "known_risks": ["Lower trade frequency", "Volume confirmation may lag"],
+                    "overfitting_risk": "Low when tested as one predeclared bounded proposal",
+                    "validation_plan": [
+                        "Compare with the matched EMA MACD baseline",
+                        "Run unchanged funnel and robustness gates"
+                    ],
+                    "do_not_change": [
+                        "Readiness thresholds",
+                        "Final validation period",
+                        "Production configuration"
+                    ]
+                }]
+            }, sort_keys=True)
         findings = []
         for candidate in context["candidates"]:
             evidence = []
