@@ -1,0 +1,314 @@
+{
+  "phase": "21.1",
+  "title": "Promising Candidate Failure Attribution",
+  "generated_at": "2026-07-13T07:02:00Z",
+  "baseline_run_id": "b_trader_full_benchmark_v1_20260713_062645_d61ee9153c",
+  "comparison_run_id": "b_trader_full_benchmark_v1_20260713_065723_6155e290bc",
+  "scope": {
+    "market_type": "Binance Spot",
+    "timeframe": "15m",
+    "pairs": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"],
+    "readiness_population": "Two Phase 21 PROMISING_REVIEW candidates",
+    "paper_trading_gate": {
+      "minimum_profit_factor": 1.2,
+      "minimum_walk_forward_pass_rate": 0.6,
+      "minimum_robustness_score": 60.0,
+      "maximum_overfitting_risk": 50.0,
+      "minimum_monte_carlo_positive_run_rate": 0.7,
+      "maximum_monte_carlo_ruin_probability": 0.05,
+      "maximum_drawdown_pct": 20.0,
+      "minimum_trades": 30,
+      "minimum_expectancy": "greater than 0",
+      "minimum_profitable_regimes": 2
+    }
+  },
+  "technical_summary": {
+    "dominant_strategy_quality_failure": "Both candidates miss the 1.20 profit-factor and 20% drawdown gates despite adequate samples. This is a payoff/risk-quality problem, not an insufficient-trade problem.",
+    "dominant_attribution_failure": "The baseline regime gate used one latest regime per market. Because all five markets were labeled LOW_VOLATILITY, historical multi-regime performance could not be measured.",
+    "selected_improvement": "Configurable historical candle-level regime attribution using only the previous completed candle, joined to real candidate entry timestamps.",
+    "selection_reason": "It removes a shared invalid readiness measurement without changing candidates, validation thresholds, or trading outcomes. Selecting new exits from final-validation results would create a greater overfitting risk in this attribution milestone.",
+    "paper_trading_readiness": "NOT_READY"
+  },
+  "candidate_failure_attribution": [
+    {
+      "candidate_id": "VOL001_EMA20_100_VOL1P5_SL1P0_TP2P0",
+      "strategy_family": "volume",
+      "market": "SOLUSDT",
+      "timeframe": "15m",
+      "parameters": {
+        "generated_definition": {
+          "fast_ema": 20,
+          "slow_ema": 100,
+          "volume_period": 20,
+          "volume_multiplier": 1.5,
+          "stop_loss_pct": 1.0,
+          "take_profit_pct": 2.0
+        },
+        "selected_backtest_exits": {
+          "stop_loss_pct": 2.0,
+          "take_profit_pct": 2.0,
+          "mode": "fixed_percent_full_position"
+        }
+      },
+      "full_period_metrics": {
+        "trade_count": 463,
+        "win_rate_pct": 52.92,
+        "profit_factor": 1.09,
+        "roi_pct": 56.43,
+        "max_drawdown_pct": -32.0,
+        "expectancy": 12.19
+      },
+      "progressive_funnel": {
+        "three_month": {
+          "status": "PASS",
+          "train_trades": 46,
+          "train_profit_factor": 1.190476,
+          "train_max_drawdown_pct": 15.025748,
+          "walk_forward_trades": 39,
+          "walk_forward_profit_factor": 1.294118,
+          "walk_forward_max_drawdown_pct": 7.800079
+        },
+        "six_month": {
+          "status": "PASS",
+          "train_trades": 138,
+          "train_profit_factor": 1.15625,
+          "train_max_drawdown_pct": 15.127677,
+          "walk_forward_trades": 60,
+          "walk_forward_profit_factor": 1.068966,
+          "walk_forward_max_drawdown_pct": 15.025748
+        },
+        "one_year": {
+          "status": "PASS",
+          "train_trades": 341,
+          "train_profit_factor": 1.104938,
+          "train_max_drawdown_pct": 31.999364,
+          "validation_trades": 62,
+          "validation_profit_factor": 1.296296,
+          "validation_max_drawdown_pct": 11.6635,
+          "out_of_sample_trades": 60,
+          "out_of_sample_profit_factor": 1.068966,
+          "out_of_sample_max_drawdown_pct": 15.025748
+        }
+      },
+      "robustness": {
+        "status": "PROMISING",
+        "score": 68.29,
+        "overfitting_risk_score": 15.59,
+        "parameter_sensitivity_score": 61.77,
+        "pair_consistency_score": 93.46
+      },
+      "walk_forward": {
+        "pass_rate": 1.0,
+        "average_score": 82.63,
+        "gate": "PASS",
+        "threshold_headroom": 0.4
+      },
+      "monte_carlo": {
+        "simulations": 1000,
+        "positive_run_rate": 0.835,
+        "ruin_probability": 0.004,
+        "median_roi_pct": 57.81,
+        "median_max_drawdown_pct": -31.82,
+        "worst_max_drawdown_pct": -152.49,
+        "stability_score": 62.22,
+        "final_gate_positive_run_rate": "PASS",
+        "final_gate_ruin_probability": "PASS",
+        "internal_constraint_status": "FAIL",
+        "internal_constraint_reason": "Worst drawdown exceeds the 30% Monte Carlo maximum by 122.49 percentage points"
+      },
+      "historical_regime_consistency": {
+        "method": "HISTORICAL_PRIOR_CANDLE",
+        "score": 55.78,
+        "observed_regimes": 4,
+        "adequately_sampled_regimes": 3,
+        "profitable_regimes": ["SIDEWAYS", "TRENDING"],
+        "gate": "PASS",
+        "regime_details": [
+          {"regime": "HIGH_VOLATILITY", "trades": 7, "profit_factor": 0.76, "roi_pct": -2.57, "max_drawdown_pct": -4.87, "sample_sufficient": false, "passed": false},
+          {"regime": "LOW_VOLATILITY", "trades": 145, "profit_factor": 0.94, "roi_pct": -12.4, "max_drawdown_pct": -31.6, "sample_sufficient": true, "passed": false},
+          {"regime": "SIDEWAYS", "trades": 53, "profit_factor": 1.62, "roi_pct": 34.36, "max_drawdown_pct": -10.24, "sample_sufficient": true, "passed": true},
+          {"regime": "TRENDING", "trades": 257, "profit_factor": 1.11, "roi_pct": 35.04, "max_drawdown_pct": -26.83, "sample_sufficient": true, "passed": true}
+        ]
+      },
+      "readiness_criteria": [
+        {"criterion": "profit_factor", "required": 1.2, "actual": 1.09, "status": "FAIL", "distance_to_threshold": 0.11},
+        {"criterion": "walk_forward_pass_rate", "required": 0.6, "actual": 1.0, "status": "PASS", "threshold_headroom": 0.4},
+        {"criterion": "robustness_score", "required": 60.0, "actual": 68.29, "status": "PASS", "threshold_headroom": 8.29},
+        {"criterion": "overfitting_risk", "maximum": 50.0, "actual": 15.59, "status": "PASS", "threshold_headroom": 34.41},
+        {"criterion": "monte_carlo_positive_run_rate", "required": 0.7, "actual": 0.835, "status": "PASS", "threshold_headroom": 0.135},
+        {"criterion": "monte_carlo_ruin_probability", "maximum": 0.05, "actual": 0.004, "status": "PASS", "threshold_headroom": 0.046},
+        {"criterion": "max_drawdown_pct", "maximum": 20.0, "actual_absolute": 32.0, "status": "FAIL", "distance_to_threshold": 12.0},
+        {"criterion": "trades", "required": 30, "actual": 463, "status": "PASS", "threshold_headroom": 433},
+        {"criterion": "expectancy", "required": "greater than 0", "actual": 12.19, "status": "PASS"},
+        {"criterion": "profitable_regimes", "required": 2, "actual": 2, "status": "PASS", "threshold_headroom": 0}
+      ],
+      "failed_readiness_criteria": ["Profit factor below 1.20", "Max drawdown above 20%"],
+      "failure_classification": {
+        "structural": true,
+        "market_specific": true,
+        "parameter_specific": false,
+        "insufficient_sample_size": false,
+        "interpretation": "Adequate trade and walk-forward samples rule out sample scarcity. Losses concentrate in low-volatility conditions, while the full-period payoff ratio and drawdown indicate exit/risk quality remains the binding problem."
+      }
+    },
+    {
+      "candidate_id": "BRK001_EMA50_100_ATR14_SL1P5_TP3P0",
+      "strategy_family": "breakout",
+      "market": "ETHUSDT",
+      "timeframe": "15m",
+      "parameters": {
+        "generated_definition": {
+          "fast_ema": 50,
+          "slow_ema": 100,
+          "atr_period": 14,
+          "atr_multiplier": 2.0,
+          "stop_loss_pct": 1.5,
+          "take_profit_pct": 3.0
+        },
+        "selected_backtest_exits": {
+          "stop_loss_pct": 2.0,
+          "take_profit_pct": 5.0,
+          "mode": "fixed_percent_full_position"
+        }
+      },
+      "full_period_metrics": {
+        "trade_count": 187,
+        "win_rate_pct": 31.55,
+        "profit_factor": 1.1,
+        "roi_pct": 34.0,
+        "max_drawdown_pct": -29.61,
+        "expectancy": 18.18
+      },
+      "progressive_funnel": {
+        "three_month": {
+          "status": "PASS",
+          "train_trades": 21,
+          "train_profit_factor": 0.588235,
+          "train_max_drawdown_pct": 20.867596,
+          "walk_forward_trades": 11,
+          "walk_forward_profit_factor": 2.083333,
+          "walk_forward_max_drawdown_pct": 5.8808
+        },
+        "six_month": {
+          "status": "PASS",
+          "train_trades": 61,
+          "train_profit_factor": 0.888889,
+          "train_max_drawdown_pct": 22.065301,
+          "walk_forward_trades": 19,
+          "walk_forward_profit_factor": 1.153846,
+          "walk_forward_max_drawdown_pct": 11.415762
+        },
+        "one_year": {
+          "status": "PASS",
+          "train_trades": 138,
+          "train_profit_factor": 1.170213,
+          "train_max_drawdown_pct": 26.060191,
+          "validation_trades": 30,
+          "validation_profit_factor": 1.071429,
+          "validation_max_drawdown_pct": 10.669883,
+          "out_of_sample_trades": 19,
+          "out_of_sample_profit_factor": 1.153846,
+          "out_of_sample_max_drawdown_pct": 11.415762
+        }
+      },
+      "robustness": {
+        "status": "PROMISING",
+        "score": 68.39,
+        "overfitting_risk_score": 27.24,
+        "parameter_sensitivity_score": 93.35,
+        "pair_consistency_score": 90.1
+      },
+      "walk_forward": {
+        "pass_rate": 0.5,
+        "average_score": 73.0,
+        "gate": "FAIL",
+        "distance_to_threshold": 0.1
+      },
+      "monte_carlo": {
+        "simulations": 1000,
+        "positive_run_rate": 0.732,
+        "ruin_probability": 0.009,
+        "median_roi_pct": 34.19,
+        "median_max_drawdown_pct": -36.82,
+        "worst_max_drawdown_pct": -135.65,
+        "stability_score": 58.59,
+        "final_gate_positive_run_rate": "PASS",
+        "final_gate_ruin_probability": "PASS",
+        "internal_constraint_status": "FAIL",
+        "internal_constraint_reason": "Worst drawdown exceeds the 30% Monte Carlo maximum by 105.65 percentage points"
+      },
+      "historical_regime_consistency": {
+        "method": "HISTORICAL_PRIOR_CANDLE",
+        "score": 40.5,
+        "observed_regimes": 4,
+        "adequately_sampled_regimes": 2,
+        "profitable_regimes": ["LOW_VOLATILITY"],
+        "gate": "FAIL",
+        "regime_details": [
+          {"regime": "HIGH_VOLATILITY", "trades": 4, "profit_factor": 0.91, "roi_pct": -0.75, "max_drawdown_pct": -7.57, "sample_sufficient": false, "passed": false},
+          {"regime": "LOW_VOLATILITY", "trades": 67, "profit_factor": 1.19, "roi_pct": 23.99, "max_drawdown_pct": -17.18, "sample_sufficient": true, "passed": true},
+          {"regime": "SIDEWAYS", "trades": 8, "profit_factor": 1.46, "roi_pct": 6.22, "max_drawdown_pct": -13.58, "sample_sufficient": false, "passed": false},
+          {"regime": "TRENDING", "trades": 107, "profit_factor": 1.0, "roi_pct": -0.46, "max_drawdown_pct": -49.26, "sample_sufficient": true, "passed": false}
+        ]
+      },
+      "readiness_criteria": [
+        {"criterion": "profit_factor", "required": 1.2, "actual": 1.1, "status": "FAIL", "distance_to_threshold": 0.1},
+        {"criterion": "walk_forward_pass_rate", "required": 0.6, "actual": 0.5, "status": "FAIL", "distance_to_threshold": 0.1},
+        {"criterion": "robustness_score", "required": 60.0, "actual": 68.39, "status": "PASS", "threshold_headroom": 8.39},
+        {"criterion": "overfitting_risk", "maximum": 50.0, "actual": 27.24, "status": "PASS", "threshold_headroom": 22.76},
+        {"criterion": "monte_carlo_positive_run_rate", "required": 0.7, "actual": 0.732, "status": "PASS", "threshold_headroom": 0.032},
+        {"criterion": "monte_carlo_ruin_probability", "maximum": 0.05, "actual": 0.009, "status": "PASS", "threshold_headroom": 0.041},
+        {"criterion": "max_drawdown_pct", "maximum": 20.0, "actual_absolute": 29.61, "status": "FAIL", "distance_to_threshold": 9.61},
+        {"criterion": "trades", "required": 30, "actual": 187, "status": "PASS", "threshold_headroom": 157},
+        {"criterion": "expectancy", "required": "greater than 0", "actual": 18.18, "status": "PASS"},
+        {"criterion": "profitable_regimes", "required": 2, "actual": 1, "status": "FAIL", "distance_to_threshold": 1}
+      ],
+      "failed_readiness_criteria": [
+        "Profit factor below 1.20",
+        "Walk-forward pass rate below 0.60",
+        "Max drawdown above 20%",
+        "Fewer than 2 profitable regimes"
+      ],
+      "failure_classification": {
+        "structural": true,
+        "market_specific": true,
+        "parameter_specific": false,
+        "insufficient_sample_size": false,
+        "interpretation": "The parameter neighborhood is stable, but only one of two adequately sampled regimes passes and walk-forward pass rate is 50%. The weakness is temporal and regime-specific rather than caused by a small sample or an isolated parameter choice."
+      }
+    }
+  ],
+  "baseline_vs_new": {
+    "candidate_comparison_rows": {"baseline": 200, "new": 200},
+    "three_month_survivors": {"baseline": 109, "new": 109},
+    "six_month_survivors": {"baseline": 13, "new": 13},
+    "one_year_survivors": {"baseline": 12, "new": 12},
+    "robustness_evaluations": {"baseline": 6, "new": 6},
+    "robustness_statuses": {
+      "baseline": {"PROMISING": 2, "FRAGILE": 2, "REJECTED": 2},
+      "new": {"PROMISING": 2, "FRAGILE": 2, "REJECTED": 2}
+    },
+    "promising_review": {"baseline": 2, "new": 2},
+    "paper_trading_ready": {"baseline": 0, "new": 0},
+    "regime_gate_changes": {
+      "VOL001_EMA20_100_VOL1P5_SL1P0_TP2P0": {"baseline": "FAIL", "new": "PASS"},
+      "BRK001_EMA50_100_ATR14_SL1P5_TP3P0": {"baseline": "FAIL", "new": "FAIL"}
+    }
+  },
+  "limitations": [
+    "Historical regime labels are descriptive classifications, not causal evidence that a regime caused returns.",
+    "Regime cohorts require at least 30 trades; high-volatility observations remain under-sampled for both candidates.",
+    "The current final readiness gate checks Monte Carlo positive-run and ruin rates but does not directly reject an internal Monte Carlo worst-drawdown constraint failure.",
+    "No exit or risk parameter was selected from final validation results in this milestone. Profit factor and drawdown remain unresolved strategy-quality failures."
+  ],
+  "recommended_next_step": "Run a predeclared volatility-normalized exit experiment against the fixed-percent baseline, with ATR multipliers chosen before validation and assessed on unchanged walk-forward, Monte Carlo, drawdown, and final readiness gates.",
+  "sources": [
+    "reports/research_runs/b_trader_full_benchmark_v1_20260713_062645_d61ee9153c",
+    "reports/research_runs/b_trader_full_benchmark_v1_20260713_065723_6155e290bc",
+    "src/research/generated_strategy_robustness.py",
+    "src/research/market_regime_engine.py",
+    "src/research/benchmark/benchmark_shortlist.py",
+    "src/config/generated_strategy_robustness.json",
+    "src/config/monte_carlo.json"
+  ]
+}

@@ -24,6 +24,13 @@ REGIME_STRATEGY_FAMILIES = {
     "HIGH_VOLATILITY": ["ATR Breakout", "Donchian Breakout"],
     "LOW_VOLATILITY": ["Squeeze", "Low Volatility"],
 }
+REGIME_FEATURE_COLUMNS = [
+    "ADX14",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "EMA_DISTANCE_PCT",
+    "VOLUME_RATIO",
+]
 
 
 def load_market_regime_config(config_path: Path = CONFIG_PATH) -> dict:
@@ -116,11 +123,8 @@ def _score_regimes(row, config: dict) -> dict:
     return scores, reasons
 
 
-def detect_market_regime(df: pd.DataFrame, config: dict | None = None) -> dict:
-    config = config or load_market_regime_config()
-    lookback_candles = config.get("lookback_candles", 200)
-    regime_df = df.tail(lookback_candles).copy()
-
+def _calculate_regime_features(df: pd.DataFrame) -> pd.DataFrame:
+    regime_df = df.copy()
     regime_df["EMA50"] = calculate_ema(regime_df, 50)
     regime_df["EMA200"] = calculate_ema(regime_df, 200)
     regime_df["ADX14"] = calculate_adx(regime_df)
@@ -146,6 +150,93 @@ def detect_market_regime(df: pd.DataFrame, config: dict | None = None) -> dict:
     regime_df["VOLUME_RATIO"] = (
         regime_df["volume"] / regime_df["VOLUME_SMA20"]
     )
+    return regime_df
+
+
+def detect_historical_market_regimes(
+    df: pd.DataFrame,
+    config: dict | None = None,
+) -> pd.DataFrame:
+    """Classify each candle using indicators available before its open time."""
+    config = config or load_market_regime_config()
+    regime_df = _calculate_regime_features(df)
+    prior_features = regime_df[REGIME_FEATURE_COLUMNS].shift(1)
+    scores = pd.DataFrame(
+        0,
+        index=regime_df.index,
+        columns=list(REGIME_STRATEGY_FAMILIES),
+        dtype=float,
+    )
+
+    scores.loc[
+        prior_features["ADX14"] >= config["adx"]["trending_min"],
+        "TRENDING",
+    ] += 2
+    scores.loc[
+        prior_features["EMA_DISTANCE_PCT"]
+        >= config["ema_distance"]["trending_min_pct"],
+        "TRENDING",
+    ] += 2
+    scores.loc[
+        prior_features["ADX14"] <= config["adx"]["sideways_max"],
+        "SIDEWAYS",
+    ] += 2
+    scores.loc[
+        prior_features["EMA_DISTANCE_PCT"]
+        <= config["ema_distance"]["sideways_max_pct"],
+        "SIDEWAYS",
+    ] += 1
+    scores.loc[
+        prior_features["BB_WIDTH_PCT"]
+        <= config["bollinger_width"]["sideways_max_pct"],
+        "SIDEWAYS",
+    ] += 1
+    scores.loc[
+        prior_features["ATR_PCT"] >= config["atr"]["high_volatility_pct"],
+        "HIGH_VOLATILITY",
+    ] += 2
+    scores.loc[
+        prior_features["BB_WIDTH_PCT"]
+        >= config["bollinger_width"]["high_volatility_pct"],
+        "HIGH_VOLATILITY",
+    ] += 2
+    scores.loc[
+        prior_features["VOLUME_RATIO"]
+        >= config["volume_ratio"]["high_volatility_min"],
+        "HIGH_VOLATILITY",
+    ] += 1
+    scores.loc[
+        prior_features["ATR_PCT"] <= config["atr"]["low_volatility_pct"],
+        "LOW_VOLATILITY",
+    ] += 2
+    scores.loc[
+        prior_features["BB_WIDTH_PCT"]
+        <= config["bollinger_width"]["low_volatility_pct"],
+        "LOW_VOLATILITY",
+    ] += 2
+    scores.loc[
+        prior_features["VOLUME_RATIO"]
+        <= config["volume_ratio"]["low_volatility_max"],
+        "LOW_VOLATILITY",
+    ] += 1
+
+    valid = prior_features.notna().all(axis=1)
+    result = pd.DataFrame({
+        "open_time": pd.to_datetime(regime_df["open_time"], utc=True),
+        "Regime": pd.Series(pd.NA, index=regime_df.index, dtype="object"),
+        "Confidence": pd.Series(pd.NA, index=regime_df.index, dtype="Float64"),
+    })
+    result.loc[valid, "Regime"] = scores.loc[valid].idxmax(axis=1)
+    result.loc[valid, "Confidence"] = (
+        scores.loc[valid].max(axis=1).div(5).clip(upper=1).round(2)
+    )
+    return result
+
+
+def detect_market_regime(df: pd.DataFrame, config: dict | None = None) -> dict:
+    config = config or load_market_regime_config()
+    lookback_candles = config.get("lookback_candles", 200)
+    regime_df = _calculate_regime_features(df.tail(lookback_candles))
 
     latest = _latest_clean_row(regime_df)
     scores, reasons = _score_regimes(latest, config)

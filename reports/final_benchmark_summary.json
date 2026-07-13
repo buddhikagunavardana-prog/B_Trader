@@ -2,7 +2,7 @@
     "benchmark_name": "b_trader_full_benchmark_v1",
     "mode": "FULL_BENCHMARK",
     "status": "COMPLETED",
-    "run_id": "b_trader_full_benchmark_v1_20260713_062645_d61ee9153c",
+    "run_id": "b_trader_full_benchmark_v1_20260713_065723_6155e290bc",
     "pairs": [
         "BTCUSDT",
         "ETHUSDT",
@@ -101,7 +101,7 @@
     "promising_review_count": 2,
     "rejected_count": 0,
     "task_usage": 2619,
-    "runtime_usage": 223.76150310007506,
+    "runtime_usage": 250.689383000019,
     "completed_stages": [
         "load_data",
         "fixed_strategy_research",

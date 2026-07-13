@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 from src.research.generated_strategy_robustness import (
     REPORT_COLUMNS,
     calculate_overfitting_risk,
+    calculate_historical_regime_consistency,
     calculate_pair_consistency,
     calculate_regime_consistency,
     calculate_robustness_score,
@@ -86,6 +87,7 @@ def _sample_config() -> dict:
         "minimum_trades": 30,
         "minimum_profit_factor": 1.05,
         "maximum_drawdown_pct": 35.0,
+        "historical_regime_minimum_trades": 2,
         "maximum_neighbor_degradation_pct": 30.0,
         "pass_score": 65.0,
     }
@@ -138,6 +140,43 @@ def test_regime_consistency_uses_pair_regime_map():
 
     assert result["score"] > 60
     assert set(result["recommended_regimes"]) == {"TRENDING", "SIDEWAYS"}
+
+
+def test_historical_regime_consistency_uses_real_trade_outcomes():
+    trades = pd.DataFrame({
+        "Entry Time": pd.to_datetime([
+            "2025-01-01T00:00:00Z",
+            "2025-01-01T00:15:00Z",
+            "2025-01-01T00:30:00Z",
+            "2025-01-01T00:45:00Z",
+            "2025-01-01T01:00:00Z",
+        ]),
+        "PnL": [100.0, -20.0, 50.0, -10.0, 5.0],
+        "Initial Balance": [1000.0, None, None, None, None],
+    })
+    regimes = pd.DataFrame({
+        "open_time": trades["Entry Time"],
+        "Regime": [
+            "TRENDING",
+            "TRENDING",
+            "SIDEWAYS",
+            "SIDEWAYS",
+            "HIGH_VOLATILITY",
+        ],
+    })
+
+    result = calculate_historical_regime_consistency(
+        trades,
+        regimes,
+        _sample_config(),
+    )
+
+    assert result["method"] == "HISTORICAL_PRIOR_CANDLE"
+    assert result["regime_count"] == 2
+    assert result["observed_regime_count"] == 3
+    assert set(result["recommended_regimes"]) == {"TRENDING", "SIDEWAYS"}
+    assert len(result["details"]) == 3
+    assert sum(item["sample_sufficient"] for item in result["details"]) == 2
 
 
 def test_neighbor_generation_is_limited_and_valid():
@@ -248,6 +287,7 @@ if __name__ == "__main__":
     test_top_selection_can_be_limited_to_smoke_pair()
     test_pair_consistency_scores_profitable_pairs()
     test_regime_consistency_uses_pair_regime_map()
+    test_historical_regime_consistency_uses_real_trade_outcomes()
     test_neighbor_generation_is_limited_and_valid()
     test_score_outputs_are_bounded()
     test_status_rejects_low_walk_forward_pass_rate()

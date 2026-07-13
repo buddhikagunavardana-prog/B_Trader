@@ -51,7 +51,10 @@ def _selector_candidates(shortlist: list[dict], monte_carlo: dict) -> list[dict]
             "Overfitting Risk": item.get("overfitting_risk_score"),
             "Pair Consistency": item.get("pair_consistency_score", 0.0),
             "Regime Consistency": item.get("regime_consistency_score", 0.0),
-            "Profitable Regime Count": len(item.get("recommended_regimes") or []),
+            "Profitable Regime Count": item.get(
+                "profitable_regime_count",
+                len(item.get("recommended_regimes") or []),
+            ),
             "Monte Carlo Stability": mc.get("Stability Score"),
             "Monte Carlo Positive Run Rate": mc.get("Positive Run Rate"),
             "Monte Carlo Ruin Probability": mc.get("Ruin Probability"),

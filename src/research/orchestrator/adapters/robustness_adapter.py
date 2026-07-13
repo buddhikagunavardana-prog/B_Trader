@@ -22,12 +22,14 @@ def run_robustness_stage(context, stage, state):
 
     output_report = context.run_directory() / "generated_strategy_robustness.csv"
     shortlist_report = context.run_directory() / "generated_strategy_shortlist.json"
+    trade_report = artifact_path_from_state(state, "candidate_trades")
     top_count = int(benchmark.get("robustness_top_candidate_count", 3))
     if benchmark.get("mode") == "SMALL_BENCHMARK":
         top_count = min(top_count, 2)
     report, shortlist = run_generated_strategy_robustness({
         "enabled": True,
         "comparison_report": comparison_report,
+        "trade_report": trade_report,
         "output_report": str(output_report),
         "shortlist_report": str(shortlist_report),
         "pairs": configured_pairs(context),

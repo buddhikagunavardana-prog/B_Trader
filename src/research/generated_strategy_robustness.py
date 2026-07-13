@@ -6,6 +6,7 @@ import pandas as pd
 
 from src.research.generated_candidate_experiment import _score_report
 from src.research.market_regime_engine import (
+    detect_historical_market_regimes,
     detect_market_regime,
     load_market_regime_config,
 )
@@ -43,6 +44,9 @@ REPORT_COLUMNS = [
     "Average Walk Forward Score",
     "Pair Consistency Score",
     "Regime Consistency Score",
+    "Profitable Regime Count",
+    "Observed Regime Count",
+    "Regime Attribution Method",
     "Parameter Sensitivity Score",
     "Overfitting Risk Score",
     "Robustness Score",
@@ -69,6 +73,7 @@ def load_robustness_config(config_path: Path = CONFIG_PATH) -> dict:
         "walk_forward_windows",
         "global_max_validation_tasks",
         "comparison_report",
+        "trade_report",
         "output_report",
         "shortlist_report",
         "pairs",
@@ -77,6 +82,8 @@ def load_robustness_config(config_path: Path = CONFIG_PATH) -> dict:
         "minimum_trades",
         "minimum_profit_factor",
         "maximum_drawdown_pct",
+        "historical_regime_attribution_enabled",
+        "historical_regime_minimum_trades",
         "maximum_neighbor_degradation_pct",
         "pass_score",
     ]
@@ -105,6 +112,26 @@ def _load_comparison_report(path: str) -> pd.DataFrame:
         "Overall Score",
     }
     return load_csv_report(path, required_columns)
+
+
+def _load_trade_report(path: str) -> pd.DataFrame:
+    required_columns = {
+        "Strategy ID",
+        "Pair",
+        "Entry Time",
+        "PnL",
+        "Initial Balance",
+    }
+    report = load_csv_report(path, required_columns)
+    report["Entry Time"] = pd.to_datetime(
+        report["Entry Time"],
+        utc=True,
+        errors="coerce",
+    )
+    report["PnL"] = pd.to_numeric(report["PnL"], errors="coerce")
+    if report["Entry Time"].isna().any() or report["PnL"].isna().any():
+        raise ValueError("Trade report contains invalid historical regime inputs")
+    return report
 
 
 def select_top_generated_candidates(
@@ -247,6 +274,9 @@ def calculate_regime_consistency(
             "score": 0.0,
             "recommended_regimes": [],
             "regime_count": 0,
+            "observed_regime_count": 0,
+            "method": "LATEST_PAIR_SNAPSHOT",
+            "details": [],
         }
 
     regime_rows = strategy_rows.copy()
@@ -271,6 +301,127 @@ def calculate_regime_consistency(
         "score": score,
         "recommended_regimes": passed_regimes,
         "regime_count": len(regime_scores),
+        "observed_regime_count": len(regime_scores),
+        "method": "LATEST_PAIR_SNAPSHOT",
+        "details": [],
+    }
+
+
+def _historical_max_drawdown_pct(
+    pnl_values: pd.Series,
+    initial_balance: float,
+) -> float:
+    equity = initial_balance + pnl_values.cumsum()
+    equity = pd.concat([
+        pd.Series([initial_balance], dtype=float),
+        equity.reset_index(drop=True),
+    ], ignore_index=True)
+    peaks = equity.cummax()
+    drawdowns = (equity - peaks) / peaks * 100
+    return float(drawdowns.min())
+
+
+def calculate_historical_regime_consistency(
+    candidate_trades: pd.DataFrame,
+    regime_history: pd.DataFrame,
+    config: dict,
+) -> dict:
+    if candidate_trades.empty or regime_history.empty:
+        return {
+            "score": 0.0,
+            "recommended_regimes": [],
+            "regime_count": 0,
+            "observed_regime_count": 0,
+            "method": "HISTORICAL_PRIOR_CANDLE",
+            "details": [],
+        }
+
+    initial_values = pd.to_numeric(
+        candidate_trades["Initial Balance"],
+        errors="coerce",
+    ).dropna()
+    if initial_values.empty:
+        raise ValueError("Candidate trades are missing an initial balance")
+    initial_balance = float(initial_values.iloc[0])
+
+    attributed = candidate_trades.copy()
+    attributed["Entry Time"] = pd.to_datetime(
+        attributed["Entry Time"],
+        utc=True,
+    )
+    attributed = attributed.merge(
+        regime_history[["open_time", "Regime"]],
+        left_on="Entry Time",
+        right_on="open_time",
+        how="left",
+        validate="many_to_one",
+    ).dropna(subset=["Regime"])
+
+    minimum_trades = int(config["historical_regime_minimum_trades"])
+    recommended_regimes = []
+    regime_scores = []
+    regime_details = []
+    observed_regimes = 0
+    for regime, group in attributed.groupby("Regime"):
+        observed_regimes += 1
+        group = group.sort_values("Entry Time")
+        trade_count = len(group)
+        gross_profit = float(group.loc[group["PnL"] > 0, "PnL"].sum())
+        gross_loss = abs(float(group.loc[group["PnL"] < 0, "PnL"].sum()))
+        profit_factor = gross_profit / gross_loss if gross_loss > 0 else 0.0
+        max_drawdown = _historical_max_drawdown_pct(
+            group["PnL"],
+            initial_balance,
+        )
+        roi_pct = float(group["PnL"].sum()) / initial_balance * 100
+        if trade_count < minimum_trades:
+            regime_details.append({
+                "regime": str(regime),
+                "trades": trade_count,
+                "profit_factor": round(profit_factor, 2),
+                "roi_pct": round(roi_pct, 2),
+                "max_drawdown_pct": round(max_drawdown, 2),
+                "sample_sufficient": False,
+                "passed": False,
+            })
+            continue
+
+        metrics = pd.Series({
+            "Profit Factor": profit_factor,
+            "Trades": trade_count,
+            "Max Drawdown %": max_drawdown,
+        })
+        regime_config = {
+            **config,
+            "minimum_trades": minimum_trades,
+        }
+        passed = _metric_pass(metrics, regime_config)
+        regime_details.append({
+            "regime": str(regime),
+            "trades": trade_count,
+            "profit_factor": round(profit_factor, 2),
+            "roi_pct": round(roi_pct, 2),
+            "max_drawdown_pct": round(max_drawdown, 2),
+            "sample_sufficient": True,
+            "passed": bool(passed),
+        })
+        regime_scores.append(_bounded_score(
+            (75.0 if passed else 0.0) + _bounded_score(roi_pct) * 0.25
+        ))
+        if passed:
+            recommended_regimes.append(str(regime))
+
+    score = (
+        _bounded_score(sum(regime_scores) / len(regime_scores))
+        if regime_scores else 0.0
+    )
+    return {
+        "score": score,
+        "recommended_regimes": recommended_regimes,
+        "regime_count": len(regime_scores),
+        "observed_regime_count": observed_regimes,
+        "method": "HISTORICAL_PRIOR_CANDLE",
+        "details": regime_details,
     }
 
 
@@ -608,6 +759,10 @@ def _build_shortlist(report: pd.DataFrame, records: list[dict]) -> list[dict]:
             "walk_forward_pass_rate": row["Walk Forward Pass Rate %"] / 100.0,
             "pair_consistency_score": row["Pair Consistency Score"],
             "regime_consistency_score": row["Regime Consistency Score"],
+            "profitable_regime_count": row["Profitable Regime Count"],
+            "observed_regime_count": row["Observed Regime Count"],
+            "regime_attribution_method": row["Regime Attribution Method"],
+            "historical_regime_details": record.get("regime_details", []),
             "minimum_expected_metrics": {
                 "profit_factor": row["Original Profit Factor"],
                 "roi_pct": row["Original ROI %"],
@@ -628,13 +783,31 @@ def _evaluate_record(
     comparison_report: pd.DataFrame,
     market_data: dict,
     regime_map: dict,
+    trade_report: pd.DataFrame,
+    historical_regime_map: dict,
     config: dict,
 ) -> dict:
     strategy_rows = comparison_report[
         comparison_report["Strategy ID"] == record["strategy_id"]
     ].copy()
     pair_result = calculate_pair_consistency(strategy_rows, config)
-    regime_result = calculate_regime_consistency(strategy_rows, regime_map, config)
+    if config.get("historical_regime_attribution_enabled", False):
+        candidate_trades = trade_report[
+            (trade_report["Strategy ID"] == record["strategy_id"])
+            & (trade_report["Pair"] == record["original_pair"])
+        ].copy()
+        regime_result = calculate_historical_regime_consistency(
+            candidate_trades,
+            historical_regime_map[record["original_pair"]],
+            config,
+        )
+    else:
+        regime_result = calculate_regime_consistency(
+            strategy_rows,
+            regime_map,
+            config,
+        )
+    record["regime_details"] = regime_result["details"]
     original_df = market_data[record["original_pair"]]
     walk_forward_result = calculate_walk_forward_validation(
         record,
@@ -687,6 +860,9 @@ def _evaluate_record(
         "Average Walk Forward Score": walk_forward_result["average_score"],
         "Pair Consistency Score": pair_result["score"],
         "Regime Consistency Score": regime_result["score"],
+        "Profitable Regime Count": len(regime_result["recommended_regimes"]),
+        "Observed Regime Count": regime_result["observed_regime_count"],
+        "Regime Attribution Method": regime_result["method"],
         "Parameter Sensitivity Score": parameter_result["score"],
         "Overfitting Risk Score": overfitting_risk_score,
         "Robustness Score": robustness_score,
@@ -739,6 +915,25 @@ def run_generated_strategy_robustness(config_override: dict | None = None):
         config["lookback"],
     )
     regime_map = _build_regime_map(market_data)
+    trade_report = pd.DataFrame()
+    historical_regime_map = {}
+    if config.get("historical_regime_attribution_enabled", False):
+        trade_path = config.get("trade_report")
+        if not trade_path:
+            raise ValueError(
+                "Historical regime attribution requires a candidate trade report"
+            )
+        trade_report = _load_trade_report(trade_path)
+        regime_config = load_market_regime_config()
+        required_regime_pairs = {
+            record["original_pair"]
+            for record in records
+        }
+        historical_regime_map = {
+            pair: detect_historical_market_regimes(df, regime_config)
+            for pair, df in market_data.items()
+            if pair in required_regime_pairs
+        }
     rows = []
     total = len(records)
 
@@ -759,6 +954,8 @@ def run_generated_strategy_robustness(config_override: dict | None = None):
             comparison_report,
             market_data,
             regime_map,
+            trade_report,
+            historical_regime_map,
             config,
         ))
 

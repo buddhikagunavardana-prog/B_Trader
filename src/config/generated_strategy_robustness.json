@@ -5,6 +5,7 @@
     "walk_forward_windows": 5,
     "global_max_validation_tasks": 500,
     "comparison_report": "reports/generated_candidate_comparison.csv",
+    "trade_report": "reports/candidate_trades.csv",
     "output_report": "reports/generated_strategy_robustness.csv",
     "shortlist_report": "reports/generated_strategy_shortlist.json",
     "pairs": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"],
@@ -13,6 +14,8 @@
     "minimum_trades": 30,
     "minimum_profit_factor": 1.05,
     "maximum_drawdown_pct": 35.0,
+    "historical_regime_attribution_enabled": true,
+    "historical_regime_minimum_trades": 30,
     "maximum_neighbor_degradation_pct": 30.0,
     "pass_score": 65.0
 }
