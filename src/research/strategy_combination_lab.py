@@ -140,17 +140,26 @@ def _run_backtest_grid(
     signal_df = generate_signals(signal_df, signal_strategy)
     signals = signal_df["SIGNAL"]
 
+    exit_mode = strategy.exit_rules.get(
+        "simulated_exit_mode",
+        "fixed_percent_full_position",
+    )
+    if exit_mode == "atr_full_position":
+        sl_values = [strategy.exit_rules.get("stop_loss_percent", sl_values[0])]
+        tp_values = [strategy.exit_rules.get("take_profit_percent", tp_values[0])]
+
     for sl in sl_values:
         for tp in tp_values:
             test_strategy = copy.deepcopy(strategy)
-            test_strategy.exit_rules["stop_loss_percent"] = sl
-            test_strategy.exit_rules["take_profit_percent"] = tp
+            if exit_mode != "atr_full_position":
+                test_strategy.exit_rules["stop_loss_percent"] = sl
+                test_strategy.exit_rules["take_profit_percent"] = tp
 
             backtest = BacktestEngine(
                 strategy=test_strategy,
                 initial_balance=10000,
-                stop_loss_pct=sl,
-                take_profit_pct=tp,
+                stop_loss_pct=None if exit_mode == "atr_full_position" else sl,
+                take_profit_pct=None if exit_mode == "atr_full_position" else tp,
                 fee_pct=0.0,
             )
 

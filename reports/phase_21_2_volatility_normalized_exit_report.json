@@ -1,0 +1,154 @@
+{
+  "phase": "21.2",
+  "title": "Volatility-Normalized Risk and Exit Improvement",
+  "benchmark_run_id": "b_trader_full_benchmark_v1_20260713_074914_6155e290bc",
+  "scope": {
+    "market": "Binance Spot",
+    "timeframe": "15m",
+    "lookback": "1 year",
+    "pairs": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"],
+    "baseline_phase": "21.1"
+  },
+  "trade_lifecycle_diagnosis": {
+    "signal_and_entry": "Indicators and BUY signals are calculated on the research frame; entries execute at the signal candle close.",
+    "position_sizing": "Each trade uses 100% of current balance. Risk per trade is therefore not normalized to stop distance.",
+    "baseline_exits": "The baseline searches fixed percentage stops [1.0, 1.5, 2.0, 2.5] and targets [2.0, 3.0, 4.0, 5.0], then uses one selected pair for validation.",
+    "intrabar_execution": "Exits start on the candle after entry. If stop and target are both touched, the stop is applied first, which is conservative and unchanged.",
+    "cost_model": "The generated-candidate research path uses zero fees and has no slippage model. This optimistic limitation is unchanged in order to preserve the Phase 21.1 comparison.",
+    "logging_and_validation": "Calendar entry/exit timestamps and real trade returns feed the progressive funnel, historical prior-candle regimes, robustness, walk-forward, Monte Carlo, and final readiness.",
+    "dominant_phase_21_1_evidence": "Both promising candidates had adequate trade samples but profit factors of 1.09-1.10 and drawdowns of 29.61%-32.00%; losses were regime-dependent. Fixed exits across changing volatility were therefore a justified single-factor hypothesis, while 100% sizing remained a known drawdown amplifier.",
+    "post_experiment_conclusion": "A single universal ATR 1.5x stop / 3.0x target was not a broad improvement. It increased trading frequency and worsened aggregate profit factor, ROI, expectancy, and drawdown. The remaining bottleneck is signal/regime selectivity combined with non-risk-normalized sizing, not insufficiently weak validation."
+  },
+  "implementation": {
+    "exit_mode": "atr_full_position",
+    "atr_period": 14,
+    "stop_multiplier": 1.5,
+    "target_multiplier": 3.0,
+    "minimum_stop_percent": 0.75,
+    "maximum_stop_percent": 3.0,
+    "reward_to_risk": "2:1 is preserved after stop clamps",
+    "timing": "ATR is read from the previous completed candle at entry; invalid or missing ATR cannot produce a trade.",
+    "candidate_policy": "The original 30 generated candidates remain unchanged and precede 30 deterministic ATR variants with unique IDs. No multiplier was selected from final validation results.",
+    "validation_policy": "All gates and thresholds are unchanged. The robustness task budget is derived from configured candidate/window/neighbor counts so every eligible one-year survivor is evaluated.",
+    "report_contract": "Full candidate metrics are handed from final selection to the outer benchmark so root and run-local reports reconcile without treating hidden fields as failures."
+  },
+  "benchmark_comparison": {
+    "phase_21_1": {
+      "candidate_rows": 200,
+      "funnel_3m_survivors": 109,
+      "funnel_6m_survivors": 13,
+      "funnel_1y_survivors": 12,
+      "robustness_evaluations": 6,
+      "robustness_statuses": {"PROMISING": 2, "FRAGILE": 2, "REJECTED": 2},
+      "promising_review": 2,
+      "paper_trading_ready": 0
+    },
+    "phase_21_2": {
+      "candidate_rows": 350,
+      "funnel_3m_survivors": {"total": 172, "fixed": 112, "atr": 60},
+      "funnel_6m_survivors": {"total": 26, "fixed": 13, "atr": 13},
+      "funnel_1y_survivors": {"total": 14, "fixed": 11, "atr": 3},
+      "robustness_evaluations": 14,
+      "atr_robustness_evaluations": 3,
+      "atr_robustness_statuses": {"REJECTED": 3},
+      "promising_review": 2,
+      "paper_trading_ready": 0,
+      "completed_stages": 15,
+      "failed_stages": 0,
+      "blocked_stages": 0
+    }
+  },
+  "fixed_vs_atr_generated_candidates": {
+    "fixed": {
+      "rows": 150,
+      "trade_count_total": 56501,
+      "trade_count_mean": 376.67,
+      "profit_factor_mean": 1.0243,
+      "roi_pct_mean": 8.8932,
+      "absolute_drawdown_pct_mean": 34.9522,
+      "expectancy_mean": 4.6885,
+      "positive_expectancy_rows": 85
+    },
+    "atr": {
+      "rows": 150,
+      "trade_count_total": 120717,
+      "trade_count_mean": 804.78,
+      "profit_factor_mean": 0.9589,
+      "roi_pct_mean": -17.4302,
+      "absolute_drawdown_pct_mean": 40.3926,
+      "expectancy_mean": -2.1726,
+      "positive_expectancy_rows": 26
+    },
+    "paired_rows": 150,
+    "paired_outcomes": {
+      "higher_profit_factor": 5,
+      "lower_drawdown": 28,
+      "higher_profit_factor_without_worse_drawdown": 3,
+      "lower_drawdown_without_worse_expectancy": 5
+    },
+    "interpretation": "A few local pairs improved, but all three profit-factor-plus-drawdown improvements remained unprofitable. Aggregate and robustness evidence does not support promotion of this ATR specification."
+  },
+  "atr_one_year_survivors": [
+    {
+      "family": "hybrid",
+      "pair": "BNBUSDT",
+      "trades": 510,
+      "profit_factor": 1.0,
+      "roi_pct": 0.47,
+      "max_drawdown_pct": -32.31,
+      "expectancy": 0.09,
+      "walk_forward_pass_rate_pct": 50.0,
+      "profitable_regime_count": 1,
+      "robustness_score": 52.4,
+      "status": "REJECTED"
+    },
+    {
+      "family": "breakout",
+      "pair": "BNBUSDT",
+      "trades": 662,
+      "profit_factor": 1.01,
+      "roi_pct": 2.56,
+      "max_drawdown_pct": -39.76,
+      "expectancy": 0.39,
+      "walk_forward_pass_rate_pct": 50.0,
+      "profitable_regime_count": 0,
+      "robustness_score": 49.77,
+      "status": "REJECTED"
+    },
+    {
+      "family": "hybrid",
+      "pair": "BNBUSDT",
+      "trades": 570,
+      "profit_factor": 1.01,
+      "roi_pct": 1.77,
+      "max_drawdown_pct": -40.01,
+      "expectancy": 0.31,
+      "walk_forward_pass_rate_pct": 50.0,
+      "profitable_regime_count": 0,
+      "robustness_score": 49.2,
+      "status": "REJECTED"
+    }
+  ],
+  "monte_carlo_and_final": {
+    "atr_candidates": "Not run: all ATR survivors were rejected by robustness before Monte Carlo, as required by the funnel.",
+    "fixed_promising_candidates": "The Phase 21.1 volume and breakout candidates retained their prior Monte Carlo results and PROMISING_REVIEW status.",
+    "paper_trading_status": "NOT_READY"
+  },
+  "data_quality": {
+    "candidate_trade_rows": 198788,
+    "fixed_trade_rows": 78071,
+    "atr_trade_rows": 120717,
+    "invalid_entry_timestamps": 0,
+    "atr_rows_missing_atr_or_distance_fields": 0,
+    "validated_json_artifacts": 14,
+    "root_and_run_local_final_reports_match": true
+  },
+  "remaining_risks": [
+    "The backtest still allocates 100% of balance per trade and does not normalize position size to stop distance.",
+    "Fees and slippage remain zero in generated-candidate research, so reported outcomes are optimistic.",
+    "A single predeclared ATR specification cannot establish that all volatility-aware exits are ineffective; expanding multipliers against final-period results would, however, create overfitting risk.",
+    "ATR exits more than doubled mean trade count, exposing weak signal selectivity and repeated losses.",
+    "The three ATR one-year survivors were concentrated in BNBUSDT and did not show multi-regime consistency."
+  ],
+  "recommended_next_research_question": "Before adding more exit variants, test whether risk-per-trade position sizing or regime-aware entry suppression addresses the drawdown and overtrading bottlenecks using a separately predeclared experiment."
+}

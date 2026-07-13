@@ -41,7 +41,7 @@ def test_config_loading():
     config = load_experiment_config()
 
     assert config["enabled"] is False
-    assert config["generated_candidate_limit"] == 30
+    assert config["generated_candidate_limit"] == 60
     assert config["timeframe"] == "15m"
 
 
@@ -60,6 +60,19 @@ def test_generated_strategy_retrieval_and_limit():
         record["strategy_source"] == "GENERATED"
         for record in generated_records
     )
+
+
+def test_generated_strategy_retrieval_includes_configured_atr_variants():
+    config = load_experiment_config()
+    records = load_generated_strategy_records(60, config["atr_exit_variants"])
+
+    assert len(records) == 60
+    assert sum(
+        record["strategy"].exit_rules.get("simulated_exit_mode")
+        == "atr_full_position"
+        for record in records
+    ) == 30
+    assert len({record["strategy_id"] for record in records}) == 60
 
 
 def test_duplicate_prevention():
@@ -161,6 +174,7 @@ if __name__ == "__main__":
     test_config_loading()
     test_fixed_strategy_retrieval()
     test_generated_strategy_retrieval_and_limit()
+    test_generated_strategy_retrieval_includes_configured_atr_variants()
     test_duplicate_prevention()
     test_report_schema_and_source_labels()
     test_comparison_summary()

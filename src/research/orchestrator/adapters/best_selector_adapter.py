@@ -9,6 +9,7 @@ from src.research.orchestrator.adapters.adapter_result import (
     make_artifact,
     stage_payload,
 )
+from src.research.pipeline.pipeline_reporter import save_json_report
 
 
 def _load_json(path: str):
@@ -70,6 +71,7 @@ def run_best_selector_stage(context, stage, state):
     ranking_path = context.run_directory() / "final_benchmark_ranking.csv"
     shortlist_path = context.run_directory() / "final_benchmark_shortlist.json"
     rejections_path = context.run_directory() / "final_benchmark_rejections.csv"
+    metrics_path = context.run_directory() / "final_candidate_metrics.json"
     robustness_path = artifact_path_from_state(state, "robustness_shortlist")
     monte_carlo_path = artifact_path_from_state(state, "monte_carlo_summary")
     if not robustness_path or not monte_carlo_path:
@@ -94,6 +96,7 @@ def run_best_selector_stage(context, stage, state):
             ranking, shortlist, rejections,
             str(ranking_path), str(shortlist_path), str(rejections_path),
         )
+        save_json_report(candidates, str(metrics_path))
         return stage_payload(
             stage.name,
             "Best selector completed from production candidate artifacts",
@@ -102,7 +105,7 @@ def run_best_selector_stage(context, stage, state):
                 make_artifact(ranking_path, "final_ranking", stage.name, "CSV", metadata={"contract_version": "2"}),
                 make_artifact(shortlist_path, "paper_trading_shortlist", stage.name, "JSON", metadata={"contract_version": "2"}),
                 make_artifact(rejections_path, "final_rejections", stage.name, "CSV", required=False),
-                make_artifact(ranking_path, "final_candidate_metrics", stage.name, "CSV", metadata={"contract_version": "2"}),
+                make_artifact(metrics_path, "final_candidate_metrics", stage.name, "JSON", metadata={"contract_version": "2"}),
             ],
             metrics={
                 "candidate_count": len(candidates),

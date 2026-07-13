@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -299,11 +300,19 @@ def test_real_candidate_trades_feed_monte_carlo_and_selector():
 
         summary = pd.read_json(context.run_directory() / "monte_carlo_summary.json")
         ranking = pd.read_csv(context.run_directory() / "final_benchmark_ranking.csv")
+        with open(
+            context.run_directory() / "final_candidate_metrics.json",
+            encoding="utf-8",
+        ) as file:
+            final_metrics = json.load(file)
 
     assert mc_payload["metadata"]["adapter_result"]["status"] == "COMPLETED"
     assert mc_payload["metadata"]["adapter_result"]["metrics"]["candidate_count"] == 1
     assert best_payload["metadata"]["adapter_result"]["metrics"]["candidate_count"] == 1
     assert ranking.iloc[0]["Candidate ID"] == "G1"
+    assert final_metrics[0]["Walk Forward Pass Rate"] == 0.7
+    assert final_metrics[0]["Overfitting Risk"] == 25
+    assert final_metrics[0]["Monte Carlo Positive Run Rate"] >= 0
     assert "INTEGRATION_CANDIDATE" not in summary.to_json()
 
 

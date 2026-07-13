@@ -1,16 +1,16 @@
 Stage,Status,Task Usage,Runtime Seconds,Message
-load_data,COMPLETED,5,1.945025,Loaded and validated cached market data
-fixed_strategy_research,COMPLETED,50,69.600665,Fixed strategy research completed
-generated_candidate_research,COMPLETED,200,168.814694,Generated candidate experiment completed
-funnel_3m,COMPLETED,200,1.750193,Progressive funnel funnel_3m completed
-funnel_6m,COMPLETED,109,1.101998,Progressive funnel funnel_6m completed
-funnel_1y,COMPLETED,13,0.388447,Progressive funnel funnel_1y completed
-optimization_search,COMPLETED,12,0.010064,Optimization search completed
-parameter_optimization,COMPLETED,12,0.002732,Parameter optimization candidate selection normalized
-walk_forward,COMPLETED,2,0.003074,Walk-forward adapter registered candidate handoff artifact
-market_regime,COMPLETED,5,0.67377,Market regime detection completed
-robustness_validation,COMPLETED,6,4.763679,Robustness validation completed
-portfolio_builder,COMPLETED,2,0.029934,Portfolio builder completed
-monte_carlo,COMPLETED,2000,1.595218,Monte Carlo validation completed from real candidate trades
-best_strategy_selection,COMPLETED,2,0.008528,Best selector completed from production candidate artifacts
-final_summary,COMPLETED,1,0.001363,Production final summary completed
+load_data,COMPLETED,5,1.785788,Loaded and validated cached market data
+fixed_strategy_research,COMPLETED,50,43.594561,Fixed strategy research completed
+generated_candidate_research,COMPLETED,350,193.530118,Generated candidate experiment completed
+funnel_3m,COMPLETED,350,6.345737,Progressive funnel funnel_3m completed
+funnel_6m,COMPLETED,172,3.453622,Progressive funnel funnel_6m completed
+funnel_1y,COMPLETED,26,1.200037,Progressive funnel funnel_1y completed
+optimization_search,COMPLETED,11,0.012889,Optimization search completed
+parameter_optimization,COMPLETED,11,0.002969,Parameter optimization candidate selection normalized
+walk_forward,COMPLETED,2,0.003766,Walk-forward adapter registered candidate handoff artifact
+market_regime,COMPLETED,5,0.707446,Market regime detection completed
+robustness_validation,COMPLETED,14,9.442263,Robustness validation completed
+portfolio_builder,COMPLETED,2,0.004133,Portfolio builder completed
+monte_carlo,COMPLETED,2000,2.292873,Monte Carlo validation completed from real candidate trades
+best_strategy_selection,COMPLETED,2,0.011219,Best selector completed from production candidate artifacts
+final_summary,COMPLETED,1,0.002023,Production final summary completed

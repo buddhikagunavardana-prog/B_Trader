@@ -1,7 +1,19 @@
 {
     "enabled": false,
     "include_fixed_strategies": true,
-    "generated_candidate_limit": 30,
+    "generated_candidate_limit": 60,
+    "atr_exit_variants": {
+        "enabled": true,
+        "variants": [
+            {
+                "atr_period": 14,
+                "stop_multiplier": 1.5,
+                "target_multiplier": 3.0,
+                "min_stop_percent": 0.75,
+                "max_stop_percent": 3.0
+            }
+        ]
+    },
     "pairs": [
         "BTCUSDT",
         "ETHUSDT",

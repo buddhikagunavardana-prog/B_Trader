@@ -1,3 +1,4 @@
+import copy
 import itertools
 import json
 from pathlib import Path
@@ -156,6 +157,7 @@ class ParameterGenerator:
         self,
         enabled_templates: list[str] | None = None,
         global_max_candidates: int | None = None,
+        atr_exit_variants: dict | None = None,
     ) -> list[dict]:
         candidates = []
         seen_ids = set()
@@ -179,10 +181,64 @@ class ParameterGenerator:
                 seen_ids.add(strategy_id)
                 candidates.append(candidate)
 
+        if atr_exit_variants and atr_exit_variants.get("enabled", False):
+            baseline_candidates = list(candidates)
+            for variant in atr_exit_variants.get("variants", []):
+                required = {
+                    "atr_period",
+                    "stop_multiplier",
+                    "target_multiplier",
+                }
+                missing = required.difference(variant)
+                if missing:
+                    raise ValueError(
+                        "ATR exit variant is missing fields: "
+                        f"{sorted(missing)}"
+                    )
+                if any(float(variant[key]) <= 0 for key in required):
+                    raise ValueError("ATR exit variant values must be positive")
+                minimum = variant.get("min_stop_percent")
+                maximum = variant.get("max_stop_percent")
+                if minimum is not None and float(minimum) <= 0:
+                    raise ValueError("min_stop_percent must be positive")
+                if maximum is not None and float(maximum) <= 0:
+                    raise ValueError("max_stop_percent must be positive")
                 if (
-                    global_max_candidates is not None
-                    and len(candidates) >= global_max_candidates
+                    minimum is not None
+                    and maximum is not None
+                    and float(minimum) > float(maximum)
                 ):
-                    return candidates
+                    raise ValueError(
+                        "min_stop_percent cannot exceed max_stop_percent"
+                    )
+
+                for baseline in baseline_candidates:
+                    parameters = copy.deepcopy(baseline["parameters"])
+                    parameters.update({
+                        "exit_mode": "atr_full_position",
+                        "atr_exit_period": int(variant["atr_period"]),
+                        "atr_stop_multiplier": float(
+                            variant["stop_multiplier"]
+                        ),
+                        "atr_target_multiplier": float(
+                            variant["target_multiplier"]
+                        ),
+                        "min_stop_percent": minimum,
+                        "max_stop_percent": maximum,
+                    })
+                    candidate = self._build_candidate(
+                        {"template_name": baseline["template_name"]},
+                        parameters,
+                    )
+                    strategy_id = candidate["strategy_id"]
+                    if strategy_id in seen_ids:
+                        raise ValueError(
+                            f"Duplicate generated strategy ID: {strategy_id}"
+                        )
+                    seen_ids.add(strategy_id)
+                    candidates.append(candidate)
+
+        if global_max_candidates is not None:
+            return candidates[:global_max_candidates]
 
         return candidates

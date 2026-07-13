@@ -26,6 +26,16 @@ def run_robustness_stage(context, stage, state):
     top_count = int(benchmark.get("robustness_top_candidate_count", 3))
     if benchmark.get("mode") == "SMALL_BENCHMARK":
         top_count = min(top_count, 2)
+    walk_forward_windows = min(
+        int(benchmark.get("walk_forward_windows", 2)),
+        2,
+    )
+    neighbor_limit = 2
+    validation_tasks_per_candidate = (
+        walk_forward_windows * 2
+        + neighbor_limit
+        + 2
+    )
     report, shortlist = run_generated_strategy_robustness({
         "enabled": True,
         "comparison_report": comparison_report,
@@ -36,9 +46,11 @@ def run_robustness_stage(context, stage, state):
         "timeframe": configured_timeframe(context),
         "lookback": configured_lookback(context),
         "top_candidate_count": top_count,
-        "neighbor_limit": 2,
-        "walk_forward_windows": min(int(benchmark.get("walk_forward_windows", 2)), 2),
-        "global_max_validation_tasks": 50,
+        "neighbor_limit": neighbor_limit,
+        "walk_forward_windows": walk_forward_windows,
+        "global_max_validation_tasks": (
+            top_count * validation_tasks_per_candidate
+        ),
         "generated_candidate_limit": max(top_count * 4, 8),
     })
     return stage_payload(

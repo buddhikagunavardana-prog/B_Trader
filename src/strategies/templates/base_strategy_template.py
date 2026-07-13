@@ -27,7 +27,25 @@ class BaseStrategyTemplate:
         raise NotImplementedError
 
     def build_exit_rules(self) -> dict:
+        if self.parameters.get("exit_mode") == "atr_full_position":
+            rules = {
+                "simulated_exit_mode": "atr_full_position",
+                "atr_period": int(self.parameters["atr_exit_period"]),
+                "atr_stop_multiplier": float(
+                    self.parameters["atr_stop_multiplier"]
+                ),
+                "atr_target_multiplier": float(
+                    self.parameters["atr_target_multiplier"]
+                ),
+            }
+            for key in ("min_stop_percent", "max_stop_percent"):
+                value = self.parameters.get(key)
+                if value is not None:
+                    rules[key] = float(value)
+            return rules
+
         return {
+            "simulated_exit_mode": "fixed_percent_full_position",
             "stop_loss_percent": self.parameters["stop_loss_pct"],
             "take_profit_percent": self.parameters["take_profit_pct"],
         }
@@ -38,11 +56,28 @@ class BaseStrategyTemplate:
         }
 
     def build_config(self) -> dict:
+        strategy_id = self.build_strategy_id()
+        name = self.build_name()
+        indicators = self.build_indicators()
+        if self.parameters.get("exit_mode") == "atr_full_position":
+            period = int(self.parameters["atr_exit_period"])
+            indicators = dict(indicators)
+            indicators["atr"] = {
+                "enabled": True,
+                "period": period,
+            }
+            strategy_id = (
+                f"{strategy_id}_ATREXIT{period}_"
+                f"S{self._safe_id_part(self.parameters['atr_stop_multiplier'])}_"
+                f"T{self._safe_id_part(self.parameters['atr_target_multiplier'])}"
+            )
+            name = f"{name} ATR Exit {period}"
+
         return {
-            "strategy_id": self.build_strategy_id(),
-            "name": self.build_name(),
+            "strategy_id": strategy_id,
+            "name": name,
             "timeframe": self.parameters.get("timeframe", "15m"),
-            "indicators": self.build_indicators(),
+            "indicators": indicators,
             "entry_rules": self.build_entry_rules(),
             "exit_rules": self.build_exit_rules(),
             "risk": self.build_risk(),

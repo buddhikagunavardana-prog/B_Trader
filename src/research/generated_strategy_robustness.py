@@ -4,7 +4,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.research.generated_candidate_experiment import _score_report
+from src.research.generated_candidate_experiment import (
+    _score_report,
+    load_experiment_config,
+)
 from src.research.market_regime_engine import (
     detect_historical_market_regimes,
     detect_market_regime,
@@ -154,9 +157,13 @@ def select_top_generated_candidates(
     return generated.drop_duplicates("Strategy ID").head(top_candidate_count)
 
 
-def _candidate_lookup(limit: int) -> dict:
+def _candidate_lookup(
+    limit: int,
+    atr_exit_variants: dict | None = None,
+) -> dict:
     candidates = ParameterGenerator().generate_candidates(
         global_max_candidates=limit,
+        atr_exit_variants=atr_exit_variants,
     )
     return {
         candidate["strategy_id"]: candidate
@@ -182,8 +189,9 @@ def _build_strategy_record(candidate: dict, top_row: pd.Series) -> dict:
 def resolve_top_candidate_records(
     top_candidates: pd.DataFrame,
     generator_limit: int,
+    atr_exit_variants: dict | None = None,
 ) -> list[dict]:
-    lookup = _candidate_lookup(generator_limit)
+    lookup = _candidate_lookup(generator_limit, atr_exit_variants)
     records = []
 
     for _, row in top_candidates.iterrows():
@@ -899,7 +907,14 @@ def run_generated_strategy_robustness(config_override: dict | None = None):
         int(config["top_candidate_count"]) * 4,
         int(config.get("generated_candidate_limit", 30)),
     )
-    records = resolve_top_candidate_records(top_candidates, generator_limit)
+    atr_exit_variants = config.get("atr_exit_variants")
+    if atr_exit_variants is None:
+        atr_exit_variants = load_experiment_config().get("atr_exit_variants")
+    records = resolve_top_candidate_records(
+        top_candidates,
+        generator_limit,
+        atr_exit_variants,
+    )
     records = _apply_validation_task_cap(records, config)
 
     if not records:

@@ -1,3 +1,5 @@
+import math
+
 from src.models.backtest_result import BacktestResult
 
 
@@ -61,6 +63,79 @@ class BacktestEngine:
 
         return None
 
+    def _get_exit_rules(self):
+        if isinstance(self.strategy, dict):
+            return self.strategy.get("exit_rules", {})
+        return getattr(self.strategy, "exit_rules", {})
+
+    def _get_exit_rule(self, key, default=None):
+        rules = self._get_exit_rules()
+        if isinstance(rules, dict):
+            return rules.get(key, default)
+        return getattr(rules, key, default)
+
+    def _atr_exit_settings(self):
+        if self._get_exit_rule("simulated_exit_mode") != "atr_full_position":
+            return None
+        settings = {
+            "period": int(self._get_exit_rule("atr_period")),
+            "stop_multiplier": float(
+                self._get_exit_rule("atr_stop_multiplier")
+            ),
+            "target_multiplier": float(
+                self._get_exit_rule("atr_target_multiplier")
+            ),
+            "min_stop_percent": self._get_exit_rule("min_stop_percent"),
+            "max_stop_percent": self._get_exit_rule("max_stop_percent"),
+        }
+        if settings["period"] <= 0:
+            raise ValueError("ATR period must be positive")
+        if settings["stop_multiplier"] <= 0:
+            raise ValueError("ATR stop multiplier must be positive")
+        if settings["target_multiplier"] <= 0:
+            raise ValueError("ATR target multiplier must be positive")
+        for key in ("min_stop_percent", "max_stop_percent"):
+            if settings[key] is not None:
+                settings[key] = float(settings[key])
+                if settings[key] <= 0:
+                    raise ValueError(f"{key} must be positive")
+        if (
+            settings["min_stop_percent"] is not None
+            and settings["max_stop_percent"] is not None
+            and settings["min_stop_percent"] > settings["max_stop_percent"]
+        ):
+            raise ValueError(
+                "min_stop_percent cannot exceed max_stop_percent"
+            )
+        return settings
+
+    def _atr_exit_prices(self, entry_price, atr_value, settings):
+        if not math.isfinite(atr_value) or atr_value <= 0:
+            return None
+        stop_distance = atr_value * settings["stop_multiplier"]
+        minimum = settings["min_stop_percent"]
+        maximum = settings["max_stop_percent"]
+        if minimum is not None:
+            stop_distance = max(stop_distance, entry_price * minimum / 100)
+        if maximum is not None:
+            stop_distance = min(stop_distance, entry_price * maximum / 100)
+        # Apply the target to the effective (possibly clamped) ATR distance so
+        # clamps cannot silently distort the predeclared reward-to-risk ratio.
+        target_distance = (
+            stop_distance
+            / settings["stop_multiplier"]
+            * settings["target_multiplier"]
+        )
+        if stop_distance <= 0 or target_distance <= 0:
+            return None
+        return {
+            "stop_loss": entry_price - stop_distance,
+            "take_profit": entry_price + target_distance,
+            "atr_value": atr_value,
+            "stop_distance": stop_distance,
+            "target_distance": target_distance,
+        }
+
     def _resolve_stop_loss_pct(self):
         if self.stop_loss_pct is not None:
             return float(self.stop_loss_pct)
@@ -120,6 +195,7 @@ class BacktestEngine:
 
         stop_loss_pct = self._resolve_stop_loss_pct() / 100
         take_profit_pct = self._resolve_take_profit_pct() / 100
+        atr_settings = self._atr_exit_settings()
 
         # Read-only column/index views avoid constructing two pandas Series for
         # every candle.  The loop order and all trading calculations remain the
@@ -129,6 +205,14 @@ class BacktestEngine:
         low_values = df["low"].to_numpy(copy=False)
         high_values = df["high"].to_numpy(copy=False)
         signal_values = signals.to_numpy(copy=False)
+        atr_values = None
+        if atr_settings is not None:
+            atr_column = f"ATR{atr_settings['period']}"
+            if atr_column not in df.columns:
+                raise ValueError(
+                    f"ATR exit mode requires market data column {atr_column}"
+                )
+            atr_values = df[atr_column].to_numpy(copy=False)
 
         for i in range(len(df)):
             candle_time = index[i]
@@ -139,6 +223,20 @@ class BacktestEngine:
 
             if position is None and signal == "BUY":
                 entry_price = current_price
+
+                atr_prices = None
+                if atr_settings is not None:
+                    # Signals execute at the current close. The previous row is
+                    # the latest fully completed candle available before entry.
+                    if i == 0:
+                        continue
+                    atr_prices = self._atr_exit_prices(
+                        entry_price,
+                        float(atr_values[i - 1]),
+                        atr_settings,
+                    )
+                    if atr_prices is None:
+                        continue
 
                 trade_capital = self.balance * (self.position_size_percent / 100)
                 buy_fee = self._calculate_fee(trade_capital)
@@ -153,6 +251,8 @@ class BacktestEngine:
                     "trade_capital": trade_capital,
                     "buy_fee": buy_fee
                 }
+                if atr_prices is not None:
+                    position.update(atr_prices)
 
             elif position is not None:
                 low_price = float(low_values[i])
@@ -218,6 +318,17 @@ class BacktestEngine:
                         "balance_before": round(position["balance_before"], 2),
                         "balance_after": round(self.balance, 2),
                     }
+                    if atr_settings is not None:
+                        trade.update({
+                            "exit_mode": "atr_full_position",
+                            "atr_value": round(position["atr_value"], 6),
+                            "stop_distance": round(
+                                position["stop_distance"], 6
+                            ),
+                            "target_distance": round(
+                                position["target_distance"], 6
+                            ),
+                        })
 
                     self.trades.append(trade)
                     self._record_equity(candle_time)

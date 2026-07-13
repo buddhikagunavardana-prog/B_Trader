@@ -54,9 +54,13 @@ def load_fixed_strategy_records() -> list[dict]:
     ]
 
 
-def load_generated_strategy_records(limit: int) -> list[dict]:
+def load_generated_strategy_records(
+    limit: int,
+    atr_exit_variants: dict | None = None,
+) -> list[dict]:
     candidates = ParameterGenerator().generate_candidates(
         global_max_candidates=limit,
+        atr_exit_variants=atr_exit_variants,
     )
 
     if not candidates:
@@ -117,6 +121,7 @@ def _evaluate_strategy_pair(task):
         "simulated_exit_mode",
         "fixed_percent_full_position",
     )
+    exit_rules = record["strategy"].exit_rules
     trade_records = []
     for trade in best["_Trade Records"]:
         trade_records.append({
@@ -148,6 +153,12 @@ def _evaluate_strategy_pair(task):
             "Fees": trade.get("total_fee", 0.0),
             "Exit Reason": trade["exit_reason"],
             "Simulated Exit Mode": simulated_exit_mode,
+            "ATR Period": exit_rules.get("atr_period"),
+            "ATR Stop Multiplier": exit_rules.get("atr_stop_multiplier"),
+            "ATR Target Multiplier": exit_rules.get("atr_target_multiplier"),
+            "ATR Value": trade.get("atr_value"),
+            "Stop Distance": trade.get("stop_distance"),
+            "Target Distance": trade.get("target_distance"),
             "Initial Balance": trade["balance_before"] if trade["trade_id"] == 1 else None,
         })
 
@@ -170,6 +181,11 @@ def _evaluate_strategy_pair(task):
         "Trades": best["Total Trades"],
         "Expectancy": best["Expectancy"],
         "Simulated Exit Mode": simulated_exit_mode,
+        "ATR Period": exit_rules.get("atr_period"),
+        "ATR Stop Multiplier": exit_rules.get("atr_stop_multiplier"),
+        "ATR Target Multiplier": exit_rules.get("atr_target_multiplier"),
+        "Min Stop %": exit_rules.get("min_stop_percent"),
+        "Max Stop %": exit_rules.get("max_stop_percent"),
         "Runtime Seconds": round(time.perf_counter() - started_at, 2),
         "_trade_records": trade_records,
     }
@@ -338,7 +354,8 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
         else []
     )
     generated_records = load_generated_strategy_records(
-        int(config["generated_candidate_limit"])
+        int(config["generated_candidate_limit"]),
+        config.get("atr_exit_variants"),
     )
     all_records = fixed_records + generated_records
     _prevent_duplicate_strategy_ids(all_records)
@@ -384,6 +401,8 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
             "Exit Time", "Entry Price", "Exit Price", "Side", "PnL", "PnL %",
             "Fees", "Exit Reason", "Initial Balance",
             "Simulated Exit Mode",
+            "ATR Period", "ATR Stop Multiplier", "ATR Target Multiplier",
+            "ATR Value", "Stop Distance", "Target Distance",
         ]
         save_csv_report(
             pd.DataFrame(candidate_trades, columns=trade_columns),

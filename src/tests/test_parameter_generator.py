@@ -36,6 +36,43 @@ def test_deterministic_candidate_generation():
     assert len(first_ids) == len(set(first_ids))
 
 
+def test_deterministic_atr_exit_variants_preserve_fixed_baseline():
+    variant_config = {
+        "enabled": True,
+        "variants": [{
+            "atr_period": 14,
+            "stop_multiplier": 1.5,
+            "target_multiplier": 3.0,
+            "min_stop_percent": 0.75,
+            "max_stop_percent": 3.0,
+        }],
+    }
+    generator = ParameterGenerator()
+    baseline = generator.generate_candidates(global_max_candidates=30)
+    first = generator.generate_candidates(
+        global_max_candidates=60,
+        atr_exit_variants=variant_config,
+    )
+    second = generator.generate_candidates(
+        global_max_candidates=60,
+        atr_exit_variants=variant_config,
+    )
+
+    assert [item["strategy_id"] for item in first] == [
+        item["strategy_id"] for item in second
+    ]
+    assert [item["strategy_id"] for item in first[:30]] == [
+        item["strategy_id"] for item in baseline
+    ]
+    assert len(first) == 60
+    assert all(
+        item["config"]["exit_rules"]["simulated_exit_mode"]
+        == "atr_full_position"
+        for item in first[30:]
+    )
+    assert all("ATREXIT14_S1P5_T3P0" in item["strategy_id"] for item in first[30:])
+
+
 def test_max_candidates_enforced():
     generator = ParameterGenerator()
     candidates = generator.generate_candidates_for_template("trend")
@@ -104,6 +141,7 @@ def test_existing_fixed_json_strategies_still_load():
 if __name__ == "__main__":
     test_load_parameter_sets()
     test_deterministic_candidate_generation()
+    test_deterministic_atr_exit_variants_preserve_fixed_baseline()
     test_max_candidates_enforced()
     test_invalid_fast_slow_ema_rejected()
     test_invalid_parameter_json_fails_clearly()
