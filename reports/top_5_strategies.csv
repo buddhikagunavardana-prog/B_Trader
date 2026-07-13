@@ -1,6 +1,6 @@
-Rank,Strategy,Pair,ROI,Profit Factor,Win Rate,Max Drawdown,Trade Count,Expectancy,Stability Score,Final Score
-1,EMA 200 Trend + Candlestick Confirmation,SOLUSDT,52.35,1.08,48.57,-39.15,315.0,16.62,51.65,69.15
-2,EMA 200 Filter + MACD Cross,SOLUSDT,44.88,1.09,29.97,-27.46,317.0,14.16,61.9,65.71
-3,EMA 200 Filter + MACD Cross,XRPUSDT,44.76,1.1,22.4,-20.7,375.0,11.94,68.73,65.62
-4,SuperTrend + EMA + ATR SL,SOLUSDT,45.55,1.07,35.68,-27.09,454.0,10.03,62.27,65.36
-5,EMA 20/50 Cross + RSI Filter,ETHUSDT,41.44,1.07,35.86,-24.98,382.0,10.85,63.15,64.6
+Rank,Strategy,Pair,ROI,Profit Factor,Win Rate,Max Drawdown,Trade Count,Expectancy,Stability Score,Advanced Score,Walk Forward Score,Overall Score
+1,EMA 200 Trend + Candlestick Confirmation,SOLUSDT,52.35,1.08,48.57,-39.15,315.0,16.62,51.65,69.15,72.84666666666668,71.0
+2,EMA 200 Filter + MACD Cross,SOLUSDT,44.88,1.09,29.97,-27.46,317.0,14.16,61.9,65.71,73.72333333333334,69.72
+3,SuperTrend + EMA + ATR SL,SOLUSDT,45.55,1.07,35.68,-27.09,454.0,10.03,62.27,65.36,73.37666666666667,69.37
+4,EMA 20/50 Cross + RSI Filter,ETHUSDT,41.44,1.07,35.86,-24.98,382.0,10.85,63.15,64.6,71.2,67.9
+5,EMA 200 Filter + MACD Cross,XRPUSDT,44.76,1.1,22.4,-20.7,375.0,11.94,68.73,65.62,61.35999999999999,63.49
