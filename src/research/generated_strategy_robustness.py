@@ -160,10 +160,12 @@ def select_top_generated_candidates(
 def _candidate_lookup(
     limit: int,
     atr_exit_variants: dict | None = None,
+    risk_sizing_variants: dict | None = None,
 ) -> dict:
     candidates = ParameterGenerator().generate_candidates(
         global_max_candidates=limit,
         atr_exit_variants=atr_exit_variants,
+        risk_sizing_variants=risk_sizing_variants,
     )
     return {
         candidate["strategy_id"]: candidate
@@ -190,8 +192,13 @@ def resolve_top_candidate_records(
     top_candidates: pd.DataFrame,
     generator_limit: int,
     atr_exit_variants: dict | None = None,
+    risk_sizing_variants: dict | None = None,
 ) -> list[dict]:
-    lookup = _candidate_lookup(generator_limit, atr_exit_variants)
+    lookup = _candidate_lookup(
+        generator_limit,
+        atr_exit_variants,
+        risk_sizing_variants,
+    )
     records = []
 
     for _, row in top_candidates.iterrows():
@@ -908,12 +915,21 @@ def run_generated_strategy_robustness(config_override: dict | None = None):
         int(config.get("generated_candidate_limit", 30)),
     )
     atr_exit_variants = config.get("atr_exit_variants")
+    risk_sizing_variants = config.get("risk_sizing_variants")
+    experiment_config = None
     if atr_exit_variants is None:
-        atr_exit_variants = load_experiment_config().get("atr_exit_variants")
+        experiment_config = load_experiment_config()
+        atr_exit_variants = experiment_config.get("atr_exit_variants")
+    if risk_sizing_variants is None:
+        experiment_config = experiment_config or load_experiment_config()
+        risk_sizing_variants = experiment_config.get(
+            "risk_sizing_variants"
+        )
     records = resolve_top_candidate_records(
         top_candidates,
         generator_limit,
         atr_exit_variants,
+        risk_sizing_variants,
     )
     records = _apply_validation_task_cap(records, config)
 

@@ -51,7 +51,11 @@ def run_robustness_stage(context, stage, state):
         "global_max_validation_tasks": (
             top_count * validation_tasks_per_candidate
         ),
-        "generated_candidate_limit": max(top_count * 4, 8),
+        "generated_candidate_limit": max(
+            int(benchmark.get("generated_candidate_limit", 8)),
+            top_count * 4,
+            8,
+        ),
     })
     return stage_payload(
         stage.name,

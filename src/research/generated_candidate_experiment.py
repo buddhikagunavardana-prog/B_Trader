@@ -57,10 +57,12 @@ def load_fixed_strategy_records() -> list[dict]:
 def load_generated_strategy_records(
     limit: int,
     atr_exit_variants: dict | None = None,
+    risk_sizing_variants: dict | None = None,
 ) -> list[dict]:
     candidates = ParameterGenerator().generate_candidates(
         global_max_candidates=limit,
         atr_exit_variants=atr_exit_variants,
+        risk_sizing_variants=risk_sizing_variants,
     )
 
     if not candidates:
@@ -122,8 +124,14 @@ def _evaluate_strategy_pair(task):
         "fixed_percent_full_position",
     )
     exit_rules = record["strategy"].exit_rules
+    risk_rules = record["strategy"].risk
+    position_sizing_mode = risk_rules.get(
+        "position_sizing_mode",
+        "full_allocation",
+    )
+    source_trades = best["_Trade Records"]
     trade_records = []
-    for trade in best["_Trade Records"]:
+    for trade in source_trades:
         trade_records.append({
             "Candidate ID": record["strategy_id"],
             "Strategy ID": record["strategy_id"],
@@ -150,6 +158,7 @@ def _evaluate_strategy_pair(task):
             "Side": trade["direction"],
             "PnL": trade["pnl_amount"],
             "PnL %": trade["pnl_pct"],
+            "Raw PnL %": trade["gross_pnl_pct"],
             "Fees": trade.get("total_fee", 0.0),
             "Exit Reason": trade["exit_reason"],
             "Simulated Exit Mode": simulated_exit_mode,
@@ -159,6 +168,21 @@ def _evaluate_strategy_pair(task):
             "ATR Value": trade.get("atr_value"),
             "Stop Distance": trade.get("stop_distance"),
             "Target Distance": trade.get("target_distance"),
+            "Position Sizing Mode": position_sizing_mode,
+            "Risk Per Trade Fraction": trade.get(
+                "risk_per_trade_fraction"
+            ),
+            "Maximum Capital Allocation Fraction": trade.get(
+                "max_capital_allocation_fraction"
+            ),
+            "Quantity": trade.get("quantity"),
+            "Risk Budget": trade.get("risk_budget"),
+            "Actual Stop Risk": trade.get("actual_stop_risk"),
+            "Capital Deployed": trade.get(
+                "capital_deployed",
+                trade["trade_capital"],
+            ),
+            "Capital Deployed %": trade["position_size_percent"],
             "Initial Balance": trade["balance_before"] if trade["trade_id"] == 1 else None,
         })
 
@@ -175,17 +199,47 @@ def _evaluate_strategy_pair(task):
         "TP %": best["TP %"],
         "ROI %": best["ROI %"],
         "Profit Factor": best["Profit Factor"],
+        "Raw Profit Factor": best["Raw Profit Factor"],
         "Total PnL %": best["Total PnL %"],
         "Win Rate %": best["Win Rate %"],
         "Max Drawdown %": best["Max Drawdown %"],
         "Trades": best["Total Trades"],
         "Expectancy": best["Expectancy"],
+        "Raw Expectancy %": best["Raw Expectancy %"],
         "Simulated Exit Mode": simulated_exit_mode,
         "ATR Period": exit_rules.get("atr_period"),
         "ATR Stop Multiplier": exit_rules.get("atr_stop_multiplier"),
         "ATR Target Multiplier": exit_rules.get("atr_target_multiplier"),
         "Min Stop %": exit_rules.get("min_stop_percent"),
         "Max Stop %": exit_rules.get("max_stop_percent"),
+        "Position Sizing Mode": position_sizing_mode,
+        "Risk Per Trade Fraction": risk_rules.get(
+            "risk_per_trade_fraction"
+        ),
+        "Maximum Capital Allocation Fraction": risk_rules.get(
+            "max_capital_allocation_fraction"
+        ),
+        "Average Capital Deployed": (
+            round(
+                sum(trade["trade_capital"] for trade in source_trades)
+                / len(source_trades),
+                2,
+            )
+            if source_trades
+            else 0.0
+        ),
+        "Average Capital Deployed %": (
+            round(
+                sum(
+                    trade["position_size_percent"]
+                    for trade in source_trades
+                )
+                / len(source_trades),
+                4,
+            )
+            if source_trades
+            else 0.0
+        ),
         "Runtime Seconds": round(time.perf_counter() - started_at, 2),
         "_trade_records": trade_records,
     }
@@ -356,6 +410,7 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
     generated_records = load_generated_strategy_records(
         int(config["generated_candidate_limit"]),
         config.get("atr_exit_variants"),
+        config.get("risk_sizing_variants"),
     )
     all_records = fixed_records + generated_records
     _prevent_duplicate_strategy_ids(all_records)
@@ -403,6 +458,10 @@ def run_generated_candidate_experiment(config_override: dict | None = None):
             "Simulated Exit Mode",
             "ATR Period", "ATR Stop Multiplier", "ATR Target Multiplier",
             "ATR Value", "Stop Distance", "Target Distance",
+            "Position Sizing Mode", "Risk Per Trade Fraction",
+            "Maximum Capital Allocation Fraction", "Quantity",
+            "Risk Budget", "Actual Stop Risk", "Capital Deployed",
+            "Capital Deployed %", "Raw PnL %",
         ]
         save_csv_report(
             pd.DataFrame(candidate_trades, columns=trade_columns),

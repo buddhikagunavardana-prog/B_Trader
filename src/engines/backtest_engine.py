@@ -74,6 +74,98 @@ class BacktestEngine:
             return rules.get(key, default)
         return getattr(rules, key, default)
 
+    def _get_risk_rules(self):
+        if isinstance(self.strategy, dict):
+            return self.strategy.get("risk", {})
+        return getattr(self.strategy, "risk", {})
+
+    def _get_risk_rule(self, key, default=None):
+        rules = self._get_risk_rules()
+        if isinstance(rules, dict):
+            return rules.get(key, default)
+        return getattr(rules, key, default)
+
+    def _position_sizing_settings(self):
+        mode = self._get_risk_rule(
+            "position_sizing_mode",
+            "full_allocation",
+        )
+        if mode != "risk_normalized":
+            return None
+
+        settings = {
+            "risk_fraction": float(
+                self._get_risk_rule("risk_per_trade_fraction")
+            ),
+            "allocation_cap_fraction": float(
+                self._get_risk_rule("max_capital_allocation_fraction")
+            ),
+            "leverage_allowed": bool(
+                self._get_risk_rule("leverage_allowed", False)
+            ),
+        }
+        if not 0 < settings["risk_fraction"] <= 1:
+            raise ValueError(
+                "risk_per_trade_fraction must be between 0 and 1"
+            )
+        if not 0 < settings["allocation_cap_fraction"] <= 1:
+            raise ValueError(
+                "max_capital_allocation_fraction must be between 0 and 1"
+            )
+        if settings["leverage_allowed"]:
+            raise ValueError(
+                "Risk-normalized Binance Spot sizing does not support leverage"
+            )
+        return settings
+
+    def _risk_normalized_position(
+        self,
+        entry_price,
+        stop_price,
+        settings,
+    ):
+        stop_distance = entry_price - stop_price
+        if (
+            not math.isfinite(entry_price)
+            or not math.isfinite(stop_price)
+            or not math.isfinite(stop_distance)
+            or entry_price <= 0
+            or stop_price <= 0
+            or stop_distance <= 0
+        ):
+            return None
+
+        risk_budget = self.balance * settings["risk_fraction"]
+        quantity_by_risk = risk_budget / stop_distance
+        allocation_cap = (
+            self.balance * settings["allocation_cap_fraction"]
+        )
+        quantity_by_allocation = allocation_cap / entry_price
+        quantity_by_cash = self.balance / entry_price
+        quantity = min(
+            quantity_by_risk,
+            quantity_by_allocation,
+            quantity_by_cash,
+        )
+        trade_capital = quantity * entry_price
+        if (
+            not math.isfinite(quantity)
+            or not math.isfinite(trade_capital)
+            or quantity <= 0
+            or trade_capital <= 0
+            or trade_capital > self.balance
+        ):
+            return None
+
+        return {
+            "quantity": quantity,
+            "trade_capital": trade_capital,
+            "risk_budget": risk_budget,
+            "actual_stop_risk": quantity * stop_distance,
+            "stop_distance": stop_distance,
+            "position_size_percent": trade_capital / self.balance * 100,
+        }
+
     def _atr_exit_settings(self):
         if self._get_exit_rule("simulated_exit_mode") != "atr_full_position":
             return None
@@ -196,6 +288,7 @@ class BacktestEngine:
         stop_loss_pct = self._resolve_stop_loss_pct() / 100
         take_profit_pct = self._resolve_take_profit_pct() / 100
         atr_settings = self._atr_exit_settings()
+        sizing_settings = self._position_sizing_settings()
 
         # Read-only column/index views avoid constructing two pandas Series for
         # every candle.  The loop order and all trading calculations remain the
@@ -238,21 +331,42 @@ class BacktestEngine:
                     if atr_prices is None:
                         continue
 
-                trade_capital = self.balance * (self.position_size_percent / 100)
+                stop_loss = entry_price * (1 - stop_loss_pct)
+                take_profit = entry_price * (1 + take_profit_pct)
+                if atr_prices is not None:
+                    stop_loss = atr_prices["stop_loss"]
+                    take_profit = atr_prices["take_profit"]
+
+                sizing = None
+                if sizing_settings is not None:
+                    sizing = self._risk_normalized_position(
+                        entry_price,
+                        stop_loss,
+                        sizing_settings,
+                    )
+                    if sizing is None:
+                        continue
+                    trade_capital = sizing["trade_capital"]
+                else:
+                    trade_capital = (
+                        self.balance * self.position_size_percent / 100
+                    )
                 buy_fee = self._calculate_fee(trade_capital)
 
                 position = {
                     "entry_index": i,
                     "entry_time": candle_time,
                     "entry_price": entry_price,
-                    "stop_loss": entry_price * (1 - stop_loss_pct),
-                    "take_profit": entry_price * (1 + take_profit_pct),
+                    "stop_loss": stop_loss,
+                    "take_profit": take_profit,
                     "balance_before": self.balance,
                     "trade_capital": trade_capital,
                     "buy_fee": buy_fee
                 }
                 if atr_prices is not None:
                     position.update(atr_prices)
+                if sizing is not None:
+                    position.update(sizing)
 
             elif position is not None:
                 low_price = float(low_values[i])
@@ -283,6 +397,14 @@ class BacktestEngine:
 
                     self.balance += net_pnl_amount
 
+                    account_pnl_pct = gross_pnl_pct
+                    if sizing_settings is not None:
+                        account_pnl_pct = (
+                            net_pnl_amount
+                            / position["balance_before"]
+                            * 100
+                        )
+
                     trade = {
                         "trade_id": len(self.trades) + 1,
 
@@ -302,11 +424,17 @@ class BacktestEngine:
                         "stop_loss": round(position["stop_loss"], 6),
                         "take_profit": round(position["take_profit"], 6),
 
-                        "position_size_percent": round(self.position_size_percent, 2),
+                        "position_size_percent": round(
+                            position.get(
+                                "position_size_percent",
+                                self.position_size_percent,
+                            ),
+                            2,
+                        ),
                         "trade_capital": round(position["trade_capital"], 2),
 
                         "gross_pnl_pct": round(gross_pnl_pct, 2),
-                        "pnl_pct": round(gross_pnl_pct, 2),
+                        "pnl_pct": round(account_pnl_pct, 4),
 
                         "gross_pnl_amount": round(gross_pnl_amount, 2),
                         "pnl_amount": round(net_pnl_amount, 2),
@@ -327,6 +455,31 @@ class BacktestEngine:
                             ),
                             "target_distance": round(
                                 position["target_distance"], 6
+                            ),
+                        })
+                    if sizing_settings is not None:
+                        trade.update({
+                            "position_sizing_mode": "risk_normalized",
+                            "risk_per_trade_fraction": round(
+                                sizing_settings["risk_fraction"], 6
+                            ),
+                            "max_capital_allocation_fraction": round(
+                                sizing_settings["allocation_cap_fraction"],
+                                6,
+                            ),
+                            "leverage_allowed": False,
+                            "quantity": round(position["quantity"], 10),
+                            "risk_budget": round(
+                                position["risk_budget"], 6
+                            ),
+                            "actual_stop_risk": round(
+                                position["actual_stop_risk"], 6
+                            ),
+                            "stop_distance": round(
+                                position["stop_distance"], 6
+                            ),
+                            "capital_deployed": round(
+                                position["trade_capital"], 2
                             ),
                         })
 
@@ -352,6 +505,27 @@ class BacktestEngine:
 
         total_pnl_pct = sum(t["pnl_pct"] for t in self.trades)
         profit_factor = gross_profit / gross_loss if gross_loss > 0 else 0
+
+        raw_gross_profit = sum(
+            t["gross_pnl_pct"]
+            for t in self.trades
+            if t["gross_pnl_pct"] > 0
+        )
+        raw_gross_loss = abs(sum(
+            t["gross_pnl_pct"]
+            for t in self.trades
+            if t["gross_pnl_pct"] < 0
+        ))
+        raw_profit_factor = (
+            raw_gross_profit / raw_gross_loss
+            if raw_gross_loss > 0
+            else 0
+        )
+        raw_expectancy_pct = (
+            sum(t["gross_pnl_pct"] for t in self.trades) / total_trades
+            if total_trades > 0
+            else 0
+        )
 
         total_fees = sum(t["total_fee"] for t in self.trades)
 
@@ -392,6 +566,8 @@ class BacktestEngine:
             largest_win=largest_win,
             largest_loss=largest_loss,
             expectancy=expectancy,
+            raw_profit_factor=raw_profit_factor,
+            raw_expectancy_pct=raw_expectancy_pct,
             trades=self.trades,
             equity_curve=self.equity_curve
         )

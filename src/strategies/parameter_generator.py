@@ -158,6 +158,7 @@ class ParameterGenerator:
         enabled_templates: list[str] | None = None,
         global_max_candidates: int | None = None,
         atr_exit_variants: dict | None = None,
+        risk_sizing_variants: dict | None = None,
     ) -> list[dict]:
         candidates = []
         seen_ids = set()
@@ -225,6 +226,56 @@ class ParameterGenerator:
                         ),
                         "min_stop_percent": minimum,
                         "max_stop_percent": maximum,
+                    })
+                    candidate = self._build_candidate(
+                        {"template_name": baseline["template_name"]},
+                        parameters,
+                    )
+                    strategy_id = candidate["strategy_id"]
+                    if strategy_id in seen_ids:
+                        raise ValueError(
+                            f"Duplicate generated strategy ID: {strategy_id}"
+                        )
+                    seen_ids.add(strategy_id)
+                    candidates.append(candidate)
+
+        if risk_sizing_variants and risk_sizing_variants.get("enabled", False):
+            sizing_baselines = list(candidates)
+            for variant in risk_sizing_variants.get("variants", []):
+                required = {
+                    "risk_per_trade_fraction",
+                    "max_capital_allocation_fraction",
+                }
+                missing = required.difference(variant)
+                if missing:
+                    raise ValueError(
+                        "Risk sizing variant is missing fields: "
+                        f"{sorted(missing)}"
+                    )
+                risk_fraction = float(variant["risk_per_trade_fraction"])
+                allocation_cap = float(
+                    variant["max_capital_allocation_fraction"]
+                )
+                if not 0 < risk_fraction <= 1:
+                    raise ValueError(
+                        "risk_per_trade_fraction must be between 0 and 1"
+                    )
+                if not 0 < allocation_cap <= 1:
+                    raise ValueError(
+                        "max_capital_allocation_fraction must be between 0 and 1"
+                    )
+                if variant.get("leverage_allowed", False):
+                    raise ValueError(
+                        "Risk-normalized Binance Spot variants cannot use leverage"
+                    )
+
+                for baseline in sizing_baselines:
+                    parameters = copy.deepcopy(baseline["parameters"])
+                    parameters.update({
+                        "position_sizing_mode": "risk_normalized",
+                        "risk_per_trade_fraction": risk_fraction,
+                        "max_capital_allocation_fraction": allocation_cap,
+                        "leverage_allowed": False,
                     })
                     candidate = self._build_candidate(
                         {"template_name": baseline["template_name"]},

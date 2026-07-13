@@ -41,7 +41,7 @@ def test_config_loading():
     config = load_experiment_config()
 
     assert config["enabled"] is False
-    assert config["generated_candidate_limit"] == 60
+    assert config["generated_candidate_limit"] == 120
     assert config["timeframe"] == "15m"
 
 
@@ -73,6 +73,26 @@ def test_generated_strategy_retrieval_includes_configured_atr_variants():
         for record in records
     ) == 30
     assert len({record["strategy_id"] for record in records}) == 60
+
+
+def test_generated_strategy_retrieval_includes_risk_sizing_variants():
+    config = load_experiment_config()
+    records = load_generated_strategy_records(
+        120,
+        config["atr_exit_variants"],
+        config["risk_sizing_variants"],
+    )
+
+    assert len(records) == 120
+    assert sum(
+        record["strategy"].risk.get("position_sizing_mode")
+        == "risk_normalized"
+        for record in records
+    ) == 60
+    assert all(
+        "RISK1P0_CAP25P0" in record["strategy_id"]
+        for record in records[60:]
+    )
 
 
 def test_duplicate_prevention():
@@ -175,6 +195,7 @@ if __name__ == "__main__":
     test_fixed_strategy_retrieval()
     test_generated_strategy_retrieval_and_limit()
     test_generated_strategy_retrieval_includes_configured_atr_variants()
+    test_generated_strategy_retrieval_includes_risk_sizing_variants()
     test_duplicate_prevention()
     test_report_schema_and_source_labels()
     test_comparison_summary()

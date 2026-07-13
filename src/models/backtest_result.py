@@ -25,6 +25,8 @@ class BacktestResult:
     largest_win: float = 0.0
     largest_loss: float = 0.0
     expectancy: float = 0.0
+    raw_profit_factor: float = 0.0
+    raw_expectancy_pct: float = 0.0
 
     trades: list = field(default_factory=list)
     equity_curve: list = field(default_factory=list)
@@ -50,6 +52,8 @@ class BacktestResult:
             "largest_win": round(self.largest_win, 2),
             "largest_loss": round(self.largest_loss, 2),
             "expectancy": round(self.expectancy, 2),
+            "raw_profit_factor": round(self.raw_profit_factor, 2),
+            "raw_expectancy_pct": round(self.raw_expectancy_pct, 4),
             "trades": self.trades,
             "equity_curve": self.equity_curve,
         }

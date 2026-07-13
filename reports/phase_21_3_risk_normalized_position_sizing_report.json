@@ -1,0 +1,189 @@
+{
+  "phase": "21.3",
+  "title": "Risk-Normalized Position Sizing and Realistic Cost Diagnosis",
+  "benchmark_run_id": "b_trader_full_benchmark_v1_20260713_083551_63a132fa64",
+  "scope": {
+    "market": "Binance Spot",
+    "timeframe": "15m",
+    "lookback": "1 year",
+    "pairs": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"],
+    "baseline_phase": "21.2"
+  },
+  "pre_implementation_diagnosis": {
+    "entry_and_signal_timing": "Signals and entries are unchanged. A BUY enters at the signal candle close and exits cannot occur before the next candle.",
+    "baseline_sizing": "The stable baseline allocates 100% of current balance to every trade. Quantity is implicit as allocated capital divided by entry price.",
+    "stop_availability": "Fixed-percentage and ATR stop prices are both known before entry. ATR continues to use only the previous completed candle.",
+    "leverage": "The baseline is full cash allocation without leverage. The new variant explicitly rejects leverage and caps notional at available cash.",
+    "fees": "BacktestEngine already supports a fee percentage on both entry and exit, but the generated research grid passes zero fees.",
+    "slippage": "Historical backtests do not model entry or exit slippage. Monte Carlo perturbs returns later, which is not a substitute for execution-price slippage.",
+    "scope_decision": "Only position sizing was implemented. Adding historical slippage safely requires a separate execution-price contract and cap-inclusive fee treatment, so costs were deferred rather than added approximately."
+  },
+  "implementation": {
+    "position_sizing_mode": "risk_normalized",
+    "risk_per_trade_fraction": 0.01,
+    "maximum_capital_allocation_fraction": 0.25,
+    "leverage_allowed": false,
+    "formula": "quantity = min((balance * risk_fraction) / stop_distance, (balance * allocation_cap) / entry_price, balance / entry_price)",
+    "supported_stops": ["fixed_percent_full_position", "atr_full_position"],
+    "invalid_stop_policy": "A missing, non-finite, non-positive, or non-long stop distance cannot open a risk-normalized trade.",
+    "compounding": "Risk budget and allocation cap are recalculated from closed-trade balance before each entry.",
+    "baseline_preservation": "Strategies without position_sizing_mode=risk_normalized retain the original full-allocation calculations.",
+    "candidate_policy": "The original 30 fixed-exit and 30 ATR generated candidates remain first and unchanged. Sixty deterministic risk variants follow with unique IDs.",
+    "validation_policy": "All progressive-funnel, robustness, Monte Carlo, and final-readiness thresholds remain unchanged."
+  },
+  "reporting_contract": {
+    "candidate_fields": [
+      "Position Sizing Mode",
+      "Risk Per Trade Fraction",
+      "Maximum Capital Allocation Fraction",
+      "Average Capital Deployed",
+      "Average Capital Deployed %",
+      "Raw Profit Factor",
+      "Raw Expectancy %"
+    ],
+    "trade_fields": [
+      "Quantity",
+      "Risk Budget",
+      "Actual Stop Risk",
+      "Stop Distance",
+      "Capital Deployed",
+      "Capital Deployed %",
+      "Raw PnL %",
+      "PnL %"
+    ],
+    "return_semantics": "Raw PnL % is the unscaled price return. PnL % is the account return after sizing and fees. Monte Carlo receives the account return and sized monetary PnL.",
+    "edge_claim_policy": "Raw metrics are reported separately so exposure reduction is not described as improved strategy edge."
+  },
+  "benchmark_comparison": {
+    "phase_21_2": {
+      "candidate_rows": 350,
+      "generated_candidate_count": 60,
+      "funnel_3m_survivors": 172,
+      "funnel_6m_survivors": 26,
+      "funnel_1y_survivors": 14,
+      "promising_review": 2,
+      "paper_trading_ready": 0
+    },
+    "phase_21_3": {
+      "candidate_rows": 650,
+      "generated_candidate_count": 120,
+      "funnel_3m_survivors": 324,
+      "funnel_6m_survivors": 52,
+      "funnel_1y_survivors": 28,
+      "robustness_evaluations": 20,
+      "promising_review": 6,
+      "paper_trading_ready": 0,
+      "completed_stages": 15,
+      "failed_stages": 0,
+      "blocked_stages": 0
+    }
+  },
+  "three_group_results": {
+    "fixed_exit_full_allocation": {
+      "rows": 200,
+      "average_roi_pct": 7.03,
+      "average_raw_profit_factor": 1.049,
+      "average_raw_expectancy_pct": 0.055,
+      "average_max_drawdown_pct": -36.31,
+      "average_capital_deployed_pct": 100.0,
+      "funnel_survivors": {"3m": 112, "6m": 13, "1y": 11}
+    },
+    "atr_full_allocation": {
+      "rows": 150,
+      "average_roi_pct": -17.43,
+      "average_raw_profit_factor": 0.969,
+      "average_raw_expectancy_pct": -0.0188,
+      "average_max_drawdown_pct": -40.39,
+      "average_capital_deployed_pct": 100.0,
+      "funnel_survivors": {"3m": 60, "6m": 13, "1y": 3}
+    },
+    "risk_normalized": {
+      "rows": 300,
+      "average_roi_pct": -0.46,
+      "average_raw_profit_factor": 1.012,
+      "average_raw_expectancy_pct": 0.0218,
+      "average_max_drawdown_pct": -10.89,
+      "average_capital_deployed_pct": 25.0,
+      "funnel_survivors": {"3m": 152, "6m": 26, "1y": 14}
+    }
+  },
+  "paired_exposure_results": {
+    "identical_selected_grid_winners": 284,
+    "different_selected_grid_winners": 16,
+    "fixed_exit_pairs": {
+      "count": 134,
+      "average_raw_profit_factor": 1.063,
+      "average_raw_expectancy_pct": 0.0703,
+      "full_allocation_average_roi_pct": 11.73,
+      "risk_normalized_average_roi_pct": 3.86,
+      "full_allocation_average_drawdown_pct": -33.93,
+      "risk_normalized_average_drawdown_pct": -9.47
+    },
+    "atr_exit_pairs": {
+      "count": 150,
+      "average_raw_profit_factor": 0.969,
+      "average_raw_expectancy_pct": -0.0188,
+      "full_allocation_average_roi_pct": -17.43,
+      "risk_normalized_average_roi_pct": -4.05,
+      "full_allocation_average_drawdown_pct": -40.39,
+      "risk_normalized_average_drawdown_pct": -11.90
+    },
+    "selection_confound": "Sixteen risk variants selected a different SL/TP grid winner because the existing overall score includes exposure-sensitive ROI and drawdown. Their raw-edge differences are not attributed to sizing. The stable selector was not redesigned in this milestone."
+  },
+  "risk_cap_evidence": {
+    "risk_normalized_trade_rows": 174480,
+    "minimum_capital_deployed_pct": 25.0,
+    "maximum_capital_deployed_pct": 25.0,
+    "average_capital_deployed_pct": 25.0,
+    "minimum_actual_stop_risk_to_budget_ratio": 0.1875,
+    "maximum_actual_stop_risk_to_budget_ratio": 0.75,
+    "average_actual_stop_risk_to_budget_ratio": 0.2689,
+    "interpretation": "The 25% allocation cap bound every tested risk trade. Actual stop risk stayed below the 1% budget, from 0.1875% to 0.75% of equity, so no trade exceeded the declared risk ceiling."
+  },
+  "robustness_and_monte_carlo_impact": {
+    "final_promising_review_count": 6,
+    "risk_normalized_promising_review_count": 4,
+    "full_allocation_promising_review_count": 2,
+    "best_risk_candidate": {
+      "strategy_id": "VOL001_EMA20_100_VOL1P5_SL1P0_TP2P0_RISK1P0_CAP25P0",
+      "pair": "SOLUSDT",
+      "profit_factor": 1.12,
+      "max_drawdown_pct": -8.75,
+      "walk_forward_pass_rate": 0.5,
+      "robustness_score": 74.69,
+      "monte_carlo_stability": 86.82,
+      "monte_carlo_positive_run_rate": 0.87,
+      "monte_carlo_ruin_probability": 0.0,
+      "final_benchmark_score": 75.67
+    },
+    "interpretation": "Risk normalization materially improved drawdown and Monte Carlo stability for several candidates, allowing four risk variants to reach PROMISING_REVIEW. It did not repair profit factor, walk-forward consistency, or regime breadth."
+  },
+  "data_quality": {
+    "coverage_status": "All five pairs have approximately one year of complete 15m data with no estimated missing candles, duplicates, or invalid rows.",
+    "root_and_run_local_final_reports_reconciled": true,
+    "json_and_csv_validation": "Completed after benchmark generation.",
+    "reproducibility_status": "PARTIALLY_REPRODUCIBLE",
+    "benchmark_runtime_seconds": 690.3197,
+    "benchmark_task_usage": 7793
+  },
+  "paper_trading_readiness": {
+    "status": "NOT_READY",
+    "paper_trading_ready_count": 0,
+    "reason": "All six shortlisted candidates still miss at least one unchanged production gate. The dominant failures are profit factor below 1.20, walk-forward pass rate below 0.60, and limited profitable-regime coverage."
+  },
+  "remaining_risks": [
+    "Historical fees and slippage remain zero, so absolute returns and profit factors are optimistic.",
+    "The 25% allocation cap binds before the 1% risk budget for every tested stop, making this variant conservative but preventing a pure 1%-risk comparison.",
+    "Sixteen selected grid winners differ between baseline and risk variants because the existing ranking score is exposure-sensitive.",
+    "ATR candidates retain negative average raw expectancy and high trade counts; sizing limits damage but does not create edge.",
+    "The strongest candidates still lack sufficient walk-forward and regime consistency for Paper Trading."
+  ],
+  "precise_follow_up_cost_plan": {
+    "scope": "A separate predeclared cost-model milestone, without changing strategy signals, sizing, or validation gates.",
+    "configuration": "Add per-side Binance Spot fee and adverse slippage percentages to research configuration, with explicit zero-cost baseline variants retained.",
+    "execution": "Apply adverse slippage to entry and exit execution prices before PnL; apply fees to both notional legs; include entry fee in the no-leverage cash cap.",
+    "validation": "Unit-test long entry/stop/target/forced-exit price directions, fee arithmetic, cap compliance, deterministic results, and Monte Carlo handoff; then rerun the same benchmark groups.",
+    "promotion_rule": "Do not promote any candidate whose post-cost raw profit factor, walk-forward result, robustness status, or final readiness fails the existing thresholds."
+  },
+  "conclusion": "Phase 21.3 is a stable risk-control improvement, not an edge improvement. It reduces exposure and drawdown without weakening validation, produces four additional promising-review candidates, and leaves Paper Trading correctly NOT_READY."
+}

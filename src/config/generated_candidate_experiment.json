@@ -1,7 +1,7 @@
 {
     "enabled": false,
     "include_fixed_strategies": true,
-    "generated_candidate_limit": 60,
+    "generated_candidate_limit": 120,
     "atr_exit_variants": {
         "enabled": true,
         "variants": [
@@ -11,6 +11,16 @@
                 "target_multiplier": 3.0,
                 "min_stop_percent": 0.75,
                 "max_stop_percent": 3.0
+            }
+        ]
+    },
+    "risk_sizing_variants": {
+        "enabled": true,
+        "variants": [
+            {
+                "risk_per_trade_fraction": 0.01,
+                "max_capital_allocation_fraction": 0.25,
+                "leverage_allowed": false
             }
         ]
     },

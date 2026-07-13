@@ -73,6 +73,58 @@ def test_deterministic_atr_exit_variants_preserve_fixed_baseline():
     assert all("ATREXIT14_S1P5_T3P0" in item["strategy_id"] for item in first[30:])
 
 
+def test_deterministic_risk_variants_cover_fixed_and_atr_exits():
+    atr_config = {
+        "enabled": True,
+        "variants": [{
+            "atr_period": 14,
+            "stop_multiplier": 1.5,
+            "target_multiplier": 3.0,
+            "min_stop_percent": 0.75,
+            "max_stop_percent": 3.0,
+        }],
+    }
+    risk_config = {
+        "enabled": True,
+        "variants": [{
+            "risk_per_trade_fraction": 0.01,
+            "max_capital_allocation_fraction": 0.25,
+            "leverage_allowed": False,
+        }],
+    }
+    generator = ParameterGenerator()
+    first = generator.generate_candidates(
+        global_max_candidates=120,
+        atr_exit_variants=atr_config,
+        risk_sizing_variants=risk_config,
+    )
+    second = generator.generate_candidates(
+        global_max_candidates=120,
+        atr_exit_variants=atr_config,
+        risk_sizing_variants=risk_config,
+    )
+
+    assert len(first) == 120
+    assert [item["strategy_id"] for item in first] == [
+        item["strategy_id"] for item in second
+    ]
+    assert all(
+        item["config"]["risk"]["position_sizing_mode"]
+        == "full_allocation"
+        for item in first[:60]
+    )
+    assert all(
+        item["config"]["risk"]["position_sizing_mode"]
+        == "risk_normalized"
+        for item in first[60:]
+    )
+    assert sum(
+        item["config"]["exit_rules"]["simulated_exit_mode"]
+        == "atr_full_position"
+        for item in first[60:]
+    ) == 30
+
+
 def test_max_candidates_enforced():
     generator = ParameterGenerator()
     candidates = generator.generate_candidates_for_template("trend")
@@ -142,6 +194,7 @@ if __name__ == "__main__":
     test_load_parameter_sets()
     test_deterministic_candidate_generation()
     test_deterministic_atr_exit_variants_preserve_fixed_baseline()
+    test_deterministic_risk_variants_cover_fixed_and_atr_exits()
     test_max_candidates_enforced()
     test_invalid_fast_slow_ema_rejected()
     test_invalid_parameter_json_fails_clearly()

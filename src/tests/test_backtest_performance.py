@@ -5,6 +5,7 @@ import time
 import pandas as pd
 
 from src.engines.backtest_engine import BacktestEngine
+from src.research.monte_carlo.monte_carlo_input import MonteCarloInput
 
 
 def _strategy():
@@ -23,6 +24,21 @@ def _atr_strategy(minimum=None, maximum=None):
     if maximum is not None:
         rules["max_stop_percent"] = maximum
     return SimpleNamespace(exit_rules=rules)
+
+
+def _risk_strategy(stop_loss=5.0, take_profit=5.0, risk=0.01, cap=0.25):
+    return SimpleNamespace(
+        exit_rules={
+            "stop_loss_percent": stop_loss,
+            "take_profit_percent": take_profit,
+        },
+        risk={
+            "position_sizing_mode": "risk_normalized",
+            "risk_per_trade_fraction": risk,
+            "max_capital_allocation_fraction": cap,
+            "leverage_allowed": False,
+        },
+    )
 
 
 def test_array_access_preserves_trade_semantics_and_inputs():
@@ -147,6 +163,109 @@ def test_atr_stop_distance_clamps_and_invalid_values():
         raise AssertionError("Missing ATR column did not fail clearly")
 
 
+def test_risk_normalized_fixed_stop_quantity_and_metadata():
+    market = pd.DataFrame({
+        "close": [100.0, 100.0],
+        "high": [100.0, 106.0],
+        "low": [100.0, 99.0],
+    })
+    signals = pd.Series(["BUY", "HOLD"])
+    result = BacktestEngine(_risk_strategy()).run(market, signals).to_dict()
+    trade = result["trades"][0]
+
+    assert trade["risk_budget"] == 100.0
+    assert trade["stop_distance"] == 5.0
+    assert trade["quantity"] == 20.0
+    assert trade["capital_deployed"] == 2000.0
+    assert trade["position_size_percent"] == 20.0
+    assert trade["actual_stop_risk"] == 100.0
+    assert trade["position_sizing_mode"] == "risk_normalized"
+    assert trade["pnl_pct"] == 1.0
+    assert trade["gross_pnl_pct"] == 5.0
+
+    monte_carlo_input = MonteCarloInput.from_backtest_result(
+        strategy_id="RISK_TEST",
+        strategy_name="Risk Test",
+        pair="BTCUSDT",
+        template_type="test",
+        result=result,
+    )
+    assert monte_carlo_input.trade_returns == [1.0]
+    assert monte_carlo_input.trade_pnls == [100.0]
+
+
+def test_risk_normalized_allocation_cash_caps_and_no_leverage():
+    market = pd.DataFrame({
+        "close": [100.0, 100.0],
+        "high": [100.0, 102.0],
+        "low": [100.0, 98.0],
+    })
+    signals = pd.Series(["BUY", "HOLD"])
+    capped = BacktestEngine(
+        _risk_strategy(stop_loss=1.0, take_profit=1.0)
+    ).run(market, signals).to_dict()["trades"][0]
+    assert capped["quantity"] == 25.0
+    assert capped["capital_deployed"] == 2500.0
+    assert capped["actual_stop_risk"] == 25.0
+
+    cash_capped = BacktestEngine(
+        _risk_strategy(stop_loss=0.5, take_profit=1.0, risk=1.0, cap=1.0)
+    ).run(market, signals).to_dict()["trades"][0]
+    assert cash_capped["quantity"] == 100.0
+    assert cash_capped["capital_deployed"] == 10000.0
+
+    leveraged = _risk_strategy()
+    leveraged.risk["leverage_allowed"] = True
+    try:
+        BacktestEngine(leveraged).run(market, signals)
+    except ValueError as error:
+        assert "does not support leverage" in str(error)
+    else:
+        raise AssertionError("Leveraged Binance Spot sizing was accepted")
+
+
+def test_risk_normalized_atr_stop_compounding_and_invalid_stop():
+    atr_strategy = _atr_strategy()
+    atr_strategy.risk = _risk_strategy().risk
+    atr_market = pd.DataFrame({
+        "close": [100.0, 100.0, 100.0],
+        "high": [100.0, 100.0, 107.0],
+        "low": [100.0, 100.0, 99.0],
+        "ATR14": [2.0, 999.0, 999.0],
+    })
+    atr_trade = BacktestEngine(atr_strategy).run(
+        atr_market,
+        pd.Series(["HOLD", "BUY", "HOLD"]),
+    ).to_dict()["trades"][0]
+    assert atr_trade["stop_distance"] == 3.0
+    assert atr_trade["quantity"] == 25.0
+    assert atr_trade["capital_deployed"] == 2500.0
+
+    compound_market = pd.DataFrame({
+        "close": [100.0, 100.0, 100.0, 100.0],
+        "high": [100.0, 106.0, 100.0, 106.0],
+        "low": [100.0, 99.0, 100.0, 99.0],
+    })
+    compound_signals = pd.Series(["BUY", "HOLD", "BUY", "HOLD"])
+    first = BacktestEngine(_risk_strategy()).run(
+        compound_market,
+        compound_signals,
+    ).to_dict()
+    second = BacktestEngine(_risk_strategy()).run(
+        compound_market,
+        compound_signals,
+    ).to_dict()
+    assert first == second
+    assert first["final_balance"] == 10201.0
+    assert first["trades"][1]["risk_budget"] == 101.0
+    assert first["trades"][1]["capital_deployed"] == 2020.0
+
+    invalid = BacktestEngine(
+        _risk_strategy(stop_loss=0.0)
+    ).run(compound_market, compound_signals).to_dict()
+    assert invalid["trades"] == []
+
+
 def run_cached_worker_benchmark():
     import src.research.generated_candidate_experiment as experiment
     from src.research.pipeline.pipeline_loader import load_market_data
@@ -194,6 +313,9 @@ if __name__ == "__main__":
     test_array_access_preserves_trade_semantics_and_inputs()
     test_atr_exit_uses_previous_completed_candle_without_lookahead()
     test_atr_stop_distance_clamps_and_invalid_values()
+    test_risk_normalized_fixed_stop_quantity_and_metadata()
+    test_risk_normalized_allocation_cash_caps_and_no_leverage()
+    test_risk_normalized_atr_stop_compounding_and_invalid_stop()
     if "--benchmark" in sys.argv:
         run_cached_worker_benchmark()
     print("test_backtest_performance passed")

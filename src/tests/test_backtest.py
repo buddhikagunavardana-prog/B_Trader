@@ -1,7 +1,7 @@
 import pandas as pd
 
-from engines.backtest_engine import BacktestEngine
-from strategies.strategy_loader import load_strategy
+from src.engines.backtest_engine import BacktestEngine
+from src.strategies.strategy_loader import load_strategy
 
 
 strategy = load_strategy()

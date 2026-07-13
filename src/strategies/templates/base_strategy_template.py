@@ -51,7 +51,25 @@ class BaseStrategyTemplate:
         }
 
     def build_risk(self) -> dict:
+        if self.parameters.get("position_sizing_mode") == "risk_normalized":
+            return {
+                "position_sizing_mode": "risk_normalized",
+                "risk_per_trade_fraction": float(
+                    self.parameters["risk_per_trade_fraction"]
+                ),
+                "max_capital_allocation_fraction": float(
+                    self.parameters["max_capital_allocation_fraction"]
+                ),
+                "leverage_allowed": bool(
+                    self.parameters.get("leverage_allowed", False)
+                ),
+                "risk_per_trade": (
+                    float(self.parameters["risk_per_trade_fraction"])
+                    * 100
+                ),
+            }
         return {
+            "position_sizing_mode": "full_allocation",
             "risk_per_trade": self.parameters.get("risk_per_trade", 2),
         }
 
@@ -72,6 +90,20 @@ class BaseStrategyTemplate:
                 f"T{self._safe_id_part(self.parameters['atr_target_multiplier'])}"
             )
             name = f"{name} ATR Exit {period}"
+        if self.parameters.get("position_sizing_mode") == "risk_normalized":
+            risk_pct = (
+                float(self.parameters["risk_per_trade_fraction"])
+                * 100
+            )
+            cap_pct = (
+                float(self.parameters["max_capital_allocation_fraction"])
+                * 100
+            )
+            strategy_id = (
+                f"{strategy_id}_RISK{self._safe_id_part(risk_pct)}_"
+                f"CAP{self._safe_id_part(cap_pct)}"
+            )
+            name = f"{name} Risk {risk_pct:g}% Cap {cap_pct:g}%"
 
         return {
             "strategy_id": strategy_id,

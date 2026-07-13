@@ -183,11 +183,13 @@ def _run_backtest_grid(
                 "Win Rate %": result_dict["win_rate"],
                 "Total PnL %": result_dict["total_pnl_pct"],
                 "Profit Factor": result_dict["profit_factor"],
+                "Raw Profit Factor": result_dict["raw_profit_factor"],
                 "Avg Win": result_dict["avg_win"],
                 "Avg Loss": result_dict["avg_loss"],
                 "Largest Win": result_dict["largest_win"],
                 "Largest Loss": result_dict["largest_loss"],
                 "Expectancy": result_dict["expectancy"],
+                "Raw Expectancy %": result_dict["raw_expectancy_pct"],
             }
             if include_trade_details:
                 row["_Trade Records"] = result_dict["trades"]

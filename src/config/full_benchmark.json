@@ -25,7 +25,7 @@
     ],
     "include_fixed_strategies": true,
     "include_generated_candidates": true,
-    "generated_candidate_limit": 60,
+    "generated_candidate_limit": 120,
     "optimization_search_algorithm": "grid",
     "optimization_candidate_budget": 500,
     "walk_forward_windows": 5,
