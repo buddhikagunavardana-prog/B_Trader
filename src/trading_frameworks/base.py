@@ -149,6 +149,24 @@ class BaseTradingFramework(ABC):
             framework_version=self.metadata.version,
         )
 
+    def execute_runtime(
+        self,
+        context: FrameworkContext,
+        timestamp: pd.Timestamp,
+    ) -> FrameworkDecision:
+        """Execute a run-scoped context already validated by the research adapter.
+
+        This internal fast path deliberately performs no schema, role, or causality
+        validation per row. The adapter validates immutable prepared frames once and
+        supplies only prefix slices ending at ``timestamp``.
+        """
+        decision = self.generate_decision(context, timestamp)
+        return replace(
+            decision,
+            active_timeframe=decision.active_timeframe or self.metadata.default_timeframes.get(self.execution_role),
+            framework_version=self.metadata.version,
+        )
+
     @abstractmethod
     def generate_decision(
         self,

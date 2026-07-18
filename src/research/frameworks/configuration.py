@@ -22,6 +22,8 @@ VALID_WARMUP_POLICIES = {"skip", "include_marked"}
 VALID_EXPIRATION_MODES = {"bars", "timestamp", "session_end", "entry_cutoff", "framework"}
 VALID_OPPOSITE_MODES = {"ignore", "reject", "request_exit", "exit_then_reverse", "allow_immediate_reverse"}
 VALID_NESTED_INSIDE_BAR_POLICIES = {"keep_original_mother_bar", "replace_with_latest_mother_bar", "narrow_range", "reject_nested_setup"}
+VALID_DIAGNOSTIC_LEVELS = {"none", "summary", "standard", "full"}
+VALID_SNAPSHOT_MODES = {"none", "final_only", "transitions_only", "full"}
 
 
 def enforce_experimental_access(framework, allow_experimental: bool) -> None:
@@ -59,6 +61,11 @@ def validate_research_configuration(config: FrameworkResearchConfiguration) -> F
         raise ResearchConfigurationError(f"invalid opposite_signal_mode: {config.opposite_signal_mode}")
     if config.nested_inside_bar_policy not in VALID_NESTED_INSIDE_BAR_POLICIES:
         raise ResearchConfigurationError(f"invalid nested_inside_bar_policy: {config.nested_inside_bar_policy}")
+    if str(config.state_diagnostics_level).lower() not in VALID_DIAGNOSTIC_LEVELS:
+        raise ResearchConfigurationError(f"invalid state_diagnostics_level: {config.state_diagnostics_level}")
+    snapshot_value = config.persist_state_snapshots
+    if not isinstance(snapshot_value, bool) and str(snapshot_value).lower() not in VALID_SNAPSHOT_MODES:
+        raise ResearchConfigurationError(f"invalid persist_state_snapshots mode: {snapshot_value}")
     for name in ("cooldown_bars", "setup_expiration_bars", "cooldown_after_exit_bars", "cooldown_after_setup_invalidation_bars", "cooldown_after_setup_consumption_bars", "level_retest_cooldown_bars", "level_max_age_bars", "minimum_squeeze_bars", "maximum_release_to_trigger_bars"):
         if getattr(config, name) < 0:
             raise ResearchConfigurationError(f"{name} must be non-negative")

@@ -15,3 +15,6 @@ Setup states cover none, forming, armed, triggered, expired, invalidated, and co
 `IndicatorRequest` defines canonical indicator, validated parameters, output alias, and stable fingerprint. Explicit `COMPUTE_MISSING` supports EMA 8/13/21/34/55 and dual-average variants, rejects duplicate/colliding aliases, deduplicates fingerprints, and records provenance. `PRECOMPUTED_ONLY` remains default.
 
 Stateful output appends position/setup/session transitions, ages, IDs, opening-range completion, warnings, and validity while retaining every existing normalized column. Manifests snapshot policy, sessions, setup expiry, provenance, initial state, and runtime final-state summary without embedding decisions. This is research context, never broker or profitability state.
+## Runtime snapshot policy
+
+Snapshot storage supports `none`, `final_only`, `transitions_only`, and `full`. Legacy `false`/`true` values map to `none`/`full`; the default therefore remains backward compatible. Snapshot selection never changes controller transitions or normalized decisions.

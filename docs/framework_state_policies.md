@@ -43,3 +43,6 @@ High-resolution monotonic timing independently records generic, setup, position,
 ## Known limitations
 
 Holiday calendars are not inferred, level discovery remains an upstream causal-data responsibility, and entries/exits remain advisory research state rather than fills. Timing varies by machine and is diagnostic only. Historical profitability evaluation, ranking, optimization, paper trading, and live execution remain out of scope.
+## Compiled run context
+
+Framework setup/event/session membership and immutable rollover policy are resolved once per controller run. Session snapshots may be supplied by the adapter's deterministic run-scoped session context. Policy reason codes and transition semantics are unchanged.

@@ -94,3 +94,6 @@ Stateful research is enabled by a backward-compatible configuration default and 
 ## Phase 24.3 expansion and manifests
 
 The adapter now validates twenty framework configurations without changing its normalized output. `build_reproducibility_manifest()` separates deterministic configuration/input fields and their stable hash from runtime commit, execution timestamp, and warnings. Manifests contain no decisions, credentials, fills, or profitability fields and may optionally be written to an ignored runtime location. Streaming output remains out of scope.
+## Phase 24.7 runtime path
+
+The adapter constructs one immutable, run-scoped runtime context after preparation and causal alignment. It caches deterministic session snapshots, dependency/configuration fingerprints, diagnostics and snapshot modes, then uses the already-validated internal execution path for each causal prefix. Profiling remains optional and ordinary normalized columns are unchanged.

@@ -78,9 +78,14 @@ class RuleBasedFramework(BaseTradingFramework):
         elif k=="keltner": long=p.close<=p.KELTNER_UPPER and r.close>p.KELTNER_UPPER; short=p.close>=p.KELTNER_LOWER and r.close<p.KELTNER_LOWER
         elif k=="atr_breakout": long=r.close>p.close+self.parameters["breakout_multiple"]*p.ATR; short=r.close<p.close-self.parameters["breakout_multiple"]*p.ATR
         elif k=="opening_range":
-            session_start=timestamp.normalize(); start=int(f.index.searchsorted(session_start,side="left")); day=f.iloc[start:]; n=self.parameters["opening_bars"]
-            if len(day)<=n:return self.no_trade(timestamp,"Opening range is not complete.")
-            high=day.iloc[:n].high.max(); low=day.iloc[:n].low.min(); prev=day.iloc[-2].close; long=prev<=high and r.close>high; short=prev>=low and r.close<low
+            if "__bt_opening_complete" in f.columns:
+                if not bool(r["__bt_opening_complete"]):return self.no_trade(timestamp,"Opening range is not complete.")
+                high=float(r["__bt_opening_high"]);low=float(r["__bt_opening_low"]);prev=p.close
+            else:
+                session_start=timestamp.normalize(); start=int(f.index.searchsorted(session_start,side="left")); day=f.iloc[start:]; n=self.parameters["opening_bars"]
+                if len(day)<=n:return self.no_trade(timestamp,"Opening range is not complete.")
+                high=day.iloc[:n].high.max(); low=day.iloc[:n].low.min(); prev=day.iloc[-2].close
+            long=prev<=high and r.close>high; short=prev>=low and r.close<low
         elif k=="rsi_pullback": long=p.RSI<=self.parameters["long_setup"] and r.RSI>self.parameters["long_trigger"] and r.close>r.EMA; short=p.RSI>=self.parameters["short_setup"] and r.RSI<self.parameters["short_trigger"] and r.close<r.EMA
         elif k=="macd": long=p.MACD<=p.MACD_SIGNAL and r.MACD>r.MACD_SIGNAL and r.MACD_HISTOGRAM>0 and r.close>r.EMA; short=p.MACD>=p.MACD_SIGNAL and r.MACD<r.MACD_SIGNAL and r.MACD_HISTOGRAM<0 and r.close<r.EMA
         elif k=="vwap": long=r.close<r.VWAP and r.VWAP_DEVIATION<=-self.parameters["deviation_threshold"] and r.RSI<=self.parameters["rsi_oversold"]; short=r.close>r.VWAP and r.VWAP_DEVIATION>=self.parameters["deviation_threshold"] and r.RSI>=self.parameters["rsi_overbought"]

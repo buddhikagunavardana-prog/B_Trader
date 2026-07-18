@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 import json, subprocess
 from pathlib import Path
 from src.research.run_management.run_identity import stable_identity_hash
+from src.research.frameworks.profiling.runtime import diagnostic_level, snapshot_mode
 
 ADAPTER_VERSION="1.0.0"
 
@@ -24,6 +25,8 @@ def build_reproducibility_manifest(configuration, framework, prepared, warnings=
         "policy_layer_version":"1.0.0","reason_code_schema_version":"1.0.0",
         "policy_configuration_snapshot":{key:value for key,value in configuration.to_dict().items() if key in {"opposite_signal_mode","cooldown_after_exit_bars","cooldown_after_setup_invalidation_bars","cooldown_after_setup_consumption_bars","max_hold_enforcement","max_hold_bars","max_hold_duration","request_exit_at_session_close","clear_cooldown_on_rollover","clear_untriggered_setups_on_rollover","carry_active_position_across_sessions","level_retest_cooldown_bars","level_max_age_bars","allow_level_role_reversal","nested_inside_bar_policy","minimum_squeeze_bars","maximum_release_to_trigger_bars"}},
         "instrumentation_enabled":configuration.enable_controller_timing,
+        "diagnostic_level":diagnostic_level(configuration).value,
+        "snapshot_mode":snapshot_mode(configuration).value,
         "dependency_request_fingerprints":sorted({fingerprint for item in prepared.values() for fingerprint in item.metadata.get("dependency_request_fingerprints",[])}),"prepared_column_provenance":{role:item.metadata.get("indicator_requests",[]) or item.metadata.get("computed_columns",[]) for role,item in prepared.items()},"initial_state":{"position":"flat","setup":"none"},
     }
     try: commit=subprocess.run(["git","rev-parse","HEAD"],capture_output=True,text=True,check=True).stdout.strip()

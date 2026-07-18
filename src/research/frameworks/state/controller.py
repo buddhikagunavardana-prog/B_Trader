@@ -13,6 +13,7 @@ from src.research.frameworks.state.policies.position_policies import evaluate_en
 from src.research.frameworks.state.policies.session_policies import evaluate_rollover
 from src.research.frameworks.state.policies.setup_policies import evaluate_setup_expiration
 from src.research.frameworks.state.session_state import SessionConfiguration, session_snapshot
+from src.research.frameworks.profiling.models import SnapshotMode
 
 
 class ResearchStateController:
@@ -22,6 +23,7 @@ class ResearchStateController:
         self, framework: str, session: SessionConfiguration | None = None, cooldown_bars: int = 0,
         allow_repeated_entries: bool = False, reverse_on_opposite_signal: bool = False,
         policy_configuration: PolicyConfiguration | dict[str, Any] | None = None,
+        snapshot_mode: SnapshotMode | str = SnapshotMode.NONE,
     ) -> None:
         self.framework = framework
         self.position = PositionState(framework=framework)
@@ -38,15 +40,25 @@ class ResearchStateController:
         if reverse_on_opposite_signal:
             legacy["opposite_signal_mode"] = "allow_immediate_reverse"
         self.policy = PolicyConfiguration.from_mapping({**policy.to_dict(), **legacy})
+        self.is_setup_framework = framework in STATEFUL_SETUP_FRAMEWORKS
+        self.is_event_framework = framework in EVENT_FRAMEWORKS
+        self.is_session_bound = framework in SESSION_BOUND_FRAMEWORKS
+        self.rollover_policy = self.policy if self.is_session_bound else replace(
+            self.policy,
+            clear_untriggered_setups_on_rollover=False,
+            clear_consumed_setups_on_rollover=False,
+        )
+        self.snapshot_mode = SnapshotMode(snapshot_mode)
+        self.stored_snapshots: list[dict[str, Any]] = []
         self.setup.maximum_bars_alive = self.policy.setup_expiration_bars
         self.previous_session_id: str | None = None
         self.last_event_side: str | None = None
         self.event_reset = True
         self.last_timing = PolicyTimingSummary()
-        self.timing_totals = {key: 0 for key in self.last_timing.to_dict()}
+        self.timing_totals = {key: 0 for key in PolicyTimingSummary.__dataclass_fields__}
 
-    def snapshot(self, timestamp: pd.Timestamp) -> StateSnapshot:
-        return StateSnapshot(self.position.to_dict(), self.setup.to_dict(), session_snapshot(timestamp, self.session_config))
+    def snapshot(self, timestamp: pd.Timestamp, session: dict[str, Any] | None = None) -> StateSnapshot:
+        return StateSnapshot(self.position.to_dict(), self.setup.to_dict(), session or session_snapshot(timestamp, self.session_config))
 
     def _start_cooldown(self, bars: int, timestamp: pd.Timestamp, reason: str) -> None:
         if bars <= 0:
@@ -84,7 +96,7 @@ class ResearchStateController:
         self.position.trailing_proposal = {"type": decision.risk.trailing_stop_type}
         return f"{previous.value}->{self.position.status.value}"
 
-    def apply(self, decision: Any, timestamp: pd.Timestamp) -> dict[str, Any]:
+    def apply(self, decision: Any, timestamp: pd.Timestamp, session_context: dict[str, Any] | None = None) -> dict[str, Any]:
         total_started = perf_counter_ns() if self.policy.enable_controller_timing else 0
         timestamp = pd.Timestamp(timestamp)
         previous_position = self.position.status
@@ -101,9 +113,8 @@ class ResearchStateController:
         max_hold_reached = False
 
         session_started = perf_counter_ns() if self.policy.enable_controller_timing else 0
-        session = session_snapshot(timestamp, self.session_config)
-        rollover_policy = self.policy if self.framework in SESSION_BOUND_FRAMEWORKS else replace(self.policy, clear_untriggered_setups_on_rollover=False, clear_consumed_setups_on_rollover=False)
-        rollover = evaluate_rollover(self.previous_session_id, session["session_id"], self.position, self.setup, rollover_policy)
+        session = session_context or session_snapshot(timestamp, self.session_config)
+        rollover = evaluate_rollover(self.previous_session_id, session["session_id"], self.position, self.setup, self.rollover_policy)
         if rollover.reason_code is PolicyReasonCode.SESSION_ROLLOVER_RESET:
             session_rollover = True
             cleanup_actions = list(rollover.diagnostics.get("cleanup_actions", []))
@@ -119,7 +130,7 @@ class ResearchStateController:
         session_ns = perf_counter_ns() - session_started if self.policy.enable_controller_timing else 0
 
         setup_started = perf_counter_ns() if self.policy.enable_controller_timing else 0
-        if self.framework in STATEFUL_SETUP_FRAMEWORKS:
+        if self.is_setup_framework:
             if self.setup.status in {SetupStatus.FORMING, SetupStatus.ARMED}:
                 self.setup.bars_alive += 1
             expiration = evaluate_setup_expiration(self.setup, timestamp, session, self.policy)
@@ -166,9 +177,9 @@ class ResearchStateController:
                 transition = self._exit(timestamp, decision.exit_reason or "Framework exit proposal.")
                 reason_code, reason = PolicyReasonCode.ALLOWED, "Framework exit proposal accepted."
                 self.event_reset = True
-        elif signal in {"buy", "sell"} and not max_hold_reached and not (self.framework in STATEFUL_SETUP_FRAMEWORKS and self.setup.status in {SetupStatus.EXPIRED, SetupStatus.INVALIDATED, SetupStatus.CONSUMED} and self.position.status is PositionStatus.FLAT):
+        elif signal in {"buy", "sell"} and not max_hold_reached and not (self.is_setup_framework and self.setup.status in {SetupStatus.EXPIRED, SetupStatus.INVALIDATED, SetupStatus.CONSUMED} and self.position.status is PositionStatus.FLAT):
             entry = evaluate_entry(self.position, signal, self.policy)
-            if self.framework in EVENT_FRAMEWORKS and self.position.status is PositionStatus.FLAT and self.last_event_side == signal and not self.event_reset:
+            if self.is_event_framework and self.position.status is PositionStatus.FLAT and self.last_event_side == signal and not self.event_reset:
                 entry = replace(entry, allowed=False, reason_code=PolicyReasonCode.EVENT_ALREADY_CONSUMED, reason="The same event state was already consumed.", action="none")
             if entry.action == "request_exit":
                 opposite_action = "request_exit"
@@ -189,7 +200,7 @@ class ResearchStateController:
             if entry.allowed:
                 self.last_event_side = signal
                 self.event_reset = False
-                if self.framework in STATEFUL_SETUP_FRAMEWORKS:
+                if self.is_setup_framework:
                     self.setup.status = SetupStatus.CONSUMED
                     self.setup.setup_id = self.setup.setup_id or f"{self.framework}:{timestamp.isoformat()}"
                     self.setup.trigger_timestamp = timestamp
@@ -244,10 +255,27 @@ class ResearchStateController:
             state_serialization_time_ns=serialization_ns,
             total_controller_time_ns=total_ns,
         )
-        for key, value in self.last_timing.to_dict().items():
+        timing_values = (
+            self.last_timing.framework_decision_time_ns,
+            self.last_timing.generic_policy_time_ns,
+            self.last_timing.setup_policy_time_ns,
+            self.last_timing.position_policy_time_ns,
+            self.last_timing.session_policy_time_ns,
+            self.last_timing.level_policy_time_ns,
+            self.last_timing.transition_application_time_ns,
+            self.last_timing.state_serialization_time_ns,
+            self.last_timing.total_controller_time_ns,
+        )
+        for key, value in zip(self.timing_totals, timing_values):
             self.timing_totals[key] += value
         output["controller_time_ns"] = total_ns
         output["policy_time_ns"] = setup_ns + position_ns + session_ns
+        should_snapshot = self.snapshot_mode is SnapshotMode.FULL or (
+            self.snapshot_mode is SnapshotMode.TRANSITIONS_ONLY
+            and (transition != "none" or setup_transition != "none" or session_rollover)
+        )
+        if should_snapshot:
+            self.stored_snapshots.append(self.snapshot(timestamp, dict(session)).to_dict())
         return output
 
     def final_summary(self) -> dict[str, Any]:
@@ -255,4 +283,6 @@ class ResearchStateController:
         value = self.snapshot(timestamp).to_dict()
         value["policy_configuration"] = self.policy.to_dict()
         value["controller_timing"] = dict(self.timing_totals)
+        value["snapshot_mode"] = self.snapshot_mode.value
+        value["stored_snapshot_count"] = len(self.stored_snapshots) + (1 if self.snapshot_mode is SnapshotMode.FINAL_ONLY else 0)
         return value
