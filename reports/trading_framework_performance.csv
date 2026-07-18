@@ -1,0 +1,11 @@
+Rows,Framework,Average Runtime Ms,Minimum Runtime Ms,Maximum Runtime Ms,Measured Runs,Warmup Runs,Precomputed Input Memory Bytes,Repeated Indicator Calculation
+1000,bollinger_mean_reversion,0.191233,0.12,0.2951,3,1,208000,No
+1000,donchian_breakout,0.1751,0.1512,0.2058,3,1,208000,No
+1000,ichimoku_cloud_trading,0.144733,0.139,0.1532,3,1,208000,No
+1000,triple_screen_trading,0.239433,0.2258,0.2468,3,1,294528,No
+1000,turtle_trading,0.134233,0.1252,0.1452,3,1,208000,No
+10000,bollinger_mean_reversion,0.2684,0.2643,0.2759,3,1,2080000,No
+10000,donchian_breakout,0.303767,0.2919,0.3181,3,1,2080000,No
+10000,ichimoku_cloud_trading,0.308533,0.3023,0.3175,3,1,2080000,No
+10000,triple_screen_trading,0.512367,0.4395,0.5578,3,1,2946528,No
+10000,turtle_trading,0.136467,0.1236,0.1554,3,1,2080000,No
