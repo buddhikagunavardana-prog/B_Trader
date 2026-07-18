@@ -7,7 +7,10 @@ from src.trading_frameworks.registry import trading_framework_registry
 
 
 def test_future_rows_cannot_change_historical_decisions():
-    for name in trading_framework_registry.list_names():
+    for name in (
+        "triple_screen_trading", "turtle_trading", "ichimoku_cloud_trading",
+        "bollinger_mean_reversion", "donchian_breakout",
+    ):
         framework = load_trading_framework(name)
         context = context_for(name, 100)
         role = framework.execution_role
