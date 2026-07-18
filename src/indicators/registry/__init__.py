@@ -17,6 +17,21 @@ from src.indicators.market_strength.dmi import calculate_dmi
 from src.indicators.market_strength.elder_ray import calculate_elder_ray
 from src.indicators.market_strength.vortex import calculate_vortex
 from src.indicators.momentum.cci import calculate_cci
+from src.indicators.momentum.cycles import (
+    calculate_accelerator_oscillator,
+    calculate_center_of_gravity,
+    calculate_chande_forecast_oscillator,
+    calculate_demarker,
+    calculate_kst,
+    calculate_pretty_good_oscillator,
+    calculate_psychological_line,
+    calculate_qstick,
+    calculate_rainbow_oscillator,
+    calculate_relative_vigor_index,
+    calculate_schaff_trend_cycle,
+    calculate_smi_ergodic,
+    calculate_stochastic_momentum_index,
+)
 from src.indicators.momentum.advanced import (
     calculate_apo,
     calculate_awesome_oscillator,
@@ -76,6 +91,17 @@ from src.indicators.trend.tema import calculate_tema
 from src.indicators.trend.vwma import calculate_vwma
 from src.indicators.trend.wma import calculate_wma
 from src.indicators.volatility.atr import calculate_atr
+from src.indicators.volatility.channels import (
+    calculate_atr_bands,
+    calculate_donchian_width,
+    calculate_fractal_chaos_bands,
+    calculate_garman_klass_volatility,
+    calculate_keltner_width,
+    calculate_moving_std_channel,
+    calculate_parkinson_volatility,
+    calculate_true_range,
+    calculate_volatility_stop,
+)
 from src.indicators.volatility.advanced import (
     calculate_bollinger_band_width,
     calculate_bollinger_percent_b,
@@ -91,6 +117,19 @@ from src.indicators.volatility.historical_volatility import calculate_historical
 from src.indicators.volatility.keltner import calculate_keltner_channel
 from src.indicators.volatility.standard_deviation import calculate_standard_deviation
 from src.indicators.volume.adl import calculate_adl
+from src.indicators.volume.flow import (
+    calculate_intraday_intensity_index,
+    calculate_klinger_oscillator,
+    calculate_money_flow_oscillator,
+    calculate_money_flow_volume,
+    calculate_net_volume,
+    calculate_price_volume_trend,
+    calculate_twiggs_money_flow,
+    calculate_volume_oscillator,
+    calculate_volume_weighted_macd,
+    calculate_volume_zone_oscillator,
+    calculate_vwap_deviation,
+)
 from src.indicators.volume.advanced import (
     calculate_chaikin_oscillator,
     calculate_force_index,
@@ -252,6 +291,12 @@ class IndicatorRegistry:
             "adl": "accumulation_distribution",
             "swing": "swing_high_low",
             "fibonacci": "fibonacci_retracement",
+            "elder_ray": "elder_ray_index",
+            "ppo_histogram": "ppo",
+            "price_channel": "price_channels",
+            "volume_price_trend": "price_volume_trend",
+            "klinger_volume_oscillator": "klinger_oscillator",
+            "elder_force_index": "force_index",
         }.get(key, key)
 
     @staticmethod
@@ -566,6 +611,109 @@ _INDICATOR_METADATA.update({
     },
 })
 
+_INDICATOR_METADATA.update({
+    "accelerator_oscillator": {
+        "required_columns": ("high", "low"),
+        "output_columns": ("ACCELERATOR_OSCILLATOR",),
+        "dependencies": ("awesome_oscillator",),
+    },
+    "schaff_trend_cycle": {"required_columns": ("close",), "output_columns": ("SCHAFF_TREND_CYCLE",), "dependencies": ("macd",)},
+    "kst": {
+        "required_columns": ("close",),
+        "output_columns": ("KST", "KST_SIGNAL"),
+        "dependencies": ("roc",),
+    },
+    "smi_ergodic": {
+        "required_columns": ("close",),
+        "output_columns": ("SMI_ERGODIC", "SMI_ERGODIC_SIGNAL"),
+        "dependencies": ("tsi",),
+    },
+    "demarker": {"required_columns": ("high", "low"), "output_columns": ("DEMARKER",)},
+    "qstick": {"required_columns": ("open", "close"), "output_columns": ("QSTICK",)},
+    "relative_vigor_index": {
+        "required_columns": ("open", "high", "low", "close"),
+        "output_columns": ("RELATIVE_VIGOR", "RELATIVE_VIGOR_SIGNAL"),
+    },
+    "center_of_gravity": {"required_columns": ("close",), "output_columns": ("CENTER_OF_GRAVITY",)},
+    "chande_forecast_oscillator": {
+        "required_columns": ("close",),
+        "output_columns": ("CHANDE_FORECAST_OSCILLATOR",),
+        "dependencies": ("linear_regression_trend",),
+    },
+    "pretty_good_oscillator": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("PRETTY_GOOD_OSCILLATOR",),
+        "dependencies": ("atr", "sma"),
+    },
+    "stochastic_momentum_index": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("STOCHASTIC_MOMENTUM", "STOCHASTIC_MOMENTUM_SIGNAL"),
+    },
+    "psychological_line": {"required_columns": ("close",), "output_columns": ("PSYCHOLOGICAL_LINE",)},
+    "rainbow_oscillator": {"required_columns": ("close",), "output_columns": ("RAINBOW_OSCILLATOR",), "dependencies": ("sma",)},
+    "true_range": {"required_columns": ("high", "low", "close"), "output_columns": ("TRUE_RANGE",)},
+    "volatility_stop": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("VOLATILITY_STOP_LONG", "VOLATILITY_STOP_SHORT"),
+        "dependencies": ("atr",),
+    },
+    "atr_bands": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("ATR_UPPER_BAND", "ATR_MIDDLE_BAND", "ATR_LOWER_BAND"),
+        "dependencies": ("ema", "atr"),
+    },
+    "fractal_chaos_bands": {
+        "required_columns": ("high", "low"),
+        "output_columns": ("FRACTAL_CHAOS_UPPER", "FRACTAL_CHAOS_LOWER"),
+    },
+    "moving_std_channel": {
+        "required_columns": ("close",),
+        "output_columns": ("MOVING_STD_UPPER", "MOVING_STD_MIDDLE", "MOVING_STD_LOWER"),
+        "dependencies": ("sma", "standard_deviation"),
+    },
+    "donchian_width": {
+        "required_columns": ("high", "low"),
+        "output_columns": ("DONCHIAN_WIDTH",),
+        "dependencies": ("donchian_channel",),
+    },
+    "keltner_width": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("KELTNER_WIDTH",),
+        "dependencies": ("keltner_channel",),
+    },
+    "parkinson_volatility": {"required_columns": ("high", "low"), "output_columns": ("PARKINSON_VOLATILITY",)},
+    "garman_klass_volatility": {"required_columns": ("open", "high", "low", "close"), "output_columns": ("GARMAN_KLASS_VOLATILITY",)},
+    "klinger_oscillator": {
+        "required_columns": ("high", "low", "close", "volume"),
+        "output_columns": ("KLINGER_OSCILLATOR", "KLINGER_SIGNAL"),
+    },
+    "price_volume_trend": {"required_columns": ("close", "volume"), "output_columns": ("PRICE_VOLUME_TREND",)},
+    "volume_oscillator": {"required_columns": ("volume",), "output_columns": ("VOLUME_OSCILLATOR",), "dependencies": ("volume_ema",)},
+    "twiggs_money_flow": {"required_columns": ("high", "low", "close", "volume"), "output_columns": ("TWIGGS_MONEY_FLOW",)},
+    "volume_weighted_macd": {
+        "required_columns": ("close", "volume"),
+        "output_columns": ("VOLUME_WEIGHTED_MACD", "VOLUME_WEIGHTED_MACD_SIGNAL", "VOLUME_WEIGHTED_MACD_HISTOGRAM"),
+        "dependencies": ("ema",),
+    },
+    "intraday_intensity_index": {
+        "required_columns": ("high", "low", "close", "volume"),
+        "output_columns": ("INTRADAY_INTENSITY_INDEX",),
+    },
+    "money_flow_volume": {
+        "required_columns": ("high", "low", "close", "volume"),
+        "output_columns": ("MONEY_FLOW_VOLUME",),
+        "dependencies": ("accumulation_distribution",),
+    },
+    "volume_zone_oscillator": {"required_columns": ("close", "volume"), "output_columns": ("VOLUME_ZONE_OSCILLATOR",)},
+    "net_volume": {"required_columns": ("close", "volume"), "output_columns": ("NET_VOLUME",)},
+    "vwap_deviation": {
+        "required_columns": ("high", "low", "close", "volume"),
+        "output_columns": ("VWAP_DEVIATION",),
+        "dependencies": ("rolling_vwap",),
+    },
+    "money_flow_oscillator": {"required_columns": ("high", "low", "close", "volume"), "output_columns": ("MONEY_FLOW_OSCILLATOR",)},
+})
+
 
 def _register_defaults() -> None:
     definitions = [
@@ -612,6 +760,19 @@ def _register_defaults() -> None:
         ("awesome_oscillator", "momentum", calculate_awesome_oscillator, {"fast_period": 5, "slow_period": 34}),
         ("balance_of_power", "momentum", calculate_balance_of_power, {}),
         ("coppock_curve", "momentum", calculate_coppock_curve, {"short_period": 11, "long_period": 14, "wma_period": 10, "source": "close"}),
+        ("accelerator_oscillator", "momentum", calculate_accelerator_oscillator, {"fast_period": 5, "slow_period": 34, "signal_period": 5}),
+        ("schaff_trend_cycle", "momentum", calculate_schaff_trend_cycle, {"fast_period": 23, "slow_period": 50, "cycle_period": 10, "smoothing_period": 3, "source": "close"}),
+        ("kst", "momentum", calculate_kst, {"roc1_period": 10, "roc2_period": 15, "roc3_period": 20, "roc4_period": 30, "signal_period": 9, "source": "close"}),
+        ("smi_ergodic", "momentum", calculate_smi_ergodic, {"long_period": 25, "short_period": 13, "signal_period": 13, "source": "close"}),
+        ("demarker", "momentum", calculate_demarker, {"period": 14}),
+        ("qstick", "momentum", calculate_qstick, {"period": 14}),
+        ("relative_vigor_index", "momentum", calculate_relative_vigor_index, {"period": 10, "signal_period": 4}),
+        ("center_of_gravity", "momentum", calculate_center_of_gravity, {"period": 10, "source": "close"}),
+        ("chande_forecast_oscillator", "momentum", calculate_chande_forecast_oscillator, {"period": 14, "source": "close"}),
+        ("pretty_good_oscillator", "momentum", calculate_pretty_good_oscillator, {"period": 14, "source": "close"}),
+        ("stochastic_momentum_index", "momentum", calculate_stochastic_momentum_index, {"period": 14, "smooth_period": 3, "signal_period": 3}),
+        ("psychological_line", "momentum", calculate_psychological_line, {"period": 12, "source": "close"}),
+        ("rainbow_oscillator", "momentum", calculate_rainbow_oscillator, {"period": 2, "layers": 10, "source": "close"}),
         ("atr", "volatility", calculate_atr, {"period": 14}),
         ("bollinger_bands", "volatility", calculate_bollinger, {"period": 20, "std_dev": 2.0}),
         ("keltner_channel", "volatility", calculate_keltner_channel, {"ema_period": 20, "atr_period": 10, "multiplier": 2.0}),
@@ -625,6 +786,15 @@ def _register_defaults() -> None:
         ("normalized_atr", "volatility", calculate_normalized_atr, {"period": 14}),
         ("ulcer_index", "volatility", calculate_ulcer_index, {"period": 14, "source": "close"}),
         ("mass_index", "volatility", calculate_mass_index, {"ema_period": 9, "sum_period": 25}),
+        ("true_range", "volatility", calculate_true_range, {}),
+        ("volatility_stop", "volatility", calculate_volatility_stop, {"period": 20, "atr_period": 14, "multiplier": 2.0, "source": "close"}),
+        ("atr_bands", "volatility", calculate_atr_bands, {"period": 20, "atr_period": 14, "multiplier": 2.0, "source": "close"}),
+        ("fractal_chaos_bands", "volatility", calculate_fractal_chaos_bands, {"period": 2}),
+        ("moving_std_channel", "volatility", calculate_moving_std_channel, {"period": 20, "multiplier": 2.0, "source": "close"}),
+        ("donchian_width", "volatility", calculate_donchian_width, {"period": 20}),
+        ("keltner_width", "volatility", calculate_keltner_width, {"ema_period": 20, "atr_period": 10, "multiplier": 2.0}),
+        ("parkinson_volatility", "volatility", calculate_parkinson_volatility, {"period": 20, "annualization": 365.0}),
+        ("garman_klass_volatility", "volatility", calculate_garman_klass_volatility, {"period": 20, "annualization": 365.0}),
         ("obv", "volume", calculate_obv, {}),
         ("vwap", "volume", calculate_vwap, {}),
         ("cmf", "volume", calculate_cmf, {"period": 20}),
@@ -639,6 +809,17 @@ def _register_defaults() -> None:
         ("chaikin_oscillator", "volume", calculate_chaikin_oscillator, {"fast_period": 3, "slow_period": 10}),
         ("negative_volume_index", "volume", calculate_negative_volume_index, {"initial_value": 1000.0}),
         ("positive_volume_index", "volume", calculate_positive_volume_index, {"initial_value": 1000.0}),
+        ("klinger_oscillator", "volume", calculate_klinger_oscillator, {"fast_period": 34, "slow_period": 55, "signal_period": 13}),
+        ("price_volume_trend", "volume", calculate_price_volume_trend, {"source": "close"}),
+        ("volume_oscillator", "volume", calculate_volume_oscillator, {"fast_period": 14, "slow_period": 28}),
+        ("twiggs_money_flow", "volume", calculate_twiggs_money_flow, {"period": 21}),
+        ("volume_weighted_macd", "volume", calculate_volume_weighted_macd, {"fast_period": 12, "slow_period": 26, "signal_period": 9, "source": "close"}),
+        ("intraday_intensity_index", "volume", calculate_intraday_intensity_index, {}),
+        ("money_flow_volume", "volume", calculate_money_flow_volume, {}),
+        ("volume_zone_oscillator", "volume", calculate_volume_zone_oscillator, {"period": 14}),
+        ("net_volume", "volume", calculate_net_volume, {}),
+        ("vwap_deviation", "volume", calculate_vwap_deviation, {"period": 20, "source": "close"}),
+        ("money_flow_oscillator", "volume", calculate_money_flow_oscillator, {"period": 14}),
         ("adx", "market_strength", calculate_adx, {"period": 14}),
         ("aroon", "market_strength", calculate_aroon, {"period": 25}),
         ("vortex", "market_strength", calculate_vortex, {"period": 14}),

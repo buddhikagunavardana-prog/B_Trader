@@ -1,90 +1,123 @@
-Canonical Name,Display Name,Category,Status,File,Registered,Tested,Output Columns,Dependencies,Stability,Notes
-ema,EMA,Trend,Existing,src/indicators/trend/ema.py,Yes,Deterministic,EMA,,Stable,
-sma,SMA,Trend,Existing,src/indicators/trend/sma.py,Yes,Deterministic,SMA,,Stable,
-wma,WMA,Trend,Existing,src/indicators/trend/wma.py,Yes,Deterministic,WMA,,Stable,
-vwma,VWMA,Trend,Existing,src/indicators/trend/vwma.py,Yes,Deterministic,VWMA,,Stable,
-hma,HMA,Trend,Existing,src/indicators/trend/hma.py,Yes,Deterministic,HMA,,Stable,
-dema,DEMA,Trend,Existing,src/indicators/trend/dema.py,Yes,Deterministic,DEMA,,Stable,
-tema,TEMA,Trend,Existing,src/indicators/trend/tema.py,Yes,Deterministic,TEMA,,Stable,
-kama,KAMA,Trend,Existing,src/indicators/trend/kama.py,Yes,Deterministic,KAMA,,Stable,
-supertrend,SuperTrend,Trend,Existing,src/indicators/trend/supertrend.py,Yes,Deterministic,SUPERTREND; SUPERTREND_DIRECTION,atr,Stable,
-ichimoku_cloud,Ichimoku Cloud,Trend,Corrected,src/indicators/trend/ichimoku.py,Yes,Deterministic,ICHIMOKU_CONVERSION; ICHIMOKU_BASE; ICHIMOKU_SPAN_A; ICHIMOKU_SPAN_B; ICHIMOKU_LAGGING,,Stable,Causally aligned in Phase 23.1
-parabolic_sar,Parabolic SAR,Trend,Existing,src/indicators/trend/parabolic_sar.py,Yes,Focused,PARABOLIC_SAR; PARABOLIC_SAR_DIRECTION,,Stable,Added in Phase 23.1
-linear_regression_trend,Linear Regression Trend,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,LINEAR_REGRESSION_TREND,,Stable,Current-window regression endpoint
-trima,Triangular Moving Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,TRIMA,sma,Stable,
-alma,Arnaud Legoux Moving Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,ALMA,,Stable,
-zlema,Zero Lag EMA,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,ZLEMA,ema,Stable,
-mcginley_dynamic,McGinley Dynamic,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,MCGINLEY_DYNAMIC,,Stable,Recursive by definition
-frama,Fractal Adaptive Moving Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,FRAMA,,Stable,Causal future-change test included
-vidya,Variable Index Dynamic Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,VIDYA,cmo,Stable,CMO-weighted recursion
-moving_average_envelope,Moving Average Envelope,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,MA_ENVELOPE_UPPER; MA_ENVELOPE_MIDDLE; MA_ENVELOPE_LOWER,sma,Stable,
-linear_regression_slope,Linear Regression Slope,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,LINEAR_REGRESSION_SLOPE,,Stable,
-time_series_forecast,Time Series Forecast,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,TIME_SERIES_FORECAST,,Stable,One-step regression forecast
-dpo,Detrended Price Oscillator,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,DPO,sma,Stable,Causally aligned baseline
-rsi,RSI,Momentum,Existing,src/indicators/momentum/rsi.py,Yes,Deterministic,RSI,,Stable,
-macd,MACD,Momentum,Existing,src/indicators/momentum/macd.py,Yes,Deterministic,MACD; MACD_SIGNAL; MACD_HISTOGRAM,,Stable,
-stochastic,Stochastic Oscillator,Momentum,Existing,src/indicators/momentum/stochastic.py,Yes,Deterministic,STOCHASTIC_K; STOCHASTIC_D,,Stable,
-stochastic_rsi,Stochastic RSI,Momentum,Existing,src/indicators/momentum/stochastic_rsi.py,Yes,Deterministic,STOCHASTIC_RSI_K; STOCHASTIC_RSI_D,rsi,Stable,
-cci,Commodity Channel Index,Momentum,Existing,src/indicators/momentum/cci.py,Yes,Deterministic,CCI,,Stable,
-williams_r,Williams %R,Momentum,Existing,src/indicators/momentum/williams_r.py,Yes,Deterministic,WILLIAMS_R,,Stable,
-roc,Rate of Change,Momentum,Existing,src/indicators/momentum/roc.py,Yes,Deterministic,ROC,,Stable,
-momentum,Momentum,Momentum,Existing,src/indicators/momentum/momentum.py,Yes,Deterministic,MOMENTUM,,Stable,
-tsi,True Strength Index,Momentum,Existing,src/indicators/momentum/tsi.py,Yes,Deterministic,TSI,,Stable,
-ultimate_oscillator,Ultimate Oscillator,Momentum,Canonical Reuse,src/indicators/momentum/ultimate_oscillator.py,Yes,Deterministic,ULTIMATE_OSCILLATOR,,Stable,Already canonical; not duplicated in Phase 23.2
-zscore,Z-Score,Momentum,Existing,src/indicators/momentum/zscore.py,Yes,Deterministic,ZSCORE,,Stable,
-trix,TRIX,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,TRIX,ema,Stable,
-ppo,Percentage Price Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,PPO; PPO_SIGNAL; PPO_HISTOGRAM,ema,Stable,
-apo,Absolute Price Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,APO,ema,Stable,
-cmo,Chande Momentum Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,CMO,,Stable,
-connors_rsi,Connors RSI,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,CONNORS_RSI,rsi,Stable,Uses price RSI; streak RSI; ROC percentile rank
-rmi,Relative Momentum Index,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,RMI,,Stable,
-fisher_transform,Fisher Transform,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,FISHER_TRANSFORM,,Stable,Recursive smoothing
-awesome_oscillator,Awesome Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,AWESOME_OSCILLATOR,,Stable,
-balance_of_power,Balance of Power,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,BALANCE_OF_POWER,,Stable,
-coppock_curve,Coppock Curve,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,COPPOCK_CURVE,,Stable,
-atr,Average True Range,Volatility,Existing,src/indicators/volatility/atr.py,Yes,Deterministic,ATR,,Stable,
-bollinger_bands,Bollinger Bands,Volatility,Existing,src/indicators/volatility/bollinger.py,Yes,Deterministic,BOLLINGER_UPPER; BOLLINGER_MIDDLE; BOLLINGER_LOWER,,Stable,
-keltner_channel,Keltner Channel,Volatility,Existing,src/indicators/volatility/keltner.py,Yes,Deterministic,KELTNER_UPPER; KELTNER_MIDDLE; KELTNER_LOWER,ema; atr,Stable,
-donchian_channel,Donchian Channel,Volatility,Existing,src/indicators/volatility/donchian.py,Yes,Deterministic,DONCHIAN_UPPER; DONCHIAN_MIDDLE; DONCHIAN_LOWER,,Stable,
-historical_volatility,Historical Volatility,Volatility,Existing,src/indicators/volatility/historical_volatility.py,Yes,Deterministic,HISTORICAL_VOLATILITY,,Stable,
-standard_deviation,Standard Deviation,Volatility,Existing,src/indicators/volatility/standard_deviation.py,Yes,Deterministic,STANDARD_DEVIATION,,Stable,
-chaikin_volatility,Chaikin Volatility,Volatility,Canonical Reuse,src/indicators/volatility/chaikin.py,Yes,Deterministic,CHAIKIN_VOLATILITY,,Stable,Already canonical; not duplicated in Phase 23.2
-bollinger_band_width,Bollinger Band Width,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,BOLLINGER_BAND_WIDTH,bollinger_bands,Stable,Reuses Bollinger components
-bollinger_percent_b,Bollinger Percent B,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,BOLLINGER_PERCENT_B,bollinger_bands,Stable,Reuses Bollinger components
-chandelier_exit,Chandelier Exit,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,CHANDELIER_LONG; CHANDELIER_SHORT,atr,Stable,
-normalized_atr,Normalized ATR,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,NORMALIZED_ATR,atr,Stable,
-ulcer_index,Ulcer Index,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,ULCER_INDEX,,Stable,
-mass_index,Mass Index,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,MASS_INDEX,,Stable,
-obv,On-Balance Volume,Volume,Existing,src/indicators/volume/obv.py,Yes,Deterministic,OBV,,Stable,
-vwap,VWAP,Volume,Existing,src/indicators/volume/vwap.py,Yes,Deterministic,VWAP,,Stable,Cumulative session-agnostic implementation
-cmf,Chaikin Money Flow,Volume,Existing,src/indicators/volume/cmf.py,Yes,Deterministic,CMF,,Stable,
-mfi,Money Flow Index,Volume,Existing,src/indicators/volume/mfi.py,Yes,Deterministic,MFI,,Stable,
-accumulation_distribution,Accumulation/Distribution Line,Volume,Existing,src/indicators/volume/adl.py,Yes,Deterministic,ACCUMULATION_DISTRIBUTION,,Stable,
-volume_roc,Volume ROC,Volume,Existing,src/indicators/volume/volume_roc.py,Yes,Deterministic,VOLUME_ROC,,Stable,
-ease_of_movement,Ease of Movement,Volume,Existing,src/indicators/volume/ease_of_movement.py,Yes,Deterministic,EASE_OF_MOVEMENT,,Stable,
-volume_sma,Volume SMA,Volume,Existing,src/indicators/volume/volume.py,Yes,Deterministic,VOLUME_SMA,,Stable,
-rolling_vwap,Rolling VWAP,Volume,Existing,src/indicators/volume/rolling_vwap.py,Yes,Deterministic,ROLLING_VWAP,,Stable,Fixed rolling window
-force_index,Force Index,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,FORCE_INDEX,,Stable,EMA-smoothed
-volume_ema,Volume EMA,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,VOLUME_EMA,,Stable,
-chaikin_oscillator,Chaikin Oscillator,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,CHAIKIN_OSCILLATOR,accumulation_distribution; ema,Stable,Uses shared ADL formula
-negative_volume_index,Negative Volume Index,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,NEGATIVE_VOLUME_INDEX,,Stable,Recursive by definition
-positive_volume_index,Positive Volume Index,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,POSITIVE_VOLUME_INDEX,,Stable,Recursive by definition
-adx,ADX,Market Strength,Existing,src/indicators/market_strength/adx.py,Yes,Deterministic,ADX,dmi,Stable,Uses shared directional movement
-aroon,Aroon,Market Strength,Existing,src/indicators/market_strength/aroon.py,Yes,Deterministic,AROON_UP; AROON_DOWN,,Stable,
-vortex,Vortex Indicator,Market Strength,Existing,src/indicators/market_strength/vortex.py,Yes,Deterministic,VORTEX_POSITIVE; VORTEX_NEGATIVE,,Stable,
-choppiness_index,Choppiness Index,Market Strength,Existing,src/indicators/market_strength/choppiness.py,Yes,Deterministic,CHOPPINESS_INDEX,,Stable,
-dmi,Directional Movement Index,Market Strength,Existing,src/indicators/market_strength/dmi.py,Yes,Deterministic,DMI_PLUS; DMI_MINUS,atr,Stable,Canonical shared calculation
-elder_ray_index,Elder Ray Index,Market Strength,Existing,src/indicators/market_strength/elder_ray.py,Yes,Deterministic,BULL_POWER; BEAR_POWER,ema,Stable,
-plus_di,Plus Directional Indicator,Market Strength,Added,src/indicators/market_strength/directional.py,Yes,Focused,PLUS_DI,dmi,Stable,Standalone view of shared DMI calculation
-minus_di,Minus Directional Indicator,Market Strength,Added,src/indicators/market_strength/directional.py,Yes,Focused,MINUS_DI,dmi,Stable,Standalone view of shared DMI calculation
-pivot_points,Pivot Points,Structure,Existing,src/indicators/structure/pivot_points.py,Yes,Deterministic,PIVOT; PIVOT_R1; PIVOT_R2; PIVOT_R3; PIVOT_S1; PIVOT_S2; PIVOT_S3,,Stable,
-support_resistance,Support and Resistance,Structure,Existing,src/indicators/structure/support_resistance.py,Yes,Deterministic,SUPPORT; RESISTANCE,,Stable,Overlaps price-channel extrema
-swing_high_low,Swing High and Swing Low,Structure,Corrected,src/indicators/structure/swing.py,Yes,Deterministic,SWING_HIGH; SWING_LOW,,Stable,Delayed until causal confirmation
-price_channels,Price Channels,Structure,Existing,src/indicators/structure/price_channels.py,Yes,Deterministic,PRICE_CHANNEL_UPPER; PRICE_CHANNEL_MIDDLE; PRICE_CHANNEL_LOWER,,Stable,Overlaps Donchian and support/resistance
-fibonacci_retracement,Fibonacci Retracement,Structure,Existing,src/indicators/structure/fibonacci_retracement.py,Yes,Deterministic,FIBONACCI_0_0; FIBONACCI_23_6; FIBONACCI_38_2; FIBONACCI_50_0; FIBONACCI_61_8; FIBONACCI_78_6; FIBONACCI_100_0,,Stable,Canonical rolling implementation
-linear_regression_channel,Linear Regression Channel,Structure,Existing,src/indicators/structure/linear_regression_channel.py,Yes,Deterministic,LINEAR_REGRESSION_UPPER; LINEAR_REGRESSION_MIDDLE; LINEAR_REGRESSION_LOWER,,Stable,
-breakout_detection,Breakout Detection,Structure,Added,src/indicators/structure/breakout.py,Yes,Focused,BREAKOUT_UPPER; BREAKOUT_LOWER; BREAKOUT_BULLISH; BREAKOUT_BEARISH,,Stable,Uses prior rolling extrema
-fair_value_gap,Fair Value Gap Approximation,Structure,Added,src/indicators/structure/smc.py,Yes,Focused,FVG_BULLISH; FVG_BEARISH; FVG_LOWER; FVG_UPPER,,Experimental,Three-candle gap event confirmed on candle three; no persisted invalidation state
-order_block,Order Block Approximation,Structure,Added,src/indicators/structure/smc.py,Yes,Focused,ORDER_BLOCK_BULLISH; ORDER_BLOCK_BEARISH; ORDER_BLOCK_LOWER; ORDER_BLOCK_UPPER,,Experimental,Prior opposite candle emitted after range-break confirmation
-market_structure,BOS / CHoCH Approximation,Structure,Added,src/indicators/structure/smc.py,Yes,Focused,BOS; CHOCH; MARKET_STRUCTURE_TREND,,Experimental,Prior-range event state; not institutional order-flow detection
-candlestick,Candlestick Engine,Candlestick,Existing,src/indicators/candlestick/candlestick.py,Yes,Deterministic,26 named pattern columns,,Stable,Counted once
+Number,Canonical Name,Display Name,Category,Status,Source File,Registered,Tested,Required Columns,Output Columns,Default Parameters,Dependencies,Stability,Notes
+1,ema,EMA,Trend,Existing,src/indicators/trend/ema.py,Yes,Deterministic,close,EMA,"{""period"": 20, ""source"": ""close""}",,Stable,
+2,sma,SMA,Trend,Existing,src/indicators/trend/sma.py,Yes,Deterministic,close,SMA,"{""period"": 20, ""source"": ""close""}",,Stable,
+3,wma,WMA,Trend,Existing,src/indicators/trend/wma.py,Yes,Deterministic,close,WMA,"{""period"": 20, ""source"": ""close""}",,Stable,
+4,vwma,VWMA,Trend,Existing,src/indicators/trend/vwma.py,Yes,Deterministic,close; volume,VWMA,"{""period"": 20, ""source"": ""close""}",,Stable,
+5,hma,HMA,Trend,Existing,src/indicators/trend/hma.py,Yes,Deterministic,close,HMA,"{""period"": 20, ""source"": ""close""}",,Stable,
+6,dema,DEMA,Trend,Existing,src/indicators/trend/dema.py,Yes,Deterministic,close,DEMA,"{""period"": 20, ""source"": ""close""}",,Stable,
+7,tema,TEMA,Trend,Existing,src/indicators/trend/tema.py,Yes,Deterministic,close,TEMA,"{""period"": 20, ""source"": ""close""}",,Stable,
+8,kama,KAMA,Trend,Existing,src/indicators/trend/kama.py,Yes,Deterministic,close,KAMA,"{""fast_period"": 2, ""period"": 10, ""slow_period"": 30, ""source"": ""close""}",,Stable,
+9,supertrend,SuperTrend,Trend,Existing,src/indicators/trend/supertrend.py,Yes,Deterministic,high; low; close,SUPERTREND; SUPERTREND_DIRECTION,"{""multiplier"": 3.0, ""period"": 10}",atr,Stable,
+10,ichimoku_cloud,Ichimoku Cloud,Trend,Corrected,src/indicators/trend/ichimoku.py,Yes,Deterministic,high; low; close,ICHIMOKU_CONVERSION; ICHIMOKU_BASE; ICHIMOKU_SPAN_A; ICHIMOKU_SPAN_B; ICHIMOKU_LAGGING,"{""base_period"": 26, ""conversion_period"": 9, ""displacement"": 26, ""span_b_period"": 52}",,Stable,Causally aligned in Phase 23.1
+11,parabolic_sar,Parabolic SAR,Trend,Existing,src/indicators/trend/parabolic_sar.py,Yes,Focused,high; low,PARABOLIC_SAR; PARABOLIC_SAR_DIRECTION,"{""acceleration"": 0.02, ""maximum"": 0.2}",,Stable,Added in Phase 23.1
+12,linear_regression_trend,Linear Regression Trend,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,LINEAR_REGRESSION_TREND,"{""period"": 20, ""source"": ""close""}",,Stable,Current-window regression endpoint
+13,trima,Triangular Moving Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,TRIMA,"{""period"": 20, ""source"": ""close""}",sma,Stable,
+14,alma,Arnaud Legoux Moving Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,ALMA,"{""offset"": 0.85, ""period"": 20, ""sigma"": 6.0, ""source"": ""close""}",,Stable,
+15,zlema,Zero Lag EMA,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,ZLEMA,"{""period"": 20, ""source"": ""close""}",ema,Stable,
+16,mcginley_dynamic,McGinley Dynamic,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,MCGINLEY_DYNAMIC,"{""period"": 14, ""source"": ""close""}",,Stable,Recursive by definition
+17,frama,Fractal Adaptive Moving Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,high; low; close,FRAMA,"{""period"": 16, ""source"": ""close""}",,Stable,Causal future-change test included
+18,vidya,Variable Index Dynamic Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,VIDYA,"{""momentum_period"": 9, ""period"": 14, ""source"": ""close""}",cmo,Stable,CMO-weighted recursion
+19,moving_average_envelope,Moving Average Envelope,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,MA_ENVELOPE_UPPER; MA_ENVELOPE_MIDDLE; MA_ENVELOPE_LOWER,"{""percentage"": 2.5, ""period"": 20, ""source"": ""close""}",sma,Stable,
+20,linear_regression_slope,Linear Regression Slope,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,LINEAR_REGRESSION_SLOPE,"{""period"": 20, ""source"": ""close""}",,Stable,
+21,time_series_forecast,Time Series Forecast,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,TIME_SERIES_FORECAST,"{""period"": 20, ""source"": ""close""}",,Stable,One-step regression forecast
+22,dpo,Detrended Price Oscillator,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,close,DPO,"{""period"": 20, ""source"": ""close""}",sma,Stable,Causally aligned baseline
+23,rsi,RSI,Momentum,Existing,src/indicators/momentum/rsi.py,Yes,Deterministic,close,RSI,"{""period"": 14}",,Stable,
+24,macd,MACD,Momentum,Existing,src/indicators/momentum/macd.py,Yes,Deterministic,close,MACD; MACD_SIGNAL; MACD_HISTOGRAM,"{""fast"": 12, ""signal"": 9, ""slow"": 26}",,Stable,
+25,stochastic,Stochastic Oscillator,Momentum,Existing,src/indicators/momentum/stochastic.py,Yes,Deterministic,high; low; close,STOCHASTIC_K; STOCHASTIC_D,"{""d_period"": 3, ""k_period"": 14}",,Stable,
+26,stochastic_rsi,Stochastic RSI,Momentum,Existing,src/indicators/momentum/stochastic_rsi.py,Yes,Deterministic,close,STOCHASTIC_RSI_K; STOCHASTIC_RSI_D,"{""d_period"": 3, ""rsi_period"": 14, ""stoch_period"": 14}",rsi,Stable,
+27,cci,Commodity Channel Index,Momentum,Existing,src/indicators/momentum/cci.py,Yes,Deterministic,high; low; close,CCI,"{""period"": 20}",,Stable,
+28,williams_r,Williams %R,Momentum,Existing,src/indicators/momentum/williams_r.py,Yes,Deterministic,high; low; close,WILLIAMS_R,"{""period"": 14}",,Stable,
+29,roc,Rate of Change,Momentum,Existing,src/indicators/momentum/roc.py,Yes,Deterministic,close,ROC,"{""period"": 12, ""source"": ""close""}",,Stable,
+30,momentum,Momentum,Momentum,Existing,src/indicators/momentum/momentum.py,Yes,Deterministic,close,MOMENTUM,"{""period"": 10, ""source"": ""close""}",,Stable,
+31,tsi,True Strength Index,Momentum,Existing,src/indicators/momentum/tsi.py,Yes,Deterministic,close,TSI,"{""long_period"": 25, ""short_period"": 13, ""source"": ""close""}",,Stable,
+32,ultimate_oscillator,Ultimate Oscillator,Momentum,Canonical Reuse,src/indicators/momentum/ultimate_oscillator.py,Yes,Deterministic,high; low; close,ULTIMATE_OSCILLATOR,"{""long_period"": 28, ""medium_period"": 14, ""short_period"": 7}",,Stable,Already canonical; not duplicated in Phase 23.2
+33,zscore,Z-Score,Momentum,Existing,src/indicators/momentum/zscore.py,Yes,Deterministic,close,ZSCORE,"{""period"": 20, ""source"": ""close""}",,Stable,
+34,trix,TRIX,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,close,TRIX,"{""period"": 15, ""source"": ""close""}",ema,Stable,
+35,ppo,Percentage Price Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,close,PPO; PPO_SIGNAL; PPO_HISTOGRAM,"{""fast_period"": 12, ""signal_period"": 9, ""slow_period"": 26, ""source"": ""close""}",ema,Stable,PPO_HISTOGRAM maps the requested standalone PPO Histogram.
+36,apo,Absolute Price Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,close,APO,"{""fast_period"": 12, ""slow_period"": 26, ""source"": ""close""}",ema,Stable,
+37,cmo,Chande Momentum Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,close,CMO,"{""period"": 14, ""source"": ""close""}",,Stable,
+38,connors_rsi,Connors RSI,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,close,CONNORS_RSI,"{""rank_period"": 100, ""rsi_period"": 3, ""source"": ""close"", ""streak_period"": 2}",rsi,Stable,Uses price RSI; streak RSI; ROC percentile rank
+39,rmi,Relative Momentum Index,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,close,RMI,"{""momentum_period"": 5, ""period"": 14, ""source"": ""close""}",,Stable,
+40,fisher_transform,Fisher Transform,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,high; low,FISHER_TRANSFORM,"{""period"": 10}",,Stable,Recursive smoothing
+41,awesome_oscillator,Awesome Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,high; low,AWESOME_OSCILLATOR,"{""fast_period"": 5, ""slow_period"": 34}",,Stable,
+42,balance_of_power,Balance of Power,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,open; high; low; close,BALANCE_OF_POWER,{},,Stable,
+43,coppock_curve,Coppock Curve,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,close,COPPOCK_CURVE,"{""long_period"": 14, ""short_period"": 11, ""source"": ""close"", ""wma_period"": 10}",,Stable,
+44,accelerator_oscillator,Accelerator Oscillator,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,high; low,ACCELERATOR_OSCILLATOR,"{""fast_period"": 5, ""signal_period"": 5, ""slow_period"": 34}",awesome_oscillator,Stable,
+45,schaff_trend_cycle,Schaff Trend Cycle,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,close,SCHAFF_TREND_CYCLE,"{""cycle_period"": 10, ""fast_period"": 23, ""slow_period"": 50, ""smoothing_period"": 3, ""source"": ""close""}",macd,Stable,
+46,kst,Know Sure Thing (KST),Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,close,KST; KST_SIGNAL,"{""roc1_period"": 10, ""roc2_period"": 15, ""roc3_period"": 20, ""roc4_period"": 30, ""signal_period"": 9, ""source"": ""close""}",roc,Stable,
+47,smi_ergodic,SMI Ergodic,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,close,SMI_ERGODIC; SMI_ERGODIC_SIGNAL,"{""long_period"": 25, ""short_period"": 13, ""signal_period"": 13, ""source"": ""close""}",tsi,Stable,
+48,demarker,Demarker,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,high; low,DEMARKER,"{""period"": 14}",,Stable,
+49,qstick,Qstick,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,open; close,QSTICK,"{""period"": 14}",,Stable,
+50,relative_vigor_index,Relative Vigor Index,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,open; high; low; close,RELATIVE_VIGOR; RELATIVE_VIGOR_SIGNAL,"{""period"": 10, ""signal_period"": 4}",,Stable,
+51,center_of_gravity,Center Of Gravity,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,close,CENTER_OF_GRAVITY,"{""period"": 10, ""source"": ""close""}",,Stable,
+52,chande_forecast_oscillator,Chande Forecast Oscillator,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,close,CHANDE_FORECAST_OSCILLATOR,"{""period"": 14, ""source"": ""close""}",linear_regression_trend,Stable,
+53,pretty_good_oscillator,Pretty Good Oscillator,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,high; low; close,PRETTY_GOOD_OSCILLATOR,"{""period"": 14, ""source"": ""close""}",atr; sma,Stable,
+54,stochastic_momentum_index,Stochastic Momentum Index,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,high; low; close,STOCHASTIC_MOMENTUM; STOCHASTIC_MOMENTUM_SIGNAL,"{""period"": 14, ""signal_period"": 3, ""smooth_period"": 3}",,Stable,
+55,psychological_line,Psychological Line,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,close,PSYCHOLOGICAL_LINE,"{""period"": 12, ""source"": ""close""}",,Stable,Momentum replacement for the mapped Elder Ray request.
+56,rainbow_oscillator,Rainbow Oscillator,Momentum,Added Phase 23.3,src/indicators/momentum/cycles.py,Yes,Focused,close,RAINBOW_OSCILLATOR,"{""layers"": 10, ""period"": 2, ""source"": ""close""}",sma,Stable,Momentum replacement for the mapped PPO Histogram request.
+57,atr,Average True Range,Volatility,Existing,src/indicators/volatility/atr.py,Yes,Deterministic,high; low; close,ATR,"{""period"": 14}",,Stable,
+58,bollinger_bands,Bollinger Bands,Volatility,Existing,src/indicators/volatility/bollinger.py,Yes,Deterministic,close,BOLLINGER_UPPER; BOLLINGER_MIDDLE; BOLLINGER_LOWER,"{""period"": 20, ""std_dev"": 2.0}",,Stable,
+59,keltner_channel,Keltner Channel,Volatility,Existing,src/indicators/volatility/keltner.py,Yes,Deterministic,high; low; close,KELTNER_UPPER; KELTNER_MIDDLE; KELTNER_LOWER,"{""atr_period"": 10, ""ema_period"": 20, ""multiplier"": 2.0}",ema; atr,Stable,
+60,donchian_channel,Donchian Channel,Volatility,Existing,src/indicators/volatility/donchian.py,Yes,Deterministic,high; low,DONCHIAN_UPPER; DONCHIAN_MIDDLE; DONCHIAN_LOWER,"{""period"": 20}",,Stable,
+61,historical_volatility,Historical Volatility,Volatility,Existing,src/indicators/volatility/historical_volatility.py,Yes,Deterministic,close,HISTORICAL_VOLATILITY,"{""annualization"": 365.0, ""period"": 20, ""source"": ""close""}",,Stable,
+62,standard_deviation,Standard Deviation,Volatility,Existing,src/indicators/volatility/standard_deviation.py,Yes,Deterministic,close,STANDARD_DEVIATION,"{""period"": 20, ""source"": ""close""}",,Stable,Canonical mapping for requested Standard Deviation.
+63,chaikin_volatility,Chaikin Volatility,Volatility,Canonical Reuse,src/indicators/volatility/chaikin.py,Yes,Deterministic,high; low,CHAIKIN_VOLATILITY,"{""ema_period"": 10, ""roc_period"": 10}",,Stable,Already canonical; not duplicated in Phase 23.2
+64,bollinger_band_width,Bollinger Band Width,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,close,BOLLINGER_BAND_WIDTH,"{""period"": 20, ""std_dev"": 2.0}",bollinger_bands,Stable,Reuses Bollinger components
+65,bollinger_percent_b,Bollinger Percent B,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,close,BOLLINGER_PERCENT_B,"{""period"": 20, ""std_dev"": 2.0}",bollinger_bands,Stable,Reuses Bollinger components
+66,chandelier_exit,Chandelier Exit,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,high; low; close,CHANDELIER_LONG; CHANDELIER_SHORT,"{""atr_period"": 22, ""multiplier"": 3.0, ""period"": 22}",atr,Stable,
+67,normalized_atr,Normalized ATR,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,high; low; close,NORMALIZED_ATR,"{""period"": 14}",atr,Stable,
+68,ulcer_index,Ulcer Index,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,close,ULCER_INDEX,"{""period"": 14, ""source"": ""close""}",,Stable,
+69,mass_index,Mass Index,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,high; low,MASS_INDEX,"{""ema_period"": 9, ""sum_period"": 25}",,Stable,
+70,true_range,True Range,Volatility,Added Phase 23.3,src/indicators/volatility/channels.py,Yes,Focused,high; low; close,TRUE_RANGE,{},,Stable,
+71,volatility_stop,Volatility Stop,Volatility,Added Phase 23.3,src/indicators/volatility/channels.py,Yes,Focused,high; low; close,VOLATILITY_STOP_LONG; VOLATILITY_STOP_SHORT,"{""atr_period"": 14, ""multiplier"": 2.0, ""period"": 20, ""source"": ""close""}",atr,Stable,
+72,atr_bands,ATR Bands,Volatility,Added Phase 23.3,src/indicators/volatility/channels.py,Yes,Focused,high; low; close,ATR_UPPER_BAND; ATR_MIDDLE_BAND; ATR_LOWER_BAND,"{""atr_period"": 14, ""multiplier"": 2.0, ""period"": 20, ""source"": ""close""}",ema; atr,Stable,
+73,fractal_chaos_bands,Fractal Chaos Bands,Volatility,Added Phase 23.3,src/indicators/volatility/channels.py,Yes,Focused,high; low,FRACTAL_CHAOS_UPPER; FRACTAL_CHAOS_LOWER,"{""period"": 2}",,Stable,
+74,moving_std_channel,Moving Std Channel,Volatility,Added Phase 23.3,src/indicators/volatility/channels.py,Yes,Focused,close,MOVING_STD_UPPER; MOVING_STD_MIDDLE; MOVING_STD_LOWER,"{""multiplier"": 2.0, ""period"": 20, ""source"": ""close""}",sma; standard_deviation,Stable,
+75,donchian_width,Donchian Width,Volatility,Added Phase 23.3,src/indicators/volatility/channels.py,Yes,Focused,high; low,DONCHIAN_WIDTH,"{""period"": 20}",donchian_channel,Stable,
+76,keltner_width,Keltner Width,Volatility,Added Phase 23.3,src/indicators/volatility/channels.py,Yes,Focused,high; low; close,KELTNER_WIDTH,"{""atr_period"": 10, ""ema_period"": 20, ""multiplier"": 2.0}",keltner_channel,Stable,
+77,parkinson_volatility,Parkinson Volatility,Volatility,Added Phase 23.3,src/indicators/volatility/channels.py,Yes,Focused,high; low,PARKINSON_VOLATILITY,"{""annualization"": 365.0, ""period"": 20}",,Stable,Volatility replacement for mapped Standard Deviation.
+78,garman_klass_volatility,Garman Klass Volatility,Volatility,Added Phase 23.3,src/indicators/volatility/channels.py,Yes,Focused,open; high; low; close,GARMAN_KLASS_VOLATILITY,"{""annualization"": 365.0, ""period"": 20}",,Stable,Volatility replacement for mapped Price Channel.
+79,obv,On-Balance Volume,Volume,Existing,src/indicators/volume/obv.py,Yes,Deterministic,close; volume,OBV,{},,Stable,
+80,vwap,VWAP,Volume,Existing,src/indicators/volume/vwap.py,Yes,Deterministic,high; low; close; volume,VWAP,{},,Stable,Cumulative session-agnostic implementation
+81,cmf,Chaikin Money Flow,Volume,Existing,src/indicators/volume/cmf.py,Yes,Deterministic,high; low; close; volume,CMF,"{""period"": 20}",,Stable,
+82,mfi,Money Flow Index,Volume,Existing,src/indicators/volume/mfi.py,Yes,Deterministic,high; low; close; volume,MFI,"{""period"": 14}",,Stable,
+83,accumulation_distribution,Accumulation/Distribution Line,Volume,Existing,src/indicators/volume/adl.py,Yes,Deterministic,high; low; close; volume,ACCUMULATION_DISTRIBUTION,{},,Stable,
+84,volume_roc,Volume ROC,Volume,Existing,src/indicators/volume/volume_roc.py,Yes,Deterministic,volume,VOLUME_ROC,"{""period"": 12}",,Stable,
+85,ease_of_movement,Ease of Movement,Volume,Existing,src/indicators/volume/ease_of_movement.py,Yes,Deterministic,high; low; volume,EASE_OF_MOVEMENT,"{""period"": 14, ""volume_divisor"": 100000000.0}",,Stable,
+86,volume_sma,Volume SMA,Volume,Existing,src/indicators/volume/volume.py,Yes,Deterministic,volume,VOLUME_SMA,"{""period"": 20}",,Stable,
+87,rolling_vwap,Rolling VWAP,Volume,Existing,src/indicators/volume/rolling_vwap.py,Yes,Deterministic,high; low; close; volume,ROLLING_VWAP,"{""period"": 96}",,Stable,Fixed rolling window
+88,force_index,Force Index,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,close; volume,FORCE_INDEX,"{""period"": 1, ""smoothing_period"": 13, ""source"": ""close""}",,Stable,Canonical mapping for Elder Force Index with standard EMA smoothing.
+89,volume_ema,Volume EMA,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,volume,VOLUME_EMA,"{""period"": 20}",,Stable,
+90,chaikin_oscillator,Chaikin Oscillator,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,high; low; close; volume,CHAIKIN_OSCILLATOR,"{""fast_period"": 3, ""slow_period"": 10}",accumulation_distribution; ema,Stable,Uses shared ADL formula
+91,negative_volume_index,Negative Volume Index,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,close; volume,NEGATIVE_VOLUME_INDEX,"{""initial_value"": 1000.0}",,Stable,Recursive by definition
+92,positive_volume_index,Positive Volume Index,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,close; volume,POSITIVE_VOLUME_INDEX,"{""initial_value"": 1000.0}",,Stable,Recursive by definition
+93,klinger_oscillator,Klinger Oscillator,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,high; low; close; volume,KLINGER_OSCILLATOR; KLINGER_SIGNAL,"{""fast_period"": 34, ""signal_period"": 13, ""slow_period"": 55}",,Stable,Canonical mapping for Klinger Oscillator and Klinger Volume Oscillator.
+94,price_volume_trend,Price Volume Trend,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,close; volume,PRICE_VOLUME_TREND,"{""source"": ""close""}",,Stable,Canonical mapping for Price Volume Trend and Volume Price Trend (VPT).
+95,volume_oscillator,Volume Oscillator,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,volume,VOLUME_OSCILLATOR,"{""fast_period"": 14, ""slow_period"": 28}",volume_ema,Stable,
+96,twiggs_money_flow,Twiggs Money Flow,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,high; low; close; volume,TWIGGS_MONEY_FLOW,"{""period"": 21}",,Stable,
+97,volume_weighted_macd,Volume Weighted MACD,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,close; volume,VOLUME_WEIGHTED_MACD; VOLUME_WEIGHTED_MACD_SIGNAL; VOLUME_WEIGHTED_MACD_HISTOGRAM,"{""fast_period"": 12, ""signal_period"": 9, ""slow_period"": 26, ""source"": ""close""}",ema,Stable,
+98,intraday_intensity_index,Intraday Intensity Index,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,high; low; close; volume,INTRADAY_INTENSITY_INDEX,{},,Stable,
+99,money_flow_volume,Money Flow Volume,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,high; low; close; volume,MONEY_FLOW_VOLUME,{},accumulation_distribution,Stable,
+100,volume_zone_oscillator,Volume Zone Oscillator,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,close; volume,VOLUME_ZONE_OSCILLATOR,"{""period"": 14}",,Stable,
+101,net_volume,Net Volume,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,close; volume,NET_VOLUME,{},,Stable,Volume replacement for the duplicate VPT naming request.
+102,vwap_deviation,VWAP Deviation,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,high; low; close; volume,VWAP_DEVIATION,"{""period"": 20, ""source"": ""close""}",rolling_vwap,Stable,Volume replacement for the duplicate Klinger naming request.
+103,money_flow_oscillator,Money Flow Oscillator,Volume,Added Phase 23.3,src/indicators/volume/flow.py,Yes,Focused,high; low; close; volume,MONEY_FLOW_OSCILLATOR,"{""period"": 14}",,Stable,Volume replacement for mapped Elder Force Index.
+104,adx,ADX,Market Strength,Existing,src/indicators/market_strength/adx.py,Yes,Deterministic,high; low; close,ADX,"{""period"": 14}",dmi,Stable,Uses shared directional movement
+105,aroon,Aroon,Market Strength,Existing,src/indicators/market_strength/aroon.py,Yes,Deterministic,high; low,AROON_UP; AROON_DOWN,"{""period"": 25}",,Stable,
+106,vortex,Vortex Indicator,Market Strength,Existing,src/indicators/market_strength/vortex.py,Yes,Deterministic,high; low; close,VORTEX_POSITIVE; VORTEX_NEGATIVE,"{""period"": 14}",,Stable,
+107,choppiness_index,Choppiness Index,Market Strength,Existing,src/indicators/market_strength/choppiness.py,Yes,Deterministic,high; low; close,CHOPPINESS_INDEX,"{""period"": 14}",,Stable,
+108,dmi,Directional Movement Index,Market Strength,Existing,src/indicators/market_strength/dmi.py,Yes,Deterministic,high; low; close,DMI_PLUS; DMI_MINUS,"{""period"": 14}",atr,Stable,Canonical shared calculation
+109,elder_ray_index,Elder Ray Index,Market Strength,Existing,src/indicators/market_strength/elder_ray.py,Yes,Deterministic,high; low; close,BULL_POWER; BEAR_POWER,"{""period"": 13}",ema,Stable,Canonical mapping for requested Elder Ray Index.
+110,plus_di,Plus Directional Indicator,Market Strength,Added,src/indicators/market_strength/directional.py,Yes,Focused,high; low; close,PLUS_DI,"{""period"": 14}",dmi,Stable,Standalone view of shared DMI calculation
+111,minus_di,Minus Directional Indicator,Market Strength,Added,src/indicators/market_strength/directional.py,Yes,Focused,high; low; close,MINUS_DI,"{""period"": 14}",dmi,Stable,Standalone view of shared DMI calculation
+112,pivot_points,Pivot Points,Structure,Existing,src/indicators/structure/pivot_points.py,Yes,Deterministic,high; low; close,PIVOT; PIVOT_R1; PIVOT_R2; PIVOT_R3; PIVOT_S1; PIVOT_S2; PIVOT_S3,{},,Stable,
+113,support_resistance,Support and Resistance,Structure,Existing,src/indicators/structure/support_resistance.py,Yes,Deterministic,high; low,SUPPORT; RESISTANCE,"{""period"": 20}",,Stable,Overlaps price-channel extrema
+114,swing_high_low,Swing High and Swing Low,Structure,Corrected,src/indicators/structure/swing.py,Yes,Deterministic,high; low,SWING_HIGH; SWING_LOW,"{""period"": 5}",,Stable,Delayed until causal confirmation
+115,price_channels,Price Channels,Structure,Existing,src/indicators/structure/price_channels.py,Yes,Deterministic,high; low,PRICE_CHANNEL_UPPER; PRICE_CHANNEL_MIDDLE; PRICE_CHANNEL_LOWER,"{""period"": 20}",,Stable,Canonical mapping for requested Price Channel.
+116,fibonacci_retracement,Fibonacci Retracement,Structure,Existing,src/indicators/structure/fibonacci_retracement.py,Yes,Deterministic,high; low,FIBONACCI_0_0; FIBONACCI_23_6; FIBONACCI_38_2; FIBONACCI_50_0; FIBONACCI_61_8; FIBONACCI_78_6; FIBONACCI_100_0,"{""period"": 20}",,Stable,Canonical rolling implementation
+117,linear_regression_channel,Linear Regression Channel,Structure,Existing,src/indicators/structure/linear_regression_channel.py,Yes,Deterministic,close,LINEAR_REGRESSION_UPPER; LINEAR_REGRESSION_MIDDLE; LINEAR_REGRESSION_LOWER,"{""deviations"": 2.0, ""period"": 20, ""source"": ""close""}",,Stable,
+118,breakout_detection,Breakout Detection,Structure,Added,src/indicators/structure/breakout.py,Yes,Focused,high; low; close,BREAKOUT_UPPER; BREAKOUT_LOWER; BREAKOUT_BULLISH; BREAKOUT_BEARISH,"{""period"": 20}",,Stable,Uses prior rolling extrema
+119,fair_value_gap,Fair Value Gap Approximation,Structure,Added,src/indicators/structure/smc.py,Yes,Focused,high; low,FVG_BULLISH; FVG_BEARISH; FVG_LOWER; FVG_UPPER,{},,Experimental,Experimental causal three-candle approximation.
+120,order_block,Order Block Approximation,Structure,Added,src/indicators/structure/smc.py,Yes,Focused,open; high; low; close,ORDER_BLOCK_BULLISH; ORDER_BLOCK_BEARISH; ORDER_BLOCK_LOWER; ORDER_BLOCK_UPPER,"{""period"": 20}",,Experimental,Experimental causal prior-candle approximation.
+121,market_structure,BOS / CHoCH Approximation,Structure,Added,src/indicators/structure/smc.py,Yes,Focused,high; low; close,BOS; CHOCH; MARKET_STRUCTURE_TREND,"{""period"": 20}",,Experimental,Experimental causal BOS/CHoCH approximation.
+122,candlestick,Candlestick Engine,Candlestick,Existing,src/indicators/candlestick/candlestick.py,Yes,Deterministic,open; high; low; close,doji; dragonfly_doji; gravestone_doji; hammer; hanging_man; inverted_hammer; shooting_star; bullish_engulfing; bearish_engulfing; bullish_harami; bearish_harami; morning_star; evening_star; bullish_marubozu; bearish_marubozu; spinning_top; tweezer_bottom; tweezer_top; piercing_line; dark_cloud_cover; three_white_soldiers; three_black_crows; inside_bar; outside_bar; gap_up; gap_down,{},,Stable,Counted once

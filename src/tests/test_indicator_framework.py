@@ -4,6 +4,7 @@ import pandas as pd
 from src.indicators.market_strength.dmi import calculate_dmi
 from src.indicators.registry import indicator_registry
 from src.indicators.volatility.bollinger import calculate_bollinger
+from src.utils.indicator_inventory import build_indicator_inventory
 
 
 NEW_INDICATORS = {
@@ -17,6 +18,20 @@ NEW_INDICATORS = {
     "awesome_oscillator", "balance_of_power", "coppock_curve",
     "normalized_atr", "ulcer_index", "mass_index", "volume_ema",
     "chaikin_oscillator", "negative_volume_index", "positive_volume_index",
+}
+
+PHASE_23_3_INDICATORS = {
+    "accelerator_oscillator", "schaff_trend_cycle", "kst", "smi_ergodic",
+    "demarker", "qstick", "relative_vigor_index", "center_of_gravity",
+    "chande_forecast_oscillator", "pretty_good_oscillator",
+    "stochastic_momentum_index", "psychological_line", "rainbow_oscillator",
+    "true_range", "volatility_stop", "atr_bands", "fractal_chaos_bands",
+    "moving_std_channel", "donchian_width", "keltner_width",
+    "parkinson_volatility", "garman_klass_volatility", "klinger_oscillator",
+    "price_volume_trend", "volume_oscillator", "twiggs_money_flow",
+    "volume_weighted_macd", "intraday_intensity_index", "money_flow_volume",
+    "volume_zone_oscillator", "net_volume", "vwap_deviation",
+    "money_flow_oscillator",
 }
 
 
@@ -192,9 +207,125 @@ def test_experimental_structure_confirmation_rules() -> None:
     assert upper.iloc[2] == frame["low"].iloc[2]
 
 
+def test_phase_23_3_indicator_contracts() -> None:
+    assert PHASE_23_3_INDICATORS.issubset(indicator_registry.list_names())
+    assert len(indicator_registry.list_names()) == len(set(indicator_registry.list_names()))
+    market = _market_data()
+    original = market.copy(deep=True)
+    for name in sorted(PHASE_23_3_INDICATORS):
+        definition = indicator_registry.get(name)
+        assert callable(definition["callable"])
+        output = indicator_registry.calculate(name, market)
+        series = _series_outputs(output)
+        assert [item.name for item in series] == definition["output_columns"], name
+        for item in series:
+            assert len(item) == len(market)
+            assert item.index.equals(market.index)
+            if pd.api.types.is_numeric_dtype(item.dtype):
+                assert not np.isinf(item.to_numpy()).any(), name
+        missing = definition["required_columns"][0]
+        _expect_value_error(
+            lambda name=name, missing=missing: indicator_registry.calculate(
+                name, market.drop(columns=missing),
+            ),
+        )
+        period_key = next(
+            (
+                key for key in definition["default_parameters"]
+                if key == "period" or key.endswith("_period")
+            ),
+            None,
+        )
+        if period_key:
+            assert all(item.iloc[0:1].isna().all() for item in series), name
+            _expect_value_error(
+                lambda name=name, key=period_key: indicator_registry.calculate(
+                    name, market, {key: 0},
+                ),
+            )
+    pd.testing.assert_frame_equal(market, original, check_exact=True)
+
+
+def test_phase_23_3_exact_values_and_canonical_mappings() -> None:
+    market = _market_data(80)
+    previous_close = market["close"].shift()
+    expected_true_range = pd.concat(
+        [
+            market["high"] - market["low"],
+            (market["high"] - previous_close).abs(),
+            (market["low"] - previous_close).abs(),
+        ],
+        axis=1,
+    ).max(axis=1).rename("TRUE_RANGE")
+    pd.testing.assert_series_equal(
+        indicator_registry.calculate("true_range", market), expected_true_range,
+    )
+
+    qstick = indicator_registry.calculate("qstick", market, {"period": 5})
+    pd.testing.assert_series_equal(
+        qstick,
+        (market["close"] - market["open"]).rolling(5).mean().rename("QSTICK"),
+    )
+
+    pvt = indicator_registry.calculate("price_volume_trend", market)
+    expected_pvt = (
+        market["volume"] * market["close"].pct_change()
+    ).fillna(0.0).cumsum().rename("PRICE_VOLUME_TREND")
+    pd.testing.assert_series_equal(pvt, expected_pvt)
+
+    volume_oscillator = indicator_registry.calculate(
+        "volume_oscillator", market, {"fast_period": 3, "slow_period": 6},
+    )
+    fast = market["volume"].ewm(span=3, adjust=False, min_periods=3).mean()
+    slow = market["volume"].ewm(span=6, adjust=False, min_periods=6).mean()
+    pd.testing.assert_series_equal(
+        volume_oscillator,
+        (100.0 * (fast - slow) / slow).rename("VOLUME_OSCILLATOR"),
+    )
+
+    assert indicator_registry.get("elder_ray_index")["output_columns"] == ["BULL_POWER", "BEAR_POWER"]
+    assert indicator_registry.get("ppo")["output_columns"][2] == "PPO_HISTOGRAM"
+    assert indicator_registry.get("standard_deviation")["name"] == "standard_deviation"
+    assert indicator_registry.get("price_channels")["name"] == "price_channels"
+    assert indicator_registry.get("force_index")["name"] == "force_index"
+    assert indicator_registry.get("elder_ray")["name"] == "elder_ray_index"
+    assert indicator_registry.get("ppo_histogram")["name"] == "ppo"
+    assert indicator_registry.get("price_channel")["name"] == "price_channels"
+    assert indicator_registry.get("volume_price_trend")["name"] == "price_volume_trend"
+    assert indicator_registry.get("klinger_volume_oscillator")["name"] == "klinger_oscillator"
+    assert indicator_registry.get("elder_force_index")["name"] == "force_index"
+
+
+def test_phase_23_3_indicators_are_causal() -> None:
+    market = _market_data()
+    changed = market.copy()
+    cutoff = 180
+    changed.iloc[cutoff + 1 :, :] += 50_000.0
+    for name in sorted(PHASE_23_3_INDICATORS):
+        before = _series_outputs(indicator_registry.calculate(name, market))
+        after = _series_outputs(indicator_registry.calculate(name, changed))
+        for left, right in zip(before, after):
+            pd.testing.assert_series_equal(
+                left.iloc[: cutoff + 1], right.iloc[: cutoff + 1],
+            )
+
+
+def test_numbered_inventory_matches_registry() -> None:
+    inventory = build_indicator_inventory()
+    assert len(inventory) == 122
+    assert inventory["Number"].tolist() == list(range(1, 123))
+    assert inventory["Canonical Name"].tolist() == indicator_registry.list_names()
+    assert inventory["Required Columns"].ne("").all()
+    assert inventory["Output Columns"].ne("").all()
+
+
 if __name__ == "__main__":
     test_new_indicator_contracts()
     test_exact_trima_ppo_force_bollinger_and_directional_values()
     test_structure_and_frama_are_causal()
     test_experimental_structure_confirmation_rules()
+    test_phase_23_3_indicator_contracts()
+    test_phase_23_3_exact_values_and_canonical_mappings()
+    test_phase_23_3_indicators_are_causal()
+    test_numbered_inventory_matches_registry()
     print("test_indicator_framework passed")
