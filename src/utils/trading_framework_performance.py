@@ -19,14 +19,21 @@ def _precomputed_frame(rows: int, freq: str = "5min") -> pd.DataFrame:
     base = np.linspace(100.0, 120.0, rows)
     return pd.DataFrame({
         "high": base + 1, "low": base - 1, "close": base, "volume": np.full(rows, 1500.0),
-        "EMA": base - 1, "MACD_HISTOGRAM": np.ones(rows), "RSI": np.full(rows, 25.0),
+        "EMA": base - 1, "MACD": np.ones(rows), "MACD_SIGNAL": np.zeros(rows), "MACD_HISTOGRAM": np.ones(rows), "RSI": np.full(rows, 25.0),
         "STOCHASTIC_K": np.full(rows, 20.0), "FORCE_INDEX": np.ones(rows), "ATR": np.full(rows, 1.5),
         "DONCHIAN_UPPER": base + 2, "DONCHIAN_LOWER": base - 2,
         "DONCHIAN_EXIT_UPPER": base + 1, "DONCHIAN_EXIT_LOWER": base - 1,
         "ICHIMOKU_CONVERSION": base - .5, "ICHIMOKU_BASE": base - 1,
         "ICHIMOKU_SPAN_A": base - 2, "ICHIMOKU_SPAN_B": base - 3, "ICHIMOKU_LAGGING": base - .5,
         "BOLLINGER_UPPER": base + 2, "BOLLINGER_MIDDLE": base, "BOLLINGER_LOWER": base - 2,
+        "KELTNER_UPPER": base + 1.5, "KELTNER_MIDDLE": base, "KELTNER_LOWER": base - 1.5,
         "ZSCORE": np.zeros(rows), "ADX": np.full(rows, 22.0), "VOLUME_SMA": np.full(rows, 1000.0),
+        "SUPERTREND": base - 1, "SUPERTREND_DIRECTION": np.ones(rows),
+        "EMA_8": base-0.1, "EMA_13": base-0.2, "EMA_21": base-0.3, "EMA_34": base-0.4, "EMA_55": base-0.5,
+        "EMA_FAST": base-0.1, "EMA_SLOW": base-0.2, "PLUS_DI": np.full(rows, 30.0), "MINUS_DI": np.full(rows, 15.0),
+        "PARABOLIC_SAR": base-1, "PARABOLIC_SAR_DIRECTION": np.ones(rows),
+        "BOLLINGER_BAND_WIDTH": np.full(rows, .04), "VWAP": base, "VWAP_DEVIATION": np.zeros(rows),
+        "SUPPORT": base-1, "RESISTANCE": base+1, "SWING_HIGH": base+1, "SWING_LOW": base-1,
     }, index=index)
 
 

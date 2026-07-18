@@ -1,6 +1,21 @@
 Framework,Scenario,Rows,Deterministic,Causal,Non-Mutating,Output Valid,Warnings,Result
+adx_trend_following,deterministic_precomputed,200,True,True,True,True,0,Pass
+atr_volatility_breakout,deterministic_precomputed,200,True,True,True,True,0,Pass
 bollinger_mean_reversion,deterministic_precomputed,200,True,True,True,True,0,Pass
+bollinger_squeeze_breakout,deterministic_precomputed,200,True,True,True,True,0,Pass
 donchian_breakout,deterministic_precomputed,200,True,True,True,True,0,Pass
+dual_moving_average_crossover,deterministic_precomputed,200,True,True,True,True,0,Pass
+ema_ribbon_trend,deterministic_precomputed,200,True,True,True,True,0,Pass
 ichimoku_cloud_trading,deterministic_precomputed,200,True,True,True,True,0,Pass
+inside_bar_breakout,deterministic_precomputed,200,True,True,True,True,0,Pass
+keltner_channel_breakout,deterministic_precomputed,200,True,True,True,True,0,Pass
+macd_momentum,deterministic_precomputed,200,True,True,True,True,0,Pass
+opening_range_breakout,deterministic_precomputed,200,True,True,True,True,0,Pass
+parabolic_sar_trend,deterministic_precomputed,200,True,True,True,True,0,Pass
+rsi_pullback_trend,deterministic_precomputed,200,True,True,True,True,0,Pass
+supertrend_trend_following,deterministic_precomputed,200,True,True,True,True,0,Pass
+support_resistance_bounce,deterministic_precomputed,200,True,True,True,True,0,Pass
 triple_screen_trading,deterministic_precomputed,200,True,True,True,True,0,Pass
 turtle_trading,deterministic_precomputed,200,True,True,True,True,0,Pass
+vwap_mean_reversion,deterministic_precomputed,200,True,True,True,True,0,Pass
+zscore_mean_reversion,deterministic_precomputed,200,True,True,True,True,0,Pass

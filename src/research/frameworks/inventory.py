@@ -13,6 +13,7 @@ COMPONENTS = (
     ("adapter", "Chronological normalized decision-series generation", "src/research/frameworks/adapter.py", "decision series; causality"),
     ("validator", "Structured output and repeatability validation", "src/research/frameworks/validator.py", "validation"),
     ("reporting", "Deterministic inventory, validation, and performance reports", "src/research/frameworks/reporting.py", "reporting"),
+    ("manifest", "Minimal deterministic/runtime reproducibility snapshot", "src/research/frameworks/manifest.py", "reproducibility manifest"),
 )
 
 

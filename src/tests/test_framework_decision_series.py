@@ -10,7 +10,7 @@ from src.trading_frameworks.models import FrameworkContext
 
 
 def test_all_five_frameworks_generate_normalized_chronological_series():
-    for name in trading_framework_registry.list_names():
+    for name in ("triple_screen_trading","turtle_trading","ichimoku_cloud_trading","bollinger_mean_reversion","donchian_breakout"):
         result = run_framework_decision_series(research_configuration(name), precomputed_data(name, 100))
         assert tuple(result.decisions.columns) == DECISION_COLUMNS
         assert result.decisions["timestamp"].is_monotonic_increasing

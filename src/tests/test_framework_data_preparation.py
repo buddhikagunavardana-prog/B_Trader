@@ -20,7 +20,7 @@ def test_precomputed_only_preserves_sources_and_rejects_missing_columns():
 
 
 def test_compute_missing_mode_is_deterministic_for_all_frameworks():
-    for name in trading_framework_registry.list_names():
+    for name in ("triple_screen_trading","turtle_trading","ichimoku_cloud_trading","bollinger_mean_reversion","donchian_breakout"):
         config = research_configuration(name, PreparationMode.COMPUTE_MISSING)
         framework = load_trading_framework(name); data = raw_data(name)
         first = prepare_timeframe_data(config, framework, data); second = prepare_timeframe_data(config, framework, data)

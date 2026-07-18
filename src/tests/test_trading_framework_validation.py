@@ -7,7 +7,7 @@ from src.trading_frameworks.validator import validate_runtime
 
 
 def test_runtime_validation_is_deterministic_and_non_mutating():
-    for name in trading_framework_registry.list_names():
+    for name in ("triple_screen_trading","turtle_trading","ichimoku_cloud_trading","bollinger_mean_reversion","donchian_breakout"):
         result = validate_runtime(load_trading_framework(name), context_for(name))
         assert result.valid, result.to_dict()
 

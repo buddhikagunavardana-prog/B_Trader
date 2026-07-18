@@ -65,3 +65,5 @@ The validator returns structured `ERROR`, `WARNING`, and `INFO` issues. Release 
 This release provides architecture and deterministic reference logic, not validated trading performance. It does not include historical research, optimization, walk-forward analysis, ranking, portfolio pyramiding, maximum-hold enforcement, order execution, exchange connectivity, AI generation, or a GUI. Scale-in and holding-period values are metadata hints only.
 
 A future GUI can consume registry/schema dictionaries for framework discovery and safe parameter controls. A future research pipeline can supply precomputed frames, record immutable decisions, route risk proposals through the risk engine, and compare frameworks without changing their execution contract.
+
+Phase 24.3 expands the same contract to twenty canonical frameworks and adds `momentum` and `price_action` categories. Similar event frameworks share a rule engine, but each remains an explicit registry class with its own schema, metadata, dependencies, parameters, source module, and example configuration. Event signals represent transitions; persistent states must not emit repeated entries.

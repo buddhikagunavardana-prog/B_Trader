@@ -8,7 +8,7 @@ from src.trading_frameworks.base import BaseTradingFramework
 from src.trading_frameworks.exceptions import FrameworkNotFoundError
 
 
-VALID_CATEGORIES = {"multi_timeframe", "trend_following", "mean_reversion", "breakout"}
+VALID_CATEGORIES = {"multi_timeframe", "trend_following", "mean_reversion", "breakout", "momentum", "price_action"}
 
 
 def _normalize(name: str) -> str:
@@ -92,6 +92,11 @@ def _register_defaults() -> None:
     from src.trading_frameworks.multi_timeframe.triple_screen import TripleScreenTradingFramework
     from src.trading_frameworks.trend_following.ichimoku_cloud import IchimokuCloudTradingFramework
     from src.trading_frameworks.trend_following.turtle import TurtleTradingFramework
+    from src.trading_frameworks.trend_following.expansion import SupertrendTrendFollowingFramework, EmaRibbonTrendFramework, DualMovingAverageCrossoverFramework, AdxTrendFollowingFramework, ParabolicSarTrendFramework
+    from src.trading_frameworks.breakout.expansion import BollingerSqueezeBreakoutFramework, KeltnerChannelBreakoutFramework, AtrVolatilityBreakoutFramework, OpeningRangeBreakoutFramework
+    from src.trading_frameworks.momentum.expansion import RsiPullbackTrendFramework, MacdMomentumFramework
+    from src.trading_frameworks.mean_reversion.expansion import VwapMeanReversionFramework, ZscoreMeanReversionFramework
+    from src.trading_frameworks.price_action.expansion import InsideBarBreakoutFramework, SupportResistanceBounceFramework
 
     for framework in (
         TripleScreenTradingFramework,
@@ -99,6 +104,14 @@ def _register_defaults() -> None:
         IchimokuCloudTradingFramework,
         BollingerMeanReversionFramework,
         DonchianBreakoutFramework,
+        SupertrendTrendFollowingFramework, EmaRibbonTrendFramework,
+        DualMovingAverageCrossoverFramework, AdxTrendFollowingFramework,
+        ParabolicSarTrendFramework, BollingerSqueezeBreakoutFramework,
+        KeltnerChannelBreakoutFramework, AtrVolatilityBreakoutFramework,
+        OpeningRangeBreakoutFramework, RsiPullbackTrendFramework,
+        MacdMomentumFramework, VwapMeanReversionFramework,
+        ZscoreMeanReversionFramework, InsideBarBreakoutFramework,
+        SupportResistanceBounceFramework,
     ):
         trading_framework_registry.register(framework)
 

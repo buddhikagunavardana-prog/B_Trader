@@ -14,10 +14,10 @@ EXPECTED = {
 
 
 def test_registry_contains_exact_phase_24_1_inventory():
-    assert set(trading_framework_registry.list_names()) == EXPECTED
-    assert len(trading_framework_registry.list_definitions()) == 5
+    assert EXPECTED.issubset(trading_framework_registry.list_names())
+    assert len(trading_framework_registry.list_definitions()) == 20
     assert set(trading_framework_registry.list_categories()) == {
-        "multi_timeframe", "trend_following", "mean_reversion", "breakout",
+        "multi_timeframe", "trend_following", "mean_reversion", "breakout", "momentum", "price_action",
     }
 
 
@@ -25,11 +25,11 @@ def test_registry_metadata_and_indicator_dependencies_are_valid():
     result = validate_registry()
     assert result.valid, result.to_dict()
     assert trading_framework_registry.canonical_name("Turtle") == "turtle_trading"
-    assert trading_framework_registry.list_by_category("trend_following") == [
-        "ichimoku_cloud_trading", "turtle_trading",
-    ]
-    assert trading_framework_registry.list_stable() == sorted(EXPECTED)
-    assert set(trading_framework_registry.list_by_market("crypto_spot")) == EXPECTED
+    assert {"ichimoku_cloud_trading", "turtle_trading"}.issubset(
+        trading_framework_registry.list_by_category("trend_following")
+    )
+    assert len(trading_framework_registry.list_stable()) == 20
+    assert len(trading_framework_registry.list_by_market("crypto_spot")) == 20
     assert "triple_screen_trading" in trading_framework_registry.list_by_timeframe("1h")
 
 

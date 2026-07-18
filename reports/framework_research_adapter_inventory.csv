@@ -6,3 +6,4 @@ alignment,Backward-as-of completed-bar alignment,Complete,src/research/framework
 adapter,Chronological normalized decision-series generation,Complete,src/research/frameworks/adapter.py,decision series; causality,Phase 24.2 deterministic foundation
 validator,Structured output and repeatability validation,Complete,src/research/frameworks/validator.py,validation,Phase 24.2 deterministic foundation
 reporting,"Deterministic inventory, validation, and performance reports",Complete,src/research/frameworks/reporting.py,reporting,Phase 24.2 deterministic foundation
+manifest,Minimal deterministic/runtime reproducibility snapshot,Complete,src/research/frameworks/manifest.py,reproducibility manifest,Phase 24.2 deterministic foundation

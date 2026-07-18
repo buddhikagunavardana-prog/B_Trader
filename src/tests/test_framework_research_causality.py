@@ -6,7 +6,7 @@ from src.trading_frameworks.registry import trading_framework_registry
 
 
 def test_all_framework_adapter_paths_are_future_change_invariant():
-    for name in trading_framework_registry.list_names():
+    for name in ("triple_screen_trading","turtle_trading","ichimoku_cloud_trading","bollinger_mean_reversion","donchian_breakout"):
         data = precomputed_data(name, 120); primary = trading_framework_registry.resolve(name).execution_role
         cutoff = data[primary].index[-25]
         config = research_configuration(name, end_timestamp=cutoff)

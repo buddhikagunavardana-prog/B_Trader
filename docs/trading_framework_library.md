@@ -1,6 +1,6 @@
 # Trading Framework Library
 
-Phase 24.1 registers exactly five stable reference frameworks. They are research-ready architectural baselines, not evidence of profitability. All signals use completed bars and precomputed indicator columns.
+Phase 24.3 registers exactly twenty stable reference frameworks. They are research-ready architectural baselines, not evidence of profitability. All signals use completed bars and precomputed indicator columns.
 
 | Canonical name | Category | Roles and defaults | Required indicators |
 |---|---|---|---|
@@ -53,3 +53,25 @@ It fits trends and volatility expansion, not quiet ranges. Volume comparability,
 ## Research warning
 
 No reference framework has been ranked, optimized, walk-forward tested, or shown profitable. Phase 24.1 decisions are deterministic architectural outputs. Phase 24.2 should add a research adapter and decision-series generation while preserving this release's no-network, no-order, no-look-ahead boundary.
+
+## Phase 24.3 expansion
+
+| Framework | Category | Dependencies | Completed-bar interpretation and principal defaults |
+|---|---|---|---|
+| `supertrend_trend_following` | Trend following | SuperTrend, EMA, ADX, ATR | Direction-confirmed SuperTrend state; 10/3, EMA 50, ADX 20, 2 ATR stop, 2.5R target. |
+| `ema_ribbon_trend` | Trend following | EMA ribbon, ATR | Event when 8/13/21/34/55 ordering expands from a non-ordered state; compression prevents persistent entries. |
+| `dual_moving_average_crossover` | Trend following | EMA or SMA, ATR | Event-only 20/50 cross; long and short; 2 ATR stop and 2R target. |
+| `adx_trend_following` | Trend following | ADX, +DI, -DI, EMA, ATR | DI cross with ADX 25 and EMA confirmation; opposite DI event is the exit concept. |
+| `parabolic_sar_trend` | Trend following | Parabolic SAR, EMA, ADX, ATR | Completed SAR direction flip with EMA confirmation; 0.02/0.2 SAR metadata. |
+| `bollinger_squeeze_breakout` | Breakout | Bollinger Bands/Width, Keltner, ATR | Entry only on completed squeeze release beyond the prior band; distinct from persistent Keltner breaks. |
+| `keltner_channel_breakout` | Breakout | Keltner, EMA, ATR | Completed close crosses a prior channel boundary; center-line return is the exit concept. |
+| `atr_volatility_breakout` | Breakout | ATR, EMA | Close exceeds prior close ± 1.5 prior ATR; stop 2 ATR, target 2R. |
+| `opening_range_breakout` | Breakout | OHLC, ATR | Generic UTC session, six completed opening bars, fixed range, close confirmation; no exchange calendar. |
+| `rsi_pullback_trend` | Momentum | RSI, EMA, ADX, ATR | Recovery event after 40/60 pullback setup through 45/55 trigger; never enters on the initial extreme. |
+| `macd_momentum` | Momentum | MACD, EMA, ADX, ATR | Event-only MACD/signal cross with histogram and EMA confirmation. |
+| `vwap_mean_reversion` | Mean reversion | VWAP, VWAP Deviation, RSI, ATR | Cumulative canonical VWAP by default—no assumed session reset; deviation 1.5 and RSI 30/70. |
+| `zscore_mean_reversion` | Mean reversion | Z-Score, EMA, ATR | Recovery from ±2 extremes toward 0.25; 20-bar maximum-hold hint. |
+| `inside_bar_breakout` | Price action | OHLC, ATR | Mother-bar level is fixed only after the inside bar closes; confirmed-close default, three-bar expiry hint. |
+| `support_resistance_bounce` | Price action | Support/Resistance, swings, RSI, ATR | Uses externally prepared, previously confirmed levels; ATR zone tolerance avoids future swing leakage. |
+
+All expansion entries are stateless event models. Crosses, flips, releases, recoveries, and mother-bar breaks are emitted on transition rather than on every candle in a persistent state. Stops and targets are advisory; position-aware exit enforcement remains downstream. Turtle retains its System 1/System 2 and N-risk interpretation, while generic Donchian is a filtered single-channel breakout. Bollinger Squeeze requires containment then release; Keltner Breakout is simply a prior-boundary cross. Opening Range sessions are configurable data conventions, not exchange calendars. Support/resistance inputs must already be causally confirmed.

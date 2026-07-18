@@ -80,3 +80,7 @@ Performance reporting separates preparation, alignment, decision-series generati
 ## Limitations and next integration
 
 The adapter does not infer position state from entries, because doing so would become fill/execution simulation. Consequently, exit requests that depend on a supplied open position require a future execution-aware consumer. Missing-bar policy is explicit but does not infer bars. Runtime per-run decision files are not committed. Phase 24.3 can add a small research-run artifact manager and streaming/chunked decision output while maintaining the no-profitability and no-execution boundary.
+
+## Phase 24.3 expansion and manifests
+
+The adapter now validates twenty framework configurations without changing its normalized output. `build_reproducibility_manifest()` separates deterministic configuration/input fields and their stable hash from runtime commit, execution timestamp, and warnings. Manifests contain no decisions, credentials, fills, or profitability fields and may optionally be written to an ignored runtime location. Streaming output remains out of scope.
