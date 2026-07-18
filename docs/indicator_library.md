@@ -189,3 +189,19 @@ deferred because the current public behavior mutates the supplied DataFrame and
 allows a later configured indicator to use a column attached earlier in the
 same call. A safe future change needs to preserve both behaviors and duplicate
 column handling before replacing attachment with `pandas.concat`.
+
+## Phase 23.5 release baseline
+
+The full 150-entry library passed the Phase 23.5 deterministic release gate.
+All canonical indicators passed contract and future-change causality tests
+across normal, flat, trending, gap-heavy, zero-volume, sparse-NaN, short,
+large-value, and small-decimal inputs. Registry stability remains 138 stable
+and 12 experimental.
+
+The engine now honors standardized Series names for dictionary outputs, fixing
+the Fibonacci attachment mismatch without changing its one-column-at-a-time
+architecture. Generic aliases are canonicalized before attachment, and an
+alias plus its canonical name is rejected rather than silently overwriting
+columns. The complete formula, causality, collision, experimental,
+compatibility, performance, memory, redundancy, and defect evidence is recorded
+in `docs/indicator_library_validation.md` and the Phase 23.5 CSV reports.

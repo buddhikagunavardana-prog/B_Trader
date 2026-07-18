@@ -1,0 +1,151 @@
+Number,Canonical Name,Category,Stability,Callable Valid,Metadata Valid,Formula Test,Causality Test,Index Preservation,Non-Mutation,Parameter Validation,Missing-Column Validation,Finite Outputs,Collision Status,Strategy Compatibility,Performance Status,Final Result,Notes,Inventory Display Name
+1,ema,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,EMA
+2,sma,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,SMA
+3,wma,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,WMA
+4,vwma,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,VWMA
+5,hma,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,HMA
+6,dema,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,DEMA
+7,tema,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,TEMA
+8,kama,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,KAMA
+9,supertrend,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,SuperTrend
+10,ichimoku_cloud,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Ichimoku Cloud
+11,parabolic_sar,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Parabolic SAR
+12,linear_regression_trend,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture; Canonical LSMA implementation; lsma aliases are not counted.,Linear Regression Trend
+13,trima,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Triangular Moving Average
+14,alma,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Arnaud Legoux Moving Average
+15,zlema,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Zero Lag EMA
+16,mcginley_dynamic,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,McGinley Dynamic
+17,frama,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Fractal Adaptive Moving Average
+18,vidya,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Variable Index Dynamic Average
+19,moving_average_envelope,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Moving Average Envelope
+20,linear_regression_slope,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Linear Regression Slope
+21,time_series_forecast,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Time Series Forecast
+22,dpo,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Detrended Price Oscillator
+23,t3_moving_average,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,T3 Moving Average
+24,jurik_moving_average_approximation,trend,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,"Source derivation plus deterministic category fixture; Public volatility-adaptive approximation, not proprietary JMA.",Jurik Moving Average Approximation
+25,double_smoothed_ema,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture; Sequential EMA smoothing; distinct from lag-reduced DEMA.,Double Smoothed Ema
+26,triple_smoothed_ema,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture; Sequential EMA smoothing; distinct from lag-reduced TEMA.,Triple Smoothed Ema
+27,gaussian_moving_average,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Gaussian Moving Average
+28,ehlers_super_smoother,trend,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Source derivation plus deterministic category fixture; Causal two-pole filter approximation with warm-up seeding.,Ehlers Super Smoother
+29,ehlers_roofing_filter,trend,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Source derivation plus deterministic category fixture; Causal high-pass plus EMA smoothing approximation.,Ehlers Roofing Filter
+30,sine_weighted_moving_average,trend,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Sine Weighted Moving Average
+31,rsi,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,RSI
+32,macd,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,MACD
+33,stochastic,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Stochastic Oscillator
+34,stochastic_rsi,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Stochastic RSI
+35,cci,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Commodity Channel Index
+36,williams_r,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Williams %R
+37,roc,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Rate of Change
+38,momentum,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Momentum
+39,tsi,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,True Strength Index
+40,ultimate_oscillator,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Ultimate Oscillator
+41,zscore,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture; Canonical Z-Score implementation; z_score alias is not counted.,Z-Score
+42,trix,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,TRIX
+43,ppo,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Percentage Price Oscillator
+44,apo,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Absolute Price Oscillator
+45,cmo,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Chande Momentum Oscillator
+46,connors_rsi,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Connors RSI
+47,rmi,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Relative Momentum Index
+48,fisher_transform,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Fisher Transform
+49,awesome_oscillator,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Awesome Oscillator
+50,balance_of_power,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Balance of Power
+51,coppock_curve,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Coppock Curve
+52,accelerator_oscillator,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Accelerator Oscillator
+53,schaff_trend_cycle,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Schaff Trend Cycle
+54,kst,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Know Sure Thing (KST)
+55,smi_ergodic,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,SMI Ergodic
+56,demarker,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Demarker
+57,qstick,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Qstick
+58,relative_vigor_index,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Relative Vigor Index
+59,center_of_gravity,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Center Of Gravity
+60,chande_forecast_oscillator,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Chande Forecast Oscillator
+61,pretty_good_oscillator,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Pretty Good Oscillator
+62,stochastic_momentum_index,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Stochastic Momentum Index
+63,psychological_line,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Psychological Line
+64,rainbow_oscillator,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Rainbow Oscillator
+65,dynamic_momentum_index,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Dynamic Momentum Index
+66,laguerre_rsi,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Laguerre Rsi
+67,inverse_fisher_rsi,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Inverse Fisher Rsi
+68,correlation_trend_indicator,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Correlation Trend Indicator
+69,trend_trigger_factor,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Trend Trigger Factor
+70,wavetrend_oscillator,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,WaveTrend Oscillator
+71,squeeze_momentum,momentum,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Squeeze Momentum
+72,cycle_identifier,momentum,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,"Source derivation plus deterministic category fixture; Lag-autocorrelation strength proxy, not dominant-cycle estimation.",Cycle Identifier
+73,atr,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Average True Range
+74,bollinger_bands,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Bollinger Bands
+75,keltner_channel,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Keltner Channel
+76,donchian_channel,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Donchian Channel
+77,historical_volatility,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review; Log-return volatility reported in percent units.,Historical Volatility
+78,standard_deviation,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Standard Deviation
+79,chaikin_volatility,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Chaikin Volatility
+80,bollinger_band_width,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Bollinger Band Width
+81,bollinger_percent_b,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Bollinger Percent B
+82,chandelier_exit,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Chandelier Exit
+83,normalized_atr,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Normalized ATR
+84,ulcer_index,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Ulcer Index
+85,mass_index,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Mass Index
+86,true_range,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,True Range
+87,volatility_stop,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Volatility Stop
+88,atr_bands,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,ATR Bands
+89,fractal_chaos_bands,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Fractal Chaos Bands
+90,moving_std_channel,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Moving Std Channel
+91,donchian_width,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Donchian Width
+92,keltner_width,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Keltner Width
+93,parkinson_volatility,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Parkinson Volatility
+94,garman_klass_volatility,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Garman Klass Volatility
+95,rogers_satchell_volatility,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Rogers Satchell Volatility
+96,yang_zhang_volatility,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Yang Zhang Volatility
+97,close_to_close_volatility,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,"Independent exact fixture; Same estimator family as historical volatility, reported in decimal units.",Close To Close Volatility
+98,median_absolute_deviation,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Median Absolute Deviation
+99,average_daily_range,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Average Daily Range
+100,relative_average_true_range,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Relative Average True Range
+101,coefficient_of_variation,volatility,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Coefficient Of Variation
+102,obv,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,On-Balance Volume
+103,vwap,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,VWAP
+104,cmf,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Chaikin Money Flow
+105,mfi,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Money Flow Index
+106,accumulation_distribution,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Accumulation/Distribution Line
+107,volume_roc,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Volume ROC
+108,ease_of_movement,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Ease of Movement
+109,volume_sma,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Volume SMA
+110,rolling_vwap,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Rolling VWAP
+111,force_index,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Force Index
+112,volume_ema,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Volume EMA
+113,chaikin_oscillator,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Chaikin Oscillator
+114,negative_volume_index,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Negative Volume Index
+115,positive_volume_index,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Positive Volume Index
+116,klinger_oscillator,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Klinger Oscillator
+117,price_volume_trend,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Price Volume Trend
+118,volume_oscillator,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Volume Oscillator
+119,twiggs_money_flow,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Twiggs Money Flow
+120,volume_weighted_macd,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Volume Weighted MACD
+121,intraday_intensity_index,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Intraday Intensity Index
+122,money_flow_volume,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Money Flow Volume
+123,volume_zone_oscillator,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Volume Zone Oscillator
+124,net_volume,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Net Volume
+125,vwap_deviation,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,VWAP Deviation
+126,money_flow_oscillator,volume,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Money Flow Oscillator
+127,adx,market_strength,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,ADX
+128,aroon,market_strength,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Aroon
+129,vortex,market_strength,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Vortex Indicator
+130,choppiness_index,market_strength,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Choppiness Index
+131,dmi,market_strength,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review; Shared directional pair; plus_di and minus_di are intentional standalone views.,Directional Movement Index
+132,elder_ray_index,market_strength,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Elder Ray Index
+133,plus_di,market_strength,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture; Intentional standalone view of shared DMI positive component.,Plus Directional Indicator
+134,minus_di,market_strength,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture; Intentional standalone view of shared DMI negative component.,Minus Directional Indicator
+135,pivot_points,structure,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Pivot Points
+136,support_resistance,structure,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Support and Resistance
+137,swing_high_low,structure,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Swing High and Swing Low
+138,price_channels,structure,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture,Price Channels
+139,fibonacci_retracement,structure,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Independent exact fixture; Phase 23.5 fixed engine attachment to honor registry-standardized output names.,Fibonacci Retracement
+140,linear_regression_channel,structure,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Linear Regression Channel
+141,breakout_detection,structure,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Published/reference formula review,Breakout Detection
+142,fair_value_gap,structure,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Published/reference formula review; Three-candle gap event confirmed on candle t against t-2; event bounds only.,Fair Value Gap Approximation
+143,order_block,structure,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Published/reference formula review; Prior opposite candle retained only after a rolling-range breakout; approximate event.,Order Block Approximation
+144,market_structure,structure,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Published/reference formula review; Prior-range close breaks drive stateful BOS/CHoCH approximation.,BOS / CHoCH Approximation
+145,inverse_fair_value_gap,structure,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Source derivation plus deterministic category fixture; Event emitted when price closes through the latest opposing confirmed FVG.,Inverse Fair Value Gap
+146,liquidity_sweep,structure,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Published/reference formula review; Wick-rejection event against the latest confirmed swing; not hidden-liquidity detection.,Liquidity Sweep
+147,equal_highs,structure,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Source derivation plus deterministic category fixture; Tolerance match between confirmed swing highs after right-side delay.,Equal Highs
+148,equal_lows,structure,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Source derivation plus deterministic category fixture; Tolerance match between confirmed swing lows after right-side delay.,Equal Lows
+149,breaker_block,structure,EXPERIMENTAL,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,EXPERIMENTAL PASS,Source derivation plus deterministic category fixture; Order-block invalidation event requiring matching BOS/CHoCH direction.,Breaker Block
+150,candlestick,candlestick,STABLE,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,PASS,Source derivation plus deterministic category fixture,Candlestick Engine

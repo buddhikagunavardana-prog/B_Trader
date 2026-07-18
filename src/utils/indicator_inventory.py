@@ -128,7 +128,7 @@ def build_indicator_inventory() -> pd.DataFrame:
             ),
             "Source File": source_text,
             "Registered": "Yes",
-            "Tested": "Focused" if name in PHASE_23_3 | PHASE_23_4 else str(old.get("Tested") or "Deterministic"),
+            "Tested": "Phase 23.5 Release Gate",
             "Required Columns": "; ".join(definition["required_columns"]),
             "Output Columns": "; ".join(definition["output_columns"]),
             "Default Parameters": json.dumps(definition["default_parameters"], sort_keys=True),

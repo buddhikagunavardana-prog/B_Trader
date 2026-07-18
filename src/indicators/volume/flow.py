@@ -31,7 +31,9 @@ def _klinger_volume_force(df: pd.DataFrame) -> pd.Series:
                 cumulative[index] = cumulative[index - 1] + movement[index]
             else:
                 cumulative[index] = movement[index - 1] + movement[index]
-    ratio = 2.0 * movement / cumulative - 1.0
+    ratio = np.full(len(df), np.nan)
+    np.divide(2.0 * movement, cumulative, out=ratio, where=cumulative != 0)
+    ratio -= 1.0
     force = df["volume"].to_numpy(copy=False) * trend * np.abs(ratio) * 100.0
     return pd.Series(force, index=df.index).replace([np.inf, -np.inf], np.nan)
 

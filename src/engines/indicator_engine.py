@@ -69,7 +69,8 @@ def _attach_registry_output(df, name, output):
     elif isinstance(output, dict):
         prefix = name.upper()
         for key, item in output.items():
-            df[f"{prefix}_{key}"] = item
+            column = item.name if item.name else f"{prefix}_{key}"
+            df[column] = item
     elif hasattr(output, "columns"):
         for column in output.columns:
             df[column] = output[column]
@@ -80,6 +81,18 @@ def _attach_registry_output(df, name, output):
 def calculate_indicators(df, strategy):
 
     indicators = strategy.indicators
+
+    configured_canonical = set()
+    for configured_name, configured_settings in indicators.items():
+        if not configured_settings.get("enabled", False):
+            continue
+        configured = str(configured_name).strip().lower().replace(" ", "_")
+        canonical = indicator_registry.get(configured)["name"]
+        if canonical in configured_canonical:
+            raise ValueError(
+                f"duplicate canonical indicator configuration: {canonical}",
+            )
+        configured_canonical.add(canonical)
 
     # =====================
     # EMA
@@ -156,11 +169,12 @@ def calculate_indicators(df, strategy):
         normalized = str(name).strip().lower().replace(" ", "_")
         if normalized in LEGACY_ENGINE_INDICATORS or not settings.get("enabled", False):
             continue
+        canonical = indicator_registry.get(normalized)["name"]
         params = {key: value for key, value in settings.items() if key != "enabled"}
         _attach_registry_output(
             df,
-            normalized,
-            indicator_registry.calculate(normalized, df, params),
+            canonical,
+            indicator_registry.calculate(canonical, df, params),
         )
 
     return df
