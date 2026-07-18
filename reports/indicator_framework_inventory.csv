@@ -1,67 +1,90 @@
-Indicator,Category,Status,File,Registered,Tested,Outputs,Notes
-EMA,Trend,Existing,src/indicators/trend/ema.py,Yes,Smoke,EMA,
-SMA,Trend,Existing,src/indicators/trend/sma.py,Yes,Smoke,SMA,
-WMA,Trend,Existing,src/indicators/trend/wma.py,Yes,Smoke,WMA,
-VWMA,Trend,Existing,src/indicators/trend/vwma.py,Yes,Smoke,VWMA,
-HMA,Trend,Existing,src/indicators/trend/hma.py,Yes,Smoke,HMA,
-DEMA,Trend,Existing,src/indicators/trend/dema.py,Yes,Smoke,DEMA,
-TEMA,Trend,Existing,src/indicators/trend/tema.py,Yes,Smoke,TEMA,
-KAMA,Trend,Existing,src/indicators/trend/kama.py,Yes,Smoke,KAMA,
-SuperTrend,Trend,Existing,src/indicators/trend/supertrend.py,Yes,Smoke,"SUPERTREND; SUPERTREND_DIRECTION",Depends on ATR
-Ichimoku Cloud,Trend,Corrected,src/indicators/trend/ichimoku.py,Yes,Focused,"ICHIMOKU_CONVERSION; ICHIMOKU_BASE; ICHIMOKU_SPAN_A; ICHIMOKU_SPAN_B; ICHIMOKU_LAGGING",Lagging span corrected to causal alignment
-Parabolic SAR,Trend,Added,src/indicators/trend/parabolic_sar.py,Yes,Focused,"PARABOLIC_SAR; PARABOLIC_SAR_DIRECTION",First safe expansion pack
-RSI,Momentum,Existing,src/indicators/momentum/rsi.py,Yes,Smoke,RSI,
-MACD,Momentum,Existing,src/indicators/momentum/macd.py,Yes,Smoke,"MACD; MACD_SIGNAL; MACD_HISTOGRAM",
-Stochastic Oscillator,Momentum,Existing,src/indicators/momentum/stochastic.py,Yes,Smoke,"STOCHASTIC_K; STOCHASTIC_D",
-Stochastic RSI,Momentum,Existing,src/indicators/momentum/stochastic_rsi.py,Yes,Smoke,"STOCHASTIC_RSI_K; STOCHASTIC_RSI_D",Depends on RSI
-CCI,Momentum,Existing,src/indicators/momentum/cci.py,Yes,Smoke,CCI,
-Williams %R,Momentum,Existing,src/indicators/momentum/williams_r.py,Yes,Smoke,WILLIAMS_R,
-ROC,Momentum,Existing,src/indicators/momentum/roc.py,Yes,Smoke,ROC,
-Momentum,Momentum,Existing,src/indicators/momentum/momentum.py,Yes,Smoke,MOMENTUM,
-TSI,Momentum,Existing,src/indicators/momentum/tsi.py,Yes,Smoke,TSI,
-Ultimate Oscillator,Momentum,Existing,src/indicators/momentum/ultimate_oscillator.py,Yes,Smoke,ULTIMATE_OSCILLATOR,
-Z-Score,Momentum,Existing,src/indicators/momentum/zscore.py,Yes,Smoke,ZSCORE,Extra professional indicator outside requested target list
-ATR,Volatility,Existing,src/indicators/volatility/atr.py,Yes,Smoke,ATR,
-Bollinger Bands,Volatility,Existing,src/indicators/volatility/bollinger.py,Yes,Smoke,"BOLLINGER_UPPER; BOLLINGER_MIDDLE; BOLLINGER_LOWER",Width and Percent B are not separate outputs
-Keltner Channel,Volatility,Existing,src/indicators/volatility/keltner.py,Yes,Smoke,"KELTNER_UPPER; KELTNER_MIDDLE; KELTNER_LOWER",Requested target classifies this under Trend
-Donchian Channel,Volatility,Existing,src/indicators/volatility/donchian.py,Yes,Smoke,"DONCHIAN_UPPER; DONCHIAN_MIDDLE; DONCHIAN_LOWER",Requested target classifies this under Trend
-Historical Volatility,Volatility,Existing,src/indicators/volatility/historical_volatility.py,Yes,Smoke,HISTORICAL_VOLATILITY,
-Standard Deviation,Volatility,Existing,src/indicators/volatility/standard_deviation.py,Yes,Smoke,STANDARD_DEVIATION,Extra professional indicator outside requested target list
-Chaikin Volatility,Volatility,Existing,src/indicators/volatility/chaikin.py,Yes,Smoke,CHAIKIN_VOLATILITY,Extra professional indicator outside requested target list
-OBV,Volume,Existing,src/indicators/volume/obv.py,Yes,Smoke,OBV,
-VWAP,Volume,Existing,src/indicators/volume/vwap.py,Yes,Smoke,VWAP,Cumulative session-agnostic implementation
-CMF,Volume,Existing,src/indicators/volume/cmf.py,Yes,Smoke,CMF,
-MFI,Volume,Existing,src/indicators/volume/mfi.py,Yes,Smoke,MFI,
-Accumulation/Distribution Line,Volume,Existing,src/indicators/volume/adl.py,Yes,Smoke,ACCUMULATION_DISTRIBUTION,
-Volume ROC,Volume,Existing,src/indicators/volume/volume_roc.py,Yes,Smoke,VOLUME_ROC,Extra professional indicator outside requested target list
-Ease of Movement,Volume,Existing,src/indicators/volume/ease_of_movement.py,Yes,Smoke,EASE_OF_MOVEMENT,
-Volume SMA,Volume,Existing,src/indicators/volume/volume.py,Yes,Smoke,VOLUME_SMA,
-Rolling VWAP,Volume,Existing,src/indicators/volume/rolling_vwap.py,Yes,Smoke,ROLLING_VWAP,Overlaps cumulative VWAP but uses a fixed rolling window
-ADX,Market Strength,Existing,src/indicators/market_strength/adx.py,Yes,Smoke,ADX,
-Aroon,Market Strength,Existing,src/indicators/market_strength/aroon.py,Yes,Smoke,"AROON_UP; AROON_DOWN",
-Vortex Indicator,Market Strength,Existing,src/indicators/market_strength/vortex.py,Yes,Smoke,"VORTEX_POSITIVE; VORTEX_NEGATIVE",Requested target classifies this under Trend
-Choppiness Index,Market Strength,Existing,src/indicators/market_strength/choppiness.py,Yes,Smoke,CHOPPINESS_INDEX,
-DMI,Market Strength,Existing,src/indicators/market_strength/dmi.py,Yes,Smoke,"DMI_PLUS; DMI_MINUS",Overlaps standalone Plus DI and Minus DI target entries
-Elder Ray Index,Market Strength,Existing,src/indicators/market_strength/elder_ray.py,Yes,Smoke,"BULL_POWER; BEAR_POWER",Extra professional indicator outside requested target list
-Pivot Points,Structure,Existing,src/indicators/structure/pivot_points.py,Yes,Smoke,"PIVOT; PIVOT_R1; PIVOT_R2; PIVOT_R3; PIVOT_S1; PIVOT_S2; PIVOT_S3",
-Support and Resistance,Structure,Existing,src/indicators/structure/support_resistance.py,Yes,Smoke,"SUPPORT; RESISTANCE",Overlaps price-channel extrema
-Swing High and Swing Low,Structure,Corrected,src/indicators/structure/swing.py,Yes,Focused,"SWING_HIGH; SWING_LOW",Signals now appear at confirmation time without centered-window look-ahead
-Price Channels,Structure,Existing,src/indicators/structure/price_channels.py,Yes,Smoke,"PRICE_CHANNEL_UPPER; PRICE_CHANNEL_MIDDLE; PRICE_CHANNEL_LOWER",Overlaps Donchian Channel and support/resistance
-Fibonacci Retracement,Structure,Existing,src/indicators/structure/fibonacci_retracement.py,Yes,Smoke,"FIBONACCI_0_0; FIBONACCI_23_6; FIBONACCI_38_2; FIBONACCI_50_0; FIBONACCI_61_8; FIBONACCI_78_6; FIBONACCI_100_0",Duplicates helper in src/indicators/structure/fibonacci.py
-Linear Regression Channel,Structure,Existing,src/indicators/structure/linear_regression_channel.py,Yes,Smoke,"LINEAR_REGRESSION_UPPER; LINEAR_REGRESSION_MIDDLE; LINEAR_REGRESSION_LOWER",Middle output overlaps requested Linear Regression Trend
-Candlestick Engine,Candlestick,Existing,src/indicators/candlestick/candlestick.py,Yes,Smoke,26 pattern columns,Counted once as required
-Aroon Oscillator,Market Strength,Unregistered,src/indicators/market_strength/aroon_oscillator.py,No,Missing,AROON_OSCILLATOR,Derived overlap of Aroon Up minus Aroon Down
-Breakout Detection,Structure,Unregistered,src/indicators/structure/breakout.py,No,Missing,"BREAKOUT_HIGH; BREAKOUT_LOW",Implementation overlaps price channels and lacks framework validation
-Fibonacci Levels Helper,Structure,Duplicate,src/indicators/structure/fibonacci.py,No,Missing,7 static levels,Overlaps registered rolling Fibonacci Retracement
-Linear Regression Trend,Trend,Missing,,No,Missing,LINEAR_REGRESSION_TREND,Linear Regression Channel middle output partially overlaps
-TRIX,Momentum,Missing,,No,Missing,TRIX,
-PPO,Momentum,Missing,,No,Missing,"PPO; PPO_SIGNAL; PPO_HISTOGRAM",
-Force Index,Volume,Missing,,No,Missing,FORCE_INDEX,
-Bollinger Band Width,Volatility,Missing,,No,Missing,BOLLINGER_BAND_WIDTH,Derivable from existing Bollinger Bands
-Bollinger Percent B,Volatility,Missing,,No,Missing,BOLLINGER_PERCENT_B,Derivable from existing Bollinger Bands
-Chandelier Exit,Volatility,Missing,,No,Missing,"CHANDELIER_LONG; CHANDELIER_SHORT",
-Plus DI,Market Strength,Overlap,,No,Missing,PLUS_DI,Available only as DMI_PLUS output from registered DMI
-Minus DI,Market Strength,Overlap,,No,Missing,MINUS_DI,Available only as DMI_MINUS output from registered DMI
-Fair Value Gap,Structure,Missing,,No,Missing,"FVG_BULLISH; FVG_BEARISH",
-Order Block,Structure,Missing,,No,Missing,"ORDER_BLOCK_BULLISH; ORDER_BLOCK_BEARISH",
-Market Structure BOS / CHoCH,Structure,Missing,,No,Missing,"BOS; CHOCH",
+Canonical Name,Display Name,Category,Status,File,Registered,Tested,Output Columns,Dependencies,Stability,Notes
+ema,EMA,Trend,Existing,src/indicators/trend/ema.py,Yes,Deterministic,EMA,,Stable,
+sma,SMA,Trend,Existing,src/indicators/trend/sma.py,Yes,Deterministic,SMA,,Stable,
+wma,WMA,Trend,Existing,src/indicators/trend/wma.py,Yes,Deterministic,WMA,,Stable,
+vwma,VWMA,Trend,Existing,src/indicators/trend/vwma.py,Yes,Deterministic,VWMA,,Stable,
+hma,HMA,Trend,Existing,src/indicators/trend/hma.py,Yes,Deterministic,HMA,,Stable,
+dema,DEMA,Trend,Existing,src/indicators/trend/dema.py,Yes,Deterministic,DEMA,,Stable,
+tema,TEMA,Trend,Existing,src/indicators/trend/tema.py,Yes,Deterministic,TEMA,,Stable,
+kama,KAMA,Trend,Existing,src/indicators/trend/kama.py,Yes,Deterministic,KAMA,,Stable,
+supertrend,SuperTrend,Trend,Existing,src/indicators/trend/supertrend.py,Yes,Deterministic,SUPERTREND; SUPERTREND_DIRECTION,atr,Stable,
+ichimoku_cloud,Ichimoku Cloud,Trend,Corrected,src/indicators/trend/ichimoku.py,Yes,Deterministic,ICHIMOKU_CONVERSION; ICHIMOKU_BASE; ICHIMOKU_SPAN_A; ICHIMOKU_SPAN_B; ICHIMOKU_LAGGING,,Stable,Causally aligned in Phase 23.1
+parabolic_sar,Parabolic SAR,Trend,Existing,src/indicators/trend/parabolic_sar.py,Yes,Focused,PARABOLIC_SAR; PARABOLIC_SAR_DIRECTION,,Stable,Added in Phase 23.1
+linear_regression_trend,Linear Regression Trend,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,LINEAR_REGRESSION_TREND,,Stable,Current-window regression endpoint
+trima,Triangular Moving Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,TRIMA,sma,Stable,
+alma,Arnaud Legoux Moving Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,ALMA,,Stable,
+zlema,Zero Lag EMA,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,ZLEMA,ema,Stable,
+mcginley_dynamic,McGinley Dynamic,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,MCGINLEY_DYNAMIC,,Stable,Recursive by definition
+frama,Fractal Adaptive Moving Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,FRAMA,,Stable,Causal future-change test included
+vidya,Variable Index Dynamic Average,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,VIDYA,cmo,Stable,CMO-weighted recursion
+moving_average_envelope,Moving Average Envelope,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,MA_ENVELOPE_UPPER; MA_ENVELOPE_MIDDLE; MA_ENVELOPE_LOWER,sma,Stable,
+linear_regression_slope,Linear Regression Slope,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,LINEAR_REGRESSION_SLOPE,,Stable,
+time_series_forecast,Time Series Forecast,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,TIME_SERIES_FORECAST,,Stable,One-step regression forecast
+dpo,Detrended Price Oscillator,Trend,Added,src/indicators/trend/advanced.py,Yes,Focused,DPO,sma,Stable,Causally aligned baseline
+rsi,RSI,Momentum,Existing,src/indicators/momentum/rsi.py,Yes,Deterministic,RSI,,Stable,
+macd,MACD,Momentum,Existing,src/indicators/momentum/macd.py,Yes,Deterministic,MACD; MACD_SIGNAL; MACD_HISTOGRAM,,Stable,
+stochastic,Stochastic Oscillator,Momentum,Existing,src/indicators/momentum/stochastic.py,Yes,Deterministic,STOCHASTIC_K; STOCHASTIC_D,,Stable,
+stochastic_rsi,Stochastic RSI,Momentum,Existing,src/indicators/momentum/stochastic_rsi.py,Yes,Deterministic,STOCHASTIC_RSI_K; STOCHASTIC_RSI_D,rsi,Stable,
+cci,Commodity Channel Index,Momentum,Existing,src/indicators/momentum/cci.py,Yes,Deterministic,CCI,,Stable,
+williams_r,Williams %R,Momentum,Existing,src/indicators/momentum/williams_r.py,Yes,Deterministic,WILLIAMS_R,,Stable,
+roc,Rate of Change,Momentum,Existing,src/indicators/momentum/roc.py,Yes,Deterministic,ROC,,Stable,
+momentum,Momentum,Momentum,Existing,src/indicators/momentum/momentum.py,Yes,Deterministic,MOMENTUM,,Stable,
+tsi,True Strength Index,Momentum,Existing,src/indicators/momentum/tsi.py,Yes,Deterministic,TSI,,Stable,
+ultimate_oscillator,Ultimate Oscillator,Momentum,Canonical Reuse,src/indicators/momentum/ultimate_oscillator.py,Yes,Deterministic,ULTIMATE_OSCILLATOR,,Stable,Already canonical; not duplicated in Phase 23.2
+zscore,Z-Score,Momentum,Existing,src/indicators/momentum/zscore.py,Yes,Deterministic,ZSCORE,,Stable,
+trix,TRIX,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,TRIX,ema,Stable,
+ppo,Percentage Price Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,PPO; PPO_SIGNAL; PPO_HISTOGRAM,ema,Stable,
+apo,Absolute Price Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,APO,ema,Stable,
+cmo,Chande Momentum Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,CMO,,Stable,
+connors_rsi,Connors RSI,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,CONNORS_RSI,rsi,Stable,Uses price RSI; streak RSI; ROC percentile rank
+rmi,Relative Momentum Index,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,RMI,,Stable,
+fisher_transform,Fisher Transform,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,FISHER_TRANSFORM,,Stable,Recursive smoothing
+awesome_oscillator,Awesome Oscillator,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,AWESOME_OSCILLATOR,,Stable,
+balance_of_power,Balance of Power,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,BALANCE_OF_POWER,,Stable,
+coppock_curve,Coppock Curve,Momentum,Added,src/indicators/momentum/advanced.py,Yes,Focused,COPPOCK_CURVE,,Stable,
+atr,Average True Range,Volatility,Existing,src/indicators/volatility/atr.py,Yes,Deterministic,ATR,,Stable,
+bollinger_bands,Bollinger Bands,Volatility,Existing,src/indicators/volatility/bollinger.py,Yes,Deterministic,BOLLINGER_UPPER; BOLLINGER_MIDDLE; BOLLINGER_LOWER,,Stable,
+keltner_channel,Keltner Channel,Volatility,Existing,src/indicators/volatility/keltner.py,Yes,Deterministic,KELTNER_UPPER; KELTNER_MIDDLE; KELTNER_LOWER,ema; atr,Stable,
+donchian_channel,Donchian Channel,Volatility,Existing,src/indicators/volatility/donchian.py,Yes,Deterministic,DONCHIAN_UPPER; DONCHIAN_MIDDLE; DONCHIAN_LOWER,,Stable,
+historical_volatility,Historical Volatility,Volatility,Existing,src/indicators/volatility/historical_volatility.py,Yes,Deterministic,HISTORICAL_VOLATILITY,,Stable,
+standard_deviation,Standard Deviation,Volatility,Existing,src/indicators/volatility/standard_deviation.py,Yes,Deterministic,STANDARD_DEVIATION,,Stable,
+chaikin_volatility,Chaikin Volatility,Volatility,Canonical Reuse,src/indicators/volatility/chaikin.py,Yes,Deterministic,CHAIKIN_VOLATILITY,,Stable,Already canonical; not duplicated in Phase 23.2
+bollinger_band_width,Bollinger Band Width,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,BOLLINGER_BAND_WIDTH,bollinger_bands,Stable,Reuses Bollinger components
+bollinger_percent_b,Bollinger Percent B,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,BOLLINGER_PERCENT_B,bollinger_bands,Stable,Reuses Bollinger components
+chandelier_exit,Chandelier Exit,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,CHANDELIER_LONG; CHANDELIER_SHORT,atr,Stable,
+normalized_atr,Normalized ATR,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,NORMALIZED_ATR,atr,Stable,
+ulcer_index,Ulcer Index,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,ULCER_INDEX,,Stable,
+mass_index,Mass Index,Volatility,Added,src/indicators/volatility/advanced.py,Yes,Focused,MASS_INDEX,,Stable,
+obv,On-Balance Volume,Volume,Existing,src/indicators/volume/obv.py,Yes,Deterministic,OBV,,Stable,
+vwap,VWAP,Volume,Existing,src/indicators/volume/vwap.py,Yes,Deterministic,VWAP,,Stable,Cumulative session-agnostic implementation
+cmf,Chaikin Money Flow,Volume,Existing,src/indicators/volume/cmf.py,Yes,Deterministic,CMF,,Stable,
+mfi,Money Flow Index,Volume,Existing,src/indicators/volume/mfi.py,Yes,Deterministic,MFI,,Stable,
+accumulation_distribution,Accumulation/Distribution Line,Volume,Existing,src/indicators/volume/adl.py,Yes,Deterministic,ACCUMULATION_DISTRIBUTION,,Stable,
+volume_roc,Volume ROC,Volume,Existing,src/indicators/volume/volume_roc.py,Yes,Deterministic,VOLUME_ROC,,Stable,
+ease_of_movement,Ease of Movement,Volume,Existing,src/indicators/volume/ease_of_movement.py,Yes,Deterministic,EASE_OF_MOVEMENT,,Stable,
+volume_sma,Volume SMA,Volume,Existing,src/indicators/volume/volume.py,Yes,Deterministic,VOLUME_SMA,,Stable,
+rolling_vwap,Rolling VWAP,Volume,Existing,src/indicators/volume/rolling_vwap.py,Yes,Deterministic,ROLLING_VWAP,,Stable,Fixed rolling window
+force_index,Force Index,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,FORCE_INDEX,,Stable,EMA-smoothed
+volume_ema,Volume EMA,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,VOLUME_EMA,,Stable,
+chaikin_oscillator,Chaikin Oscillator,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,CHAIKIN_OSCILLATOR,accumulation_distribution; ema,Stable,Uses shared ADL formula
+negative_volume_index,Negative Volume Index,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,NEGATIVE_VOLUME_INDEX,,Stable,Recursive by definition
+positive_volume_index,Positive Volume Index,Volume,Added,src/indicators/volume/advanced.py,Yes,Focused,POSITIVE_VOLUME_INDEX,,Stable,Recursive by definition
+adx,ADX,Market Strength,Existing,src/indicators/market_strength/adx.py,Yes,Deterministic,ADX,dmi,Stable,Uses shared directional movement
+aroon,Aroon,Market Strength,Existing,src/indicators/market_strength/aroon.py,Yes,Deterministic,AROON_UP; AROON_DOWN,,Stable,
+vortex,Vortex Indicator,Market Strength,Existing,src/indicators/market_strength/vortex.py,Yes,Deterministic,VORTEX_POSITIVE; VORTEX_NEGATIVE,,Stable,
+choppiness_index,Choppiness Index,Market Strength,Existing,src/indicators/market_strength/choppiness.py,Yes,Deterministic,CHOPPINESS_INDEX,,Stable,
+dmi,Directional Movement Index,Market Strength,Existing,src/indicators/market_strength/dmi.py,Yes,Deterministic,DMI_PLUS; DMI_MINUS,atr,Stable,Canonical shared calculation
+elder_ray_index,Elder Ray Index,Market Strength,Existing,src/indicators/market_strength/elder_ray.py,Yes,Deterministic,BULL_POWER; BEAR_POWER,ema,Stable,
+plus_di,Plus Directional Indicator,Market Strength,Added,src/indicators/market_strength/directional.py,Yes,Focused,PLUS_DI,dmi,Stable,Standalone view of shared DMI calculation
+minus_di,Minus Directional Indicator,Market Strength,Added,src/indicators/market_strength/directional.py,Yes,Focused,MINUS_DI,dmi,Stable,Standalone view of shared DMI calculation
+pivot_points,Pivot Points,Structure,Existing,src/indicators/structure/pivot_points.py,Yes,Deterministic,PIVOT; PIVOT_R1; PIVOT_R2; PIVOT_R3; PIVOT_S1; PIVOT_S2; PIVOT_S3,,Stable,
+support_resistance,Support and Resistance,Structure,Existing,src/indicators/structure/support_resistance.py,Yes,Deterministic,SUPPORT; RESISTANCE,,Stable,Overlaps price-channel extrema
+swing_high_low,Swing High and Swing Low,Structure,Corrected,src/indicators/structure/swing.py,Yes,Deterministic,SWING_HIGH; SWING_LOW,,Stable,Delayed until causal confirmation
+price_channels,Price Channels,Structure,Existing,src/indicators/structure/price_channels.py,Yes,Deterministic,PRICE_CHANNEL_UPPER; PRICE_CHANNEL_MIDDLE; PRICE_CHANNEL_LOWER,,Stable,Overlaps Donchian and support/resistance
+fibonacci_retracement,Fibonacci Retracement,Structure,Existing,src/indicators/structure/fibonacci_retracement.py,Yes,Deterministic,FIBONACCI_0_0; FIBONACCI_23_6; FIBONACCI_38_2; FIBONACCI_50_0; FIBONACCI_61_8; FIBONACCI_78_6; FIBONACCI_100_0,,Stable,Canonical rolling implementation
+linear_regression_channel,Linear Regression Channel,Structure,Existing,src/indicators/structure/linear_regression_channel.py,Yes,Deterministic,LINEAR_REGRESSION_UPPER; LINEAR_REGRESSION_MIDDLE; LINEAR_REGRESSION_LOWER,,Stable,
+breakout_detection,Breakout Detection,Structure,Added,src/indicators/structure/breakout.py,Yes,Focused,BREAKOUT_UPPER; BREAKOUT_LOWER; BREAKOUT_BULLISH; BREAKOUT_BEARISH,,Stable,Uses prior rolling extrema
+fair_value_gap,Fair Value Gap Approximation,Structure,Added,src/indicators/structure/smc.py,Yes,Focused,FVG_BULLISH; FVG_BEARISH; FVG_LOWER; FVG_UPPER,,Experimental,Three-candle gap event confirmed on candle three; no persisted invalidation state
+order_block,Order Block Approximation,Structure,Added,src/indicators/structure/smc.py,Yes,Focused,ORDER_BLOCK_BULLISH; ORDER_BLOCK_BEARISH; ORDER_BLOCK_LOWER; ORDER_BLOCK_UPPER,,Experimental,Prior opposite candle emitted after range-break confirmation
+market_structure,BOS / CHoCH Approximation,Structure,Added,src/indicators/structure/smc.py,Yes,Focused,BOS; CHOCH; MARKET_STRUCTURE_TREND,,Experimental,Prior-range event state; not institutional order-flow detection
+candlestick,Candlestick Engine,Candlestick,Existing,src/indicators/candlestick/candlestick.py,Yes,Deterministic,26 named pattern columns,,Stable,Counted once

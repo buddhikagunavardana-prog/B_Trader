@@ -31,6 +31,13 @@ MULTI_OUTPUT_COLUMNS = {
     "linear_regression_channel": ["LINEAR_REGRESSION_UPPER", "LINEAR_REGRESSION_MIDDLE", "LINEAR_REGRESSION_LOWER"],
     "ichimoku_cloud": ["ICHIMOKU_CONVERSION", "ICHIMOKU_BASE", "ICHIMOKU_SPAN_A", "ICHIMOKU_SPAN_B", "ICHIMOKU_LAGGING"],
     "parabolic_sar": ["PARABOLIC_SAR", "PARABOLIC_SAR_DIRECTION"],
+    "moving_average_envelope": ["MA_ENVELOPE_UPPER", "MA_ENVELOPE_MIDDLE", "MA_ENVELOPE_LOWER"],
+    "ppo": ["PPO", "PPO_SIGNAL", "PPO_HISTOGRAM"],
+    "chandelier_exit": ["CHANDELIER_LONG", "CHANDELIER_SHORT"],
+    "breakout_detection": ["BREAKOUT_UPPER", "BREAKOUT_LOWER", "BREAKOUT_BULLISH", "BREAKOUT_BEARISH"],
+    "fair_value_gap": ["FVG_BULLISH", "FVG_BEARISH", "FVG_LOWER", "FVG_UPPER"],
+    "order_block": ["ORDER_BLOCK_BULLISH", "ORDER_BLOCK_BEARISH", "ORDER_BLOCK_LOWER", "ORDER_BLOCK_UPPER"],
+    "market_structure": ["BOS", "CHOCH", "MARKET_STRUCTURE_TREND"],
     "pivot_points": ["PIVOT", "PIVOT_R1", "PIVOT_R2", "PIVOT_R3", "PIVOT_S1", "PIVOT_S2", "PIVOT_S3"],
     "swing_high_low": ["SWING_HIGH", "SWING_LOW"],
 }

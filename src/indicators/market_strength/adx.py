@@ -1,29 +1,12 @@
 import pandas as pd
 
+from src.indicators._validation import positive_int
+from src.indicators.market_strength.directional import calculate_directional_movement
 
-def calculate_adx(df, period=14):
-    high = df["high"]
-    low = df["low"]
-    close = df["close"]
 
-    plus_dm = high.diff()
-    minus_dm = -low.diff()
-
-    plus_dm = plus_dm.where((plus_dm > minus_dm) & (plus_dm > 0), 0)
-    minus_dm = minus_dm.where((minus_dm > plus_dm) & (minus_dm > 0), 0)
-
-    tr1 = high - low
-    tr2 = (high - close.shift()).abs()
-    tr3 = (low - close.shift()).abs()
-
-    tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
-
-    atr = tr.rolling(period).mean()
-
-    plus_di = 100 * (plus_dm.rolling(period).mean() / atr)
-    minus_di = 100 * (minus_dm.rolling(period).mean() / atr)
-
-    dx = ((plus_di - minus_di).abs() / (plus_di + minus_di)) * 100
-    adx = dx.rolling(period).mean()
-
-    return adx
+def calculate_adx(df: pd.DataFrame, period: int = 14) -> pd.Series:
+    """Calculate ADX from shared directional-movement components."""
+    period = positive_int(period, "period")
+    plus_di, minus_di = calculate_directional_movement(df, period)
+    dx = 100.0 * (plus_di - minus_di).abs() / (plus_di + minus_di)
+    return dx.replace([float("inf"), float("-inf")], float("nan")).rolling(period).mean().rename("ADX")
