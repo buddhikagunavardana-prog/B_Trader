@@ -1,6 +1,6 @@
 # B Trader Professional Indicator Library
 
-B Trader exposes 122 registered indicators through
+B Trader exposes exactly 150 registered indicators through
 `src.indicators.registry.indicator_registry`. The registry validates JSON
 parameters and required columns, supplies documented defaults and output
 metadata, resolves backward-compatible names, validates dependencies, and
@@ -10,15 +10,19 @@ engine imports. The detailed framework and gap inventory is maintained in
 
 ## Inventory
 
-### Trend (22)
+### Trend (30)
 
 EMA, SMA, WMA, VWMA, HMA, DEMA, TEMA, KAMA, SuperTrend, and Ichimoku Cloud.
 Parabolic SAR provides both its trailing level and direction. Phase 23.2 adds
 Linear Regression Trend, TRIMA, ALMA, ZLEMA, McGinley Dynamic, FRAMA, VIDYA,
 Moving Average Envelope, Linear Regression Slope, Time Series Forecast, and a
 causally aligned DPO.
+Phase 23.4 adds T3, an explicitly approximate Jurik-style adaptive average,
+Double- and Triple-Smoothed EMA, Gaussian Moving Average, approximate Ehlers
+Super Smoother and Roofing filters, and Sine-Weighted Moving Average. Least
+Squares Moving Average maps to the existing `linear_regression_trend` endpoint.
 
-### Momentum (34)
+### Momentum (42)
 
 RSI, MACD, Stochastic, Stochastic RSI, CCI, Williams %R, ROC, Momentum, TSI,
 Ultimate Oscillator, and rolling Z-score.
@@ -29,8 +33,11 @@ Phase 23.3 adds Accelerator Oscillator, Schaff Trend Cycle, KST, SMI Ergodic,
 DeMarker, Qstick, Relative Vigor Index, Center of Gravity, Chande Forecast
 Oscillator, Pretty Good Oscillator, Stochastic Momentum Index, Psychological
 Line, and Rainbow Oscillator.
+Phase 23.4 adds Dynamic Momentum Index, Laguerre RSI, Inverse Fisher RSI,
+Correlation Trend Indicator, Trend Trigger Factor, WaveTrend, Squeeze Momentum,
+and an experimental lag-autocorrelation Cycle Identifier.
 
-### Volatility (22)
+### Volatility (29)
 
 ATR, Bollinger Bands, Keltner Channel, Donchian Channel, Historical
 Volatility, Standard Deviation, and Chaikin Volatility.
@@ -40,6 +47,9 @@ Chaikin Volatility was already canonical and was not duplicated.
 True Range, Volatility Stop, ATR Bands, causally confirmed Fractal Chaos Bands,
 Moving Standard Deviation Channel, Donchian Width, Keltner Width, Parkinson
 Volatility, and Garman-Klass Volatility were added in Phase 23.3.
+Phase 23.4 adds Rogers-Satchell, Yang-Zhang, and Close-to-Close volatility,
+Median Absolute Deviation, Average Daily Range, Relative ATR, and Coefficient
+of Variation. Requested Z-Score maps to the existing `zscore` registration.
 
 ### Volume (25)
 
@@ -59,13 +69,15 @@ Oscillator.
 ADX, Aroon, Vortex, Choppiness Index, DMI, and Elder Ray Index.
 Standalone Plus DI and Minus DI views reuse the shared DMI calculation.
 
-### Structure (10)
+### Structure (15)
 
 Pivot Points, Support/Resistance, Swing High/Low, Price Channels, Fibonacci
 Retracement, and Linear Regression Channel.
 Breakout Detection uses only prior rolling extrema. Fair Value Gap, Order Block,
 and BOS/CHoCH are deterministic rule-based approximations and are marked
 experimental rather than representations of institutional order flow.
+Phase 23.4 adds experimental Inverse Fair Value Gap, Liquidity Sweep, Equal
+Highs, Equal Lows, and Breaker Block event tools.
 
 ## Experimental structure rules
 
@@ -76,6 +88,16 @@ BOS/CHoCH compares the current close with prior rolling extremes and maintains a
 causal direction state. These outputs are event based; downstream strategies
 must manage persistence and invalidation after a close crosses the reported
 bounds. Future candles and centered windows are not used.
+
+Inverse FVG emits once when price later closes through the far boundary of the
+latest confirmed opposing FVG. Liquidity Sweep emits a wick-rejection event
+against the most recent swing level, which was already delayed by `period`
+right-side candles. Equal Highs and Equal Lows compare newly confirmed swing
+levels with the previous confirmed level using a configurable tolerance and
+emit only at confirmation. Breaker Block emits when an approximate prior order
+block is invalidated in the direction of a confirmed BOS/CHoCH event. These are
+rule-based analytical events, not institutional order-flow detection; bounds
+are event-only rather than persistent zones.
 
 ### Candlestick (1 engine)
 
@@ -107,7 +129,8 @@ periods, and invalid multipliers are rejected while loading JSON. The
 functions.
 
 Backward-compatible aliases include `bollinger`, `keltner`, `donchian`,
-`volume`, `adl`, `swing`, and `fibonacci`.
+`volume`, `adl`, `swing`, `fibonacci`, `least_squares_moving_average`, `lsma`,
+and `z_score`.
 
 ## Python usage
 
@@ -144,6 +167,19 @@ and Klinger Volume Oscillator use the single `klinger_oscillator` registration.
 Same-category replacements were added so canonical mapping did not reduce the
 phase target count; the exact mappings and replacements are recorded in the
 inventory.
+
+## Phase 23.4 canonical mappings and stability
+
+Least Squares Moving Average maps to `linear_regression_trend`, whose rolling
+regression endpoint is the LSMA definition. Z-Score maps to the existing
+`zscore`. Sine-Weighted Moving Average and Coefficient of Variation replace
+those mapped requests so the registry reaches exactly 150 without duplicates.
+
+Jurik Moving Average is explicitly a public volatility-adaptive approximation,
+not the proprietary implementation. The Ehlers filters and Cycle Identifier
+are also marked experimental approximations. All five new structure tools are
+experimental with confirmation timing described above. Stability is exposed
+by registry metadata and mirrored in the generated inventory.
 
 ## Indicator-engine attachment debt
 

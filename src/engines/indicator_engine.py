@@ -48,6 +48,13 @@ MULTI_OUTPUT_COLUMNS = {
     "moving_std_channel": ["MOVING_STD_UPPER", "MOVING_STD_MIDDLE", "MOVING_STD_LOWER"],
     "klinger_oscillator": ["KLINGER_OSCILLATOR", "KLINGER_SIGNAL"],
     "volume_weighted_macd": ["VOLUME_WEIGHTED_MACD", "VOLUME_WEIGHTED_MACD_SIGNAL", "VOLUME_WEIGHTED_MACD_HISTOGRAM"],
+    "wavetrend_oscillator": ["WAVETREND", "WAVETREND_SIGNAL"],
+    "squeeze_momentum": ["SQUEEZE_MOMENTUM", "SQUEEZE_ON"],
+    "inverse_fair_value_gap": ["INVERSE_FVG_BULLISH", "INVERSE_FVG_BEARISH", "INVERSE_FVG_LOWER", "INVERSE_FVG_UPPER"],
+    "liquidity_sweep": ["LIQUIDITY_SWEEP_HIGH", "LIQUIDITY_SWEEP_LOW", "LIQUIDITY_SWEEP_LEVEL"],
+    "equal_highs": ["EQUAL_HIGHS", "EQUAL_HIGH_LEVEL"],
+    "equal_lows": ["EQUAL_LOWS", "EQUAL_LOW_LEVEL"],
+    "breaker_block": ["BREAKER_BLOCK_BULLISH", "BREAKER_BLOCK_BEARISH", "BREAKER_BLOCK_LOWER", "BREAKER_BLOCK_UPPER"],
     "pivot_points": ["PIVOT", "PIVOT_R1", "PIVOT_R2", "PIVOT_R3", "PIVOT_S1", "PIVOT_S2", "PIVOT_S3"],
     "swing_high_low": ["SWING_HIGH", "SWING_LOW"],
 }

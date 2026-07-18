@@ -25,6 +25,20 @@ PHASE_23_3 = {
     "money_flow_oscillator",
 }
 
+PHASE_23_4 = {
+    "t3_moving_average", "jurik_moving_average_approximation",
+    "double_smoothed_ema", "triple_smoothed_ema", "gaussian_moving_average",
+    "ehlers_super_smoother", "ehlers_roofing_filter",
+    "sine_weighted_moving_average", "dynamic_momentum_index", "laguerre_rsi",
+    "inverse_fisher_rsi", "correlation_trend_indicator",
+    "trend_trigger_factor", "wavetrend_oscillator", "squeeze_momentum",
+    "cycle_identifier", "rogers_satchell_volatility", "yang_zhang_volatility",
+    "close_to_close_volatility", "median_absolute_deviation",
+    "average_daily_range", "relative_average_true_range",
+    "coefficient_of_variation", "inverse_fair_value_gap", "liquidity_sweep",
+    "equal_highs", "equal_lows", "breaker_block",
+}
+
 DISPLAY_NAMES = {
     "kst": "Know Sure Thing (KST)",
     "smi_ergodic": "SMI Ergodic",
@@ -34,6 +48,12 @@ DISPLAY_NAMES = {
     "atr_bands": "ATR Bands",
     "vwap_deviation": "VWAP Deviation",
     "volume_weighted_macd": "Volume Weighted MACD",
+    "t3_moving_average": "T3 Moving Average",
+    "jurik_moving_average_approximation": "Jurik Moving Average Approximation",
+    "ehlers_super_smoother": "Ehlers Super Smoother",
+    "ehlers_roofing_filter": "Ehlers Roofing Filter",
+    "wavetrend_oscillator": "WaveTrend Oscillator",
+    "relative_average_true_range": "Relative Average True Range",
 }
 
 NOTES = {
@@ -54,6 +74,19 @@ NOTES = {
     "fair_value_gap": "Experimental causal three-candle approximation.",
     "order_block": "Experimental causal prior-candle approximation.",
     "market_structure": "Experimental causal BOS/CHoCH approximation.",
+    "linear_regression_trend": "Canonical mapping for Least Squares Moving Average (LSMA).",
+    "zscore": "Canonical mapping for requested Z-Score.",
+    "sine_weighted_moving_average": "Trend replacement for mapped Least Squares Moving Average.",
+    "coefficient_of_variation": "Statistical replacement for mapped Z-Score.",
+    "jurik_moving_average_approximation": "Experimental volatility-adaptive approximation; not a proprietary JMA implementation.",
+    "ehlers_super_smoother": "Experimental causal two-pole filter approximation.",
+    "ehlers_roofing_filter": "Experimental causal high-pass plus smoothing approximation.",
+    "cycle_identifier": "Experimental lag-autocorrelation cycle-strength approximation.",
+    "inverse_fair_value_gap": "Experimental event when a confirmed FVG is later closed through; no persistent zone.",
+    "liquidity_sweep": "Experimental event at wick rejection of a previously confirmed swing level.",
+    "equal_highs": "Experimental event confirmed after the swing right-side delay; tolerance-based level match.",
+    "equal_lows": "Experimental event confirmed after the swing right-side delay; tolerance-based level match.",
+    "breaker_block": "Experimental event when a prior order-block approximation is invalidated with confirmed structure.",
 }
 
 
@@ -82,18 +115,20 @@ def build_indicator_inventory() -> pd.DataFrame:
             name,
             str(old.get("Display Name") or name.replace("_", " ").title()),
         )
-        stability = "Experimental" if name in {
-            "fair_value_gap", "order_block", "market_structure",
-        } else "Stable"
+        stability = definition["stability"].title()
         rows.append({
             "Number": number,
             "Canonical Name": name,
             "Display Name": display,
             "Category": definition["category"].replace("_", " ").title(),
-            "Status": "Added Phase 23.3" if name in PHASE_23_3 else str(old.get("Status") or "Existing"),
+            "Status": (
+                "Added Phase 23.4" if name in PHASE_23_4
+                else "Added Phase 23.3" if name in PHASE_23_3
+                else str(old.get("Status") or "Existing")
+            ),
             "Source File": source_text,
             "Registered": "Yes",
-            "Tested": "Focused" if name in PHASE_23_3 else str(old.get("Tested") or "Deterministic"),
+            "Tested": "Focused" if name in PHASE_23_3 | PHASE_23_4 else str(old.get("Tested") or "Deterministic"),
             "Required Columns": "; ".join(definition["required_columns"]),
             "Output Columns": "; ".join(definition["output_columns"]),
             "Default Parameters": json.dumps(definition["default_parameters"], sort_keys=True),

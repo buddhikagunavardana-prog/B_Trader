@@ -17,6 +17,16 @@ from src.indicators.market_strength.dmi import calculate_dmi
 from src.indicators.market_strength.elder_ray import calculate_elder_ray
 from src.indicators.market_strength.vortex import calculate_vortex
 from src.indicators.momentum.cci import calculate_cci
+from src.indicators.momentum.adaptive import (
+    calculate_correlation_trend_indicator,
+    calculate_cycle_identifier,
+    calculate_dynamic_momentum_index,
+    calculate_inverse_fisher_rsi,
+    calculate_laguerre_rsi,
+    calculate_squeeze_momentum,
+    calculate_trend_trigger_factor,
+    calculate_wavetrend_oscillator,
+)
 from src.indicators.momentum.cycles import (
     calculate_accelerator_oscillator,
     calculate_center_of_gravity,
@@ -66,6 +76,13 @@ from src.indicators.structure.smc import (
     calculate_market_structure,
     calculate_order_block,
 )
+from src.indicators.structure.price_action import (
+    calculate_breaker_block,
+    calculate_equal_highs,
+    calculate_equal_lows,
+    calculate_inverse_fair_value_gap,
+    calculate_liquidity_sweep,
+)
 from src.indicators.trend.advanced import (
     calculate_alma,
     calculate_dpo,
@@ -80,6 +97,16 @@ from src.indicators.trend.advanced import (
     calculate_zlema,
 )
 from src.indicators.trend.dema import calculate_dema
+from src.indicators.trend.filters import (
+    calculate_double_smoothed_ema,
+    calculate_ehlers_roofing_filter,
+    calculate_ehlers_super_smoother,
+    calculate_gaussian_moving_average,
+    calculate_jurik_moving_average_approximation,
+    calculate_sine_weighted_moving_average,
+    calculate_t3_moving_average,
+    calculate_triple_smoothed_ema,
+)
 from src.indicators.trend.ema import calculate_ema
 from src.indicators.trend.hma import calculate_hma
 from src.indicators.trend.ichimoku import calculate_ichimoku_cloud
@@ -91,6 +118,15 @@ from src.indicators.trend.tema import calculate_tema
 from src.indicators.trend.vwma import calculate_vwma
 from src.indicators.trend.wma import calculate_wma
 from src.indicators.volatility.atr import calculate_atr
+from src.indicators.volatility.estimators import (
+    calculate_average_daily_range,
+    calculate_close_to_close_volatility,
+    calculate_coefficient_of_variation,
+    calculate_median_absolute_deviation,
+    calculate_relative_average_true_range,
+    calculate_rogers_satchell_volatility,
+    calculate_yang_zhang_volatility,
+)
 from src.indicators.volatility.channels import (
     calculate_atr_bands,
     calculate_donchian_width,
@@ -157,6 +193,7 @@ class IndicatorDefinition:
     output_columns: tuple[str, ...]
     description: str
     dependencies: tuple[str, ...]
+    stability: str
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -170,6 +207,7 @@ class IndicatorDefinition:
             "output_columns": list(self.output_columns),
             "description": self.description,
             "dependencies": list(self.dependencies),
+            "stability": self.stability,
         }
 
 
@@ -188,6 +226,7 @@ class IndicatorRegistry:
         output_columns: tuple[str, ...] = (),
         description: str = "",
         dependencies: tuple[str, ...] = (),
+        stability: str = "stable",
     ) -> None:
         key = self._normalize(name)
         if not key or not callable(function):
@@ -201,6 +240,9 @@ class IndicatorRegistry:
             raise ValueError(f"output columns must be unique: {key}")
         if any(not str(column).strip() for column in required_columns):
             raise ValueError(f"required columns must be non-empty: {key}")
+        normalized_stability = str(stability).strip().lower()
+        if normalized_stability not in {"stable", "experimental"}:
+            raise ValueError(f"invalid indicator stability: {key}")
         definition = IndicatorDefinition(
             name=key,
             category=normalized_category,
@@ -212,6 +254,7 @@ class IndicatorRegistry:
             output_columns=tuple(output_columns) or (key.upper(),),
             description=str(description).strip() or f"Calculate {key.replace('_', ' ')}.",
             dependencies=tuple(self._normalize(item) for item in dependencies),
+            stability=normalized_stability,
         )
         self._validate_signature(definition, definition.default_params)
         self._definitions[key] = definition
@@ -297,6 +340,9 @@ class IndicatorRegistry:
             "volume_price_trend": "price_volume_trend",
             "klinger_volume_oscillator": "klinger_oscillator",
             "elder_force_index": "force_index",
+            "least_squares_moving_average": "linear_regression_trend",
+            "lsma": "linear_regression_trend",
+            "z_score": "zscore",
         }.get(key, key)
 
     @staticmethod
@@ -600,14 +646,17 @@ _INDICATOR_METADATA.update({
     "fair_value_gap": {
         "required_columns": ("high", "low"),
         "output_columns": ("FVG_BULLISH", "FVG_BEARISH", "FVG_LOWER", "FVG_UPPER"),
+        "stability": "experimental",
     },
     "order_block": {
         "required_columns": ("open", "high", "low", "close"),
         "output_columns": ("ORDER_BLOCK_BULLISH", "ORDER_BLOCK_BEARISH", "ORDER_BLOCK_LOWER", "ORDER_BLOCK_UPPER"),
+        "stability": "experimental",
     },
     "market_structure": {
         "required_columns": ("high", "low", "close"),
         "output_columns": ("BOS", "CHOCH", "MARKET_STRUCTURE_TREND"),
+        "stability": "experimental",
     },
 })
 
@@ -714,6 +763,37 @@ _INDICATOR_METADATA.update({
     "money_flow_oscillator": {"required_columns": ("high", "low", "close", "volume"), "output_columns": ("MONEY_FLOW_OSCILLATOR",)},
 })
 
+_INDICATOR_METADATA.update({
+    "t3_moving_average": {"required_columns": ("close",), "output_columns": ("T3_MOVING_AVERAGE",), "dependencies": ("ema",)},
+    "jurik_moving_average_approximation": {"required_columns": ("close",), "output_columns": ("JURIK_MOVING_AVERAGE_APPROXIMATION",), "stability": "experimental"},
+    "double_smoothed_ema": {"required_columns": ("close",), "output_columns": ("DOUBLE_SMOOTHED_EMA",), "dependencies": ("ema",)},
+    "triple_smoothed_ema": {"required_columns": ("close",), "output_columns": ("TRIPLE_SMOOTHED_EMA",), "dependencies": ("ema",)},
+    "gaussian_moving_average": {"required_columns": ("close",), "output_columns": ("GAUSSIAN_MOVING_AVERAGE",)},
+    "ehlers_super_smoother": {"required_columns": ("close",), "output_columns": ("EHLERS_SUPER_SMOOTHER",), "stability": "experimental"},
+    "ehlers_roofing_filter": {"required_columns": ("close",), "output_columns": ("EHLERS_ROOFING_FILTER",), "dependencies": ("ehlers_super_smoother",), "stability": "experimental"},
+    "sine_weighted_moving_average": {"required_columns": ("close",), "output_columns": ("SINE_WEIGHTED_MOVING_AVERAGE",)},
+    "dynamic_momentum_index": {"required_columns": ("close",), "output_columns": ("DYNAMIC_MOMENTUM_INDEX",), "dependencies": ("rsi", "standard_deviation")},
+    "laguerre_rsi": {"required_columns": ("close",), "output_columns": ("LAGUERRE_RSI",)},
+    "inverse_fisher_rsi": {"required_columns": ("close",), "output_columns": ("INVERSE_FISHER_RSI",), "dependencies": ("rsi",)},
+    "correlation_trend_indicator": {"required_columns": ("close",), "output_columns": ("CORRELATION_TREND_INDICATOR",)},
+    "trend_trigger_factor": {"required_columns": ("high", "low"), "output_columns": ("TREND_TRIGGER_FACTOR",)},
+    "wavetrend_oscillator": {"required_columns": ("high", "low", "close"), "output_columns": ("WAVETREND", "WAVETREND_SIGNAL")},
+    "squeeze_momentum": {"required_columns": ("high", "low", "close"), "output_columns": ("SQUEEZE_MOMENTUM", "SQUEEZE_ON"), "dependencies": ("bollinger_bands", "keltner_channel")},
+    "cycle_identifier": {"required_columns": ("close",), "output_columns": ("CYCLE_IDENTIFIER",), "stability": "experimental"},
+    "rogers_satchell_volatility": {"required_columns": ("open", "high", "low", "close"), "output_columns": ("ROGERS_SATCHELL_VOLATILITY",)},
+    "yang_zhang_volatility": {"required_columns": ("open", "high", "low", "close"), "output_columns": ("YANG_ZHANG_VOLATILITY",), "dependencies": ("rogers_satchell_volatility",)},
+    "close_to_close_volatility": {"required_columns": ("close",), "output_columns": ("CLOSE_TO_CLOSE_VOLATILITY",)},
+    "median_absolute_deviation": {"required_columns": ("close",), "output_columns": ("MEDIAN_ABSOLUTE_DEVIATION",)},
+    "average_daily_range": {"required_columns": ("high", "low"), "output_columns": ("AVERAGE_DAILY_RANGE",)},
+    "relative_average_true_range": {"required_columns": ("high", "low", "close"), "output_columns": ("RELATIVE_AVERAGE_TRUE_RANGE",), "dependencies": ("atr",)},
+    "coefficient_of_variation": {"required_columns": ("close",), "output_columns": ("COEFFICIENT_OF_VARIATION",), "dependencies": ("standard_deviation", "sma")},
+    "inverse_fair_value_gap": {"required_columns": ("high", "low", "close"), "output_columns": ("INVERSE_FVG_BULLISH", "INVERSE_FVG_BEARISH", "INVERSE_FVG_LOWER", "INVERSE_FVG_UPPER"), "dependencies": ("fair_value_gap",), "stability": "experimental"},
+    "liquidity_sweep": {"required_columns": ("high", "low", "close"), "output_columns": ("LIQUIDITY_SWEEP_HIGH", "LIQUIDITY_SWEEP_LOW", "LIQUIDITY_SWEEP_LEVEL"), "dependencies": ("swing_high_low",), "stability": "experimental"},
+    "equal_highs": {"required_columns": ("high", "low"), "output_columns": ("EQUAL_HIGHS", "EQUAL_HIGH_LEVEL"), "dependencies": ("swing_high_low",), "stability": "experimental"},
+    "equal_lows": {"required_columns": ("high", "low"), "output_columns": ("EQUAL_LOWS", "EQUAL_LOW_LEVEL"), "dependencies": ("swing_high_low",), "stability": "experimental"},
+    "breaker_block": {"required_columns": ("open", "high", "low", "close"), "output_columns": ("BREAKER_BLOCK_BULLISH", "BREAKER_BLOCK_BEARISH", "BREAKER_BLOCK_LOWER", "BREAKER_BLOCK_UPPER"), "dependencies": ("order_block", "market_structure"), "stability": "experimental"},
+})
+
 
 def _register_defaults() -> None:
     definitions = [
@@ -739,6 +819,14 @@ def _register_defaults() -> None:
         ("linear_regression_slope", "trend", calculate_linear_regression_slope, {"period": 20, "source": "close"}),
         ("time_series_forecast", "trend", calculate_time_series_forecast, {"period": 20, "source": "close"}),
         ("dpo", "trend", calculate_dpo, {"period": 20, "source": "close"}),
+        ("t3_moving_average", "trend", calculate_t3_moving_average, {"period": 5, "volume_factor": 0.7, "source": "close"}),
+        ("jurik_moving_average_approximation", "trend", calculate_jurik_moving_average_approximation, {"period": 14, "phase": 0.0, "power": 2.0, "source": "close"}),
+        ("double_smoothed_ema", "trend", calculate_double_smoothed_ema, {"period": 20, "source": "close"}),
+        ("triple_smoothed_ema", "trend", calculate_triple_smoothed_ema, {"period": 20, "source": "close"}),
+        ("gaussian_moving_average", "trend", calculate_gaussian_moving_average, {"period": 20, "sigma": 6.0, "source": "close"}),
+        ("ehlers_super_smoother", "trend", calculate_ehlers_super_smoother, {"period": 10, "source": "close"}),
+        ("ehlers_roofing_filter", "trend", calculate_ehlers_roofing_filter, {"high_pass_period": 48, "smooth_period": 10, "source": "close"}),
+        ("sine_weighted_moving_average", "trend", calculate_sine_weighted_moving_average, {"period": 20, "source": "close"}),
         ("rsi", "momentum", calculate_rsi, {"period": 14}),
         ("macd", "momentum", calculate_macd, {"fast": 12, "slow": 26, "signal": 9}),
         ("stochastic", "momentum", calculate_stochastic, {"k_period": 14, "d_period": 3}),
@@ -773,6 +861,14 @@ def _register_defaults() -> None:
         ("stochastic_momentum_index", "momentum", calculate_stochastic_momentum_index, {"period": 14, "smooth_period": 3, "signal_period": 3}),
         ("psychological_line", "momentum", calculate_psychological_line, {"period": 12, "source": "close"}),
         ("rainbow_oscillator", "momentum", calculate_rainbow_oscillator, {"period": 2, "layers": 10, "source": "close"}),
+        ("dynamic_momentum_index", "momentum", calculate_dynamic_momentum_index, {"volatility_period": 14, "min_period": 5, "max_period": 30, "source": "close"}),
+        ("laguerre_rsi", "momentum", calculate_laguerre_rsi, {"gamma": 0.7, "source": "close"}),
+        ("inverse_fisher_rsi", "momentum", calculate_inverse_fisher_rsi, {"period": 14, "smoothing_period": 9}),
+        ("correlation_trend_indicator", "momentum", calculate_correlation_trend_indicator, {"period": 20, "source": "close"}),
+        ("trend_trigger_factor", "momentum", calculate_trend_trigger_factor, {"period": 15}),
+        ("wavetrend_oscillator", "momentum", calculate_wavetrend_oscillator, {"channel_period": 10, "average_period": 21, "signal_period": 4}),
+        ("squeeze_momentum", "momentum", calculate_squeeze_momentum, {"period": 20, "bollinger_multiplier": 2.0, "keltner_multiplier": 1.5, "source": "close"}),
+        ("cycle_identifier", "momentum", calculate_cycle_identifier, {"period": 20, "source": "close"}),
         ("atr", "volatility", calculate_atr, {"period": 14}),
         ("bollinger_bands", "volatility", calculate_bollinger, {"period": 20, "std_dev": 2.0}),
         ("keltner_channel", "volatility", calculate_keltner_channel, {"ema_period": 20, "atr_period": 10, "multiplier": 2.0}),
@@ -795,6 +891,13 @@ def _register_defaults() -> None:
         ("keltner_width", "volatility", calculate_keltner_width, {"ema_period": 20, "atr_period": 10, "multiplier": 2.0}),
         ("parkinson_volatility", "volatility", calculate_parkinson_volatility, {"period": 20, "annualization": 365.0}),
         ("garman_klass_volatility", "volatility", calculate_garman_klass_volatility, {"period": 20, "annualization": 365.0}),
+        ("rogers_satchell_volatility", "volatility", calculate_rogers_satchell_volatility, {"period": 20, "annualization": 365.0}),
+        ("yang_zhang_volatility", "volatility", calculate_yang_zhang_volatility, {"period": 20, "annualization": 365.0}),
+        ("close_to_close_volatility", "volatility", calculate_close_to_close_volatility, {"period": 20, "annualization": 365.0, "source": "close"}),
+        ("median_absolute_deviation", "volatility", calculate_median_absolute_deviation, {"period": 20, "source": "close"}),
+        ("average_daily_range", "volatility", calculate_average_daily_range, {"period": 14}),
+        ("relative_average_true_range", "volatility", calculate_relative_average_true_range, {"period": 14}),
+        ("coefficient_of_variation", "volatility", calculate_coefficient_of_variation, {"period": 20, "source": "close"}),
         ("obv", "volume", calculate_obv, {}),
         ("vwap", "volume", calculate_vwap, {}),
         ("cmf", "volume", calculate_cmf, {"period": 20}),
@@ -838,6 +941,11 @@ def _register_defaults() -> None:
         ("fair_value_gap", "structure", calculate_fair_value_gap, {}),
         ("order_block", "structure", calculate_order_block, {"period": 20}),
         ("market_structure", "structure", calculate_market_structure, {"period": 20}),
+        ("inverse_fair_value_gap", "structure", calculate_inverse_fair_value_gap, {}),
+        ("liquidity_sweep", "structure", calculate_liquidity_sweep, {"period": 5}),
+        ("equal_highs", "structure", calculate_equal_highs, {"period": 5, "tolerance": 0.001}),
+        ("equal_lows", "structure", calculate_equal_lows, {"period": 5, "tolerance": 0.001}),
+        ("breaker_block", "structure", calculate_breaker_block, {"period": 20}),
         ("candlestick", "candlestick", calculate_candlestick_patterns, {}),
     ]
     for name, category, function, defaults in definitions:

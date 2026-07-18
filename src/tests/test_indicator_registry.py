@@ -12,12 +12,12 @@ from src.strategies.json_strategy_loader import load_json_strategy_file
 
 
 EXPECTED_CATEGORY_COUNTS = {
-    "trend": 22,
-    "momentum": 34,
-    "volatility": 22,
+    "trend": 30,
+    "momentum": 42,
+    "volatility": 29,
     "volume": 25,
     "market_strength": 8,
-    "structure": 10,
+    "structure": 15,
     "candlestick": 1,
 }
 
@@ -71,7 +71,7 @@ def _strategy(indicators: dict) -> dict:
 
 
 def test_professional_registry_inventory_and_categories():
-    assert len(indicator_registry.list_names()) == 122
+    assert len(indicator_registry.list_names()) == 150
     assert {
         category: len(indicator_registry.list_by_category(category))
         for category in indicator_registry.list_categories()

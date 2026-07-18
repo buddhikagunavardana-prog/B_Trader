@@ -34,6 +34,26 @@ PHASE_23_3_INDICATORS = {
     "money_flow_oscillator",
 }
 
+PHASE_23_4_INDICATORS = {
+    "t3_moving_average", "jurik_moving_average_approximation",
+    "double_smoothed_ema", "triple_smoothed_ema", "gaussian_moving_average",
+    "ehlers_super_smoother", "ehlers_roofing_filter",
+    "sine_weighted_moving_average", "dynamic_momentum_index", "laguerre_rsi",
+    "inverse_fisher_rsi", "correlation_trend_indicator",
+    "trend_trigger_factor", "wavetrend_oscillator", "squeeze_momentum",
+    "cycle_identifier", "rogers_satchell_volatility", "yang_zhang_volatility",
+    "close_to_close_volatility", "median_absolute_deviation",
+    "average_daily_range", "relative_average_true_range",
+    "coefficient_of_variation", "inverse_fair_value_gap", "liquidity_sweep",
+    "equal_highs", "equal_lows", "breaker_block",
+}
+
+PHASE_23_4_EXPERIMENTAL = {
+    "jurik_moving_average_approximation", "ehlers_super_smoother",
+    "ehlers_roofing_filter", "cycle_identifier", "inverse_fair_value_gap",
+    "liquidity_sweep", "equal_highs", "equal_lows", "breaker_block",
+}
+
 
 def _market_data(rows: int = 260) -> pd.DataFrame:
     index = pd.date_range("2026-03-01", periods=rows, freq="15min")
@@ -312,11 +332,116 @@ def test_phase_23_3_indicators_are_causal() -> None:
 
 def test_numbered_inventory_matches_registry() -> None:
     inventory = build_indicator_inventory()
-    assert len(inventory) == 122
-    assert inventory["Number"].tolist() == list(range(1, 123))
+    assert len(inventory) == 150
+    assert inventory["Number"].tolist() == list(range(1, 151))
     assert inventory["Canonical Name"].tolist() == indicator_registry.list_names()
     assert inventory["Required Columns"].ne("").all()
     assert inventory["Output Columns"].ne("").all()
+
+
+def test_phase_23_4_indicator_contracts_and_metadata() -> None:
+    assert len(indicator_registry.list_names()) == 150
+    assert len(set(indicator_registry.list_names())) == 150
+    assert PHASE_23_4_INDICATORS.issubset(indicator_registry.list_names())
+    market = _market_data()
+    original = market.copy(deep=True)
+    for name in sorted(PHASE_23_4_INDICATORS):
+        definition = indicator_registry.get(name)
+        assert definition["stability"] == (
+            "experimental" if name in PHASE_23_4_EXPERIMENTAL else "stable"
+        )
+        assert definition["required_columns"] and definition["output_columns"]
+        output = indicator_registry.calculate(name, market)
+        series = _series_outputs(output)
+        assert [item.name for item in series] == definition["output_columns"], name
+        for item in series:
+            assert len(item) == len(market)
+            assert item.index.equals(market.index)
+            if pd.api.types.is_numeric_dtype(item.dtype):
+                assert not np.isinf(item.to_numpy()).any(), name
+        missing = definition["required_columns"][0]
+        _expect_value_error(
+            lambda name=name, missing=missing: indicator_registry.calculate(
+                name, market.drop(columns=missing),
+            ),
+        )
+        period_key = next(
+            (key for key in definition["default_parameters"] if key == "period" or key.endswith("_period")),
+            None,
+        )
+        if period_key:
+            _expect_value_error(
+                lambda name=name, key=period_key: indicator_registry.calculate(
+                    name, market, {key: 0},
+                ),
+            )
+    pd.testing.assert_frame_equal(market, original, check_exact=True)
+
+
+def test_phase_23_4_representative_formulas_and_mappings() -> None:
+    market = _market_data(100)
+    period = 5
+    x = np.arange(period, dtype=float)
+    centered = x - x.mean()
+    denominator = np.square(centered).sum()
+    expected_lsma = market["close"].rolling(period).apply(
+        lambda values: float(values.mean() + np.dot(centered, values) / denominator * (period - 1 - x.mean())),
+        raw=True,
+    ).rename("LINEAR_REGRESSION_TREND")
+    pd.testing.assert_series_equal(
+        indicator_registry.calculate("least_squares_moving_average", market, {"period": period}),
+        expected_lsma,
+    )
+    mean = market["close"].rolling(period).mean()
+    deviation = market["close"].rolling(period).std()
+    pd.testing.assert_series_equal(
+        indicator_registry.calculate("z_score", market, {"period": period}),
+        ((market["close"] - mean) / deviation).rename("ZSCORE"),
+    )
+    pd.testing.assert_series_equal(
+        indicator_registry.calculate("average_daily_range", market, {"period": period}),
+        (market["high"] - market["low"]).rolling(period).mean().rename("AVERAGE_DAILY_RANGE"),
+    )
+    log_return = np.log(market["close"] / market["close"].shift())
+    pd.testing.assert_series_equal(
+        indicator_registry.calculate("close_to_close_volatility", market, {"period": period, "annualization": 365.0}),
+        (log_return.rolling(period).std() * np.sqrt(365.0)).rename("CLOSE_TO_CLOSE_VOLATILITY"),
+    )
+    rs_variance = np.log(market["high"] / market["open"]) * np.log(market["high"] / market["close"]) + np.log(market["low"] / market["open"]) * np.log(market["low"] / market["close"])
+    pd.testing.assert_series_equal(
+        indicator_registry.calculate("rogers_satchell_volatility", market, {"period": period, "annualization": 365.0}),
+        np.sqrt(rs_variance.rolling(period).mean().clip(lower=0.0) * 365.0).rename("ROGERS_SATCHELL_VOLATILITY"),
+    )
+    previous_close = market["close"].shift()
+    true_range = pd.concat([
+        market["high"] - market["low"],
+        (market["high"] - previous_close).abs(),
+        (market["low"] - previous_close).abs(),
+    ], axis=1).max(axis=1)
+    pd.testing.assert_series_equal(
+        indicator_registry.calculate("relative_average_true_range", market, {"period": period}),
+        (100.0 * true_range.rolling(period).mean() / market["close"]).rename("RELATIVE_AVERAGE_TRUE_RANGE"),
+    )
+    assert indicator_registry.get("least_squares_moving_average")["name"] == "linear_regression_trend"
+    assert indicator_registry.get("lsma")["name"] == "linear_regression_trend"
+    assert indicator_registry.get("z_score")["name"] == "zscore"
+
+
+def test_phase_23_4_requested_outputs_are_causal() -> None:
+    market = _market_data()
+    changed = market.copy()
+    cutoff = 180
+    changed.iloc[cutoff + 1 :, :] += 50_000.0
+    names = {
+        "dynamic_momentum_index", "squeeze_momentum", "cycle_identifier",
+        "inverse_fair_value_gap", "liquidity_sweep", "equal_highs",
+        "equal_lows", "breaker_block",
+    }
+    for name in sorted(names):
+        before = _series_outputs(indicator_registry.calculate(name, market))
+        after = _series_outputs(indicator_registry.calculate(name, changed))
+        for left, right in zip(before, after):
+            pd.testing.assert_series_equal(left.iloc[: cutoff + 1], right.iloc[: cutoff + 1])
 
 
 if __name__ == "__main__":
@@ -328,4 +453,7 @@ if __name__ == "__main__":
     test_phase_23_3_exact_values_and_canonical_mappings()
     test_phase_23_3_indicators_are_causal()
     test_numbered_inventory_matches_registry()
+    test_phase_23_4_indicator_contracts_and_metadata()
+    test_phase_23_4_representative_formulas_and_mappings()
+    test_phase_23_4_requested_outputs_are_causal()
     print("test_indicator_framework passed")
