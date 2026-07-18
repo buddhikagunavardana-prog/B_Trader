@@ -1,0 +1,6 @@
+Check,Result
+SMC-only additions,Pass
+No financial-performance fields in SMC schemas,Pass
+No execution or sizing behavior,Pass
+No data download or external network behavior,Pass
+Framework expansion frozen at 50,Pass

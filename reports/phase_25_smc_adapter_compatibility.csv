@@ -1,0 +1,5 @@
+Check,Frameworks,Result
+Direct adapter execution,15,Pass
+Normalized output validation,15,Pass
+Source non-mutation,15,Pass
+Repeated indicator calculations equal zero,15,Pass

@@ -17,7 +17,7 @@ def test_registry_preserves_phase_24_1_inventory():
     assert EXPECTED.issubset(trading_framework_registry.list_names())
     assert len(trading_framework_registry.list_definitions()) == len(trading_framework_registry.list_names())
     assert set(trading_framework_registry.list_categories()) == {
-        "multi_timeframe", "trend_following", "mean_reversion", "breakout", "momentum", "price_action",
+        "multi_timeframe", "trend_following", "mean_reversion", "breakout", "momentum", "price_action", "smc",
     }
 
 

@@ -64,6 +64,7 @@ Financial outcomes, profitability metrics, framework scores, ranks, winners, bes
 ## Portable examples
 
 - `structural_smoke.json` selects representative stateless, stateful, session-aware, daily, and multi-timeframe frameworks.
-- `structural_all_35.json` selects the current registry through `all`; the count is validated by release tests rather than embedded in campaign internals.
+- `structural_all_50.json` is the current primary configuration and selects the registry through `all`; the exact count is validated by release tests rather than embedded in campaign internals.
+- `structural_all_35.json` is retained as historical Phase 24.9 evidence and is not the current primary configuration.
 
 Both require separately supplied local source bindings and perform no network access.

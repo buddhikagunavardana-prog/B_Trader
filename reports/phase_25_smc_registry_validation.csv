@@ -1,0 +1,5 @@
+Check,Expected,Actual,Result
+Canonical framework count,50,50,Pass
+New SMC framework count,15,15,Pass
+SMC aliases,unambiguous,none,Pass
+Registry ordering,deterministic,sorted canonical IDs,Pass

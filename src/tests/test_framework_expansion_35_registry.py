@@ -5,10 +5,10 @@ from src.trading_frameworks.validator import validate_registry
 from src.trading_frameworks.loader import load_trading_framework
 
 
-def test_exact_35_registry():
+def test_exact_50_registry():
     names = trading_framework_registry.list_names()
-    assert len(names) == 35 and len(set(names)) == 35 and set(NEW_15).issubset(names)
-    assert len(list(Path("src/config/framework_research").glob("*.json"))) == 35
+    assert len(names) == 50 and len(set(names)) == 50 and set(NEW_15).issubset(names)
+    assert len(list(Path("src/config/framework_research").glob("*.json"))) == 50
     assert validate_registry().valid
     invalid = (
         ("connors_rsi_mean_reversion", {"long_entry": 60, "exit_level": 50}),
@@ -22,4 +22,4 @@ def test_exact_35_registry():
 
 
 if __name__ == "__main__":
-    test_exact_35_registry(); print("test_framework_expansion_35_registry passed")
+    test_exact_50_registry(); print("test_framework_expansion_35_registry passed")

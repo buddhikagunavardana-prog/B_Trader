@@ -1,0 +1,5 @@
+Check,Frameworks,Result
+Future mutation before cutoff,15,Pass
+Swing event confirmation timestamp,shared primitive,Pass
+No event backdating,shared primitive,Pass
+Completed-bar inputs,15,Pass

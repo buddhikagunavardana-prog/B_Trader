@@ -2,7 +2,7 @@
 
 ## Phase 24.6 coverage
 
-The adapter loads and normalizes all 35 canonical frameworks. The fifteen new frameworks use the same causal alignment, run-local state controller, policy reason codes, configuration identity, and manifest structure. Multi-component dependency requests store canonical name, component, alias, parameter fingerprint, and provenance; equivalent requests calculate once. Prior-session pivots use only completed prior session groups and deterministic IDs.
+The adapter loads and normalizes all 50 canonical frameworks. The SMC framework set uses the same causal alignment, run-local state controller, policy reason codes, configuration identity, and manifest structure. Multi-component dependency requests store canonical name, component, alias, parameter fingerprint, and provenance; equivalent requests calculate once. Prior-session pivots use only completed prior session groups and deterministic IDs.
 
 ## Phase 24.5 proposal-policy-controller flow
 

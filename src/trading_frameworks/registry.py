@@ -8,7 +8,7 @@ from src.trading_frameworks.base import BaseTradingFramework
 from src.trading_frameworks.exceptions import FrameworkNotFoundError
 
 
-VALID_CATEGORIES = {"multi_timeframe", "trend_following", "mean_reversion", "breakout", "momentum", "price_action"}
+VALID_CATEGORIES = {"multi_timeframe", "trend_following", "mean_reversion", "breakout", "momentum", "price_action", "smc"}
 
 
 def _normalize(name: str) -> str:
@@ -102,6 +102,13 @@ def _register_defaults() -> None:
     from src.trading_frameworks.trend_following.professional import ChandelierExitTrendFramework, PriceChannelTrendFramework, HeikinAshiTrendFramework, AroonTrendFramework
     from src.trading_frameworks.breakout.professional import MomentumAccelerationBreakoutFramework, VolumeExpansionBreakoutFramework, PivotRangeBreakoutFramework
     from src.trading_frameworks.price_action.professional import Nr4Nr7VolatilityBreakoutFramework, PinBarRejectionFramework, EngulfingConfirmationTrendFramework
+    from src.trading_frameworks.smc.frameworks import (
+        BalancedPriceRangeFramework, BreakerBlockFramework, BreakOfStructureFramework,
+        ChangeOfCharacterFramework, DisplacementFramework, EqualHighLowLiquidityFramework,
+        FairValueGapFramework, JudasSwingFramework, KillZoneSetupFramework,
+        LiquiditySweepFramework, MarketStructureShiftFramework, MitigationBlockFramework,
+        OrderBlockFramework, PowerOfThreeFramework, PremiumDiscountZoneFramework,
+    )
 
     for framework in (
         TripleScreenTradingFramework,
@@ -124,6 +131,11 @@ def _register_defaults() -> None:
         MomentumAccelerationBreakoutFramework, VolumeExpansionBreakoutFramework,
         Nr4Nr7VolatilityBreakoutFramework, PinBarRejectionFramework,
         EngulfingConfirmationTrendFramework, PivotRangeBreakoutFramework,
+        OrderBlockFramework, FairValueGapFramework, BreakOfStructureFramework,
+        ChangeOfCharacterFramework, LiquiditySweepFramework, EqualHighLowLiquidityFramework,
+        BreakerBlockFramework, MitigationBlockFramework, PremiumDiscountZoneFramework,
+        MarketStructureShiftFramework, BalancedPriceRangeFramework, DisplacementFramework,
+        JudasSwingFramework, KillZoneSetupFramework, PowerOfThreeFramework,
     ):
         trading_framework_registry.register(framework)
 

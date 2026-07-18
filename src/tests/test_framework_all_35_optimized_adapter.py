@@ -4,9 +4,9 @@ from src.trading_frameworks.registry import trading_framework_registry
 from src.utils.trading_framework_performance import _context
 
 
-def test_framework_all_35_optimized_adapter():
+def test_framework_all_50_optimized_adapter():
     names = trading_framework_registry.list_names()
-    assert len(names) == 35
+    assert len(names) == 50
     for name in names:
         source = _context(name, 80).frames
         before = {role: frame.copy(deep=True) for role, frame in source.items()}
@@ -17,4 +17,4 @@ def test_framework_all_35_optimized_adapter():
 
 
 if __name__ == "__main__":
-    test_framework_all_35_optimized_adapter(); print("test_framework_all_35_optimized_adapter passed")
+    test_framework_all_50_optimized_adapter(); print("test_framework_all_35_optimized_adapter passed")

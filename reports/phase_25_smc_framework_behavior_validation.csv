@@ -1,0 +1,5 @@
+Check,Frameworks,Result
+Deterministic normalized output,15,Pass
+Explicit lifecycle and reason codes,15,Pass
+Semantic distinction fixtures,"BOS/CHoCH/MSS and order/breaker/mitigation",Pass
+Shared primitive lifecycle,"swings/FVG/liquidity/dealing range",Pass

@@ -1,0 +1,5 @@
+Check,Frameworks,Result
+IANA timezone validation,"judas_swing/kill_zone_setup/power_of_three",Pass
+DST-safe conversion,"judas_swing/kill_zone_setup/power_of_three",Pass
+Configured session bounds,"judas_swing/kill_zone_setup/power_of_three",Pass
+Higher-timeframe backward alignment,premium_discount_zone,Pass

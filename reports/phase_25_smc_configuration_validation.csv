@@ -1,0 +1,5 @@
+Check,Expected,Actual,Result
+Framework configuration count,50,50,Pass
+New SMC configurations,15,15,Pass
+Unknown fields,rejected,rejected,Pass
+Invalid and contradictory values,rejected,rejected,Pass

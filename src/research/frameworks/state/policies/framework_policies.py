@@ -5,9 +5,13 @@ STATEFUL_SETUP_FRAMEWORKS = frozenset({
     "cci_trend_pullback", "momentum_acceleration_breakout", "volume_expansion_breakout",
     "nr4_nr7_volatility_breakout", "pin_bar_rejection",
     "engulfing_confirmation_trend", "pivot_range_breakout",
+    "order_block", "fair_value_gap", "break_of_structure", "change_of_character",
+    "liquidity_sweep", "equal_high_low_liquidity", "breaker_block", "mitigation_block",
+    "premium_discount_zone", "market_structure_shift", "balanced_price_range",
+    "displacement", "judas_swing", "kill_zone_setup", "power_of_three",
 })
 
-SESSION_BOUND_FRAMEWORKS = frozenset({"opening_range_breakout", "pivot_range_breakout"})
+SESSION_BOUND_FRAMEWORKS = frozenset({"opening_range_breakout", "pivot_range_breakout", "judas_swing", "kill_zone_setup", "power_of_three"})
 LEVEL_FRAMEWORKS = frozenset({"support_resistance_bounce", "pin_bar_rejection"})
 EVENT_FRAMEWORKS = frozenset({
     "parabolic_sar_trend", "dual_moving_average_crossover", "macd_momentum",
@@ -18,6 +22,10 @@ EVENT_FRAMEWORKS = frozenset({
     "volume_expansion_breakout", "nr4_nr7_volatility_breakout", "pin_bar_rejection",
     "engulfing_confirmation_trend", "pivot_range_breakout", "stochastic_pullback_trend",
     "williams_r_reversal", "cci_trend_pullback", "connors_rsi_mean_reversion",
+    "order_block", "fair_value_gap", "break_of_structure", "change_of_character",
+    "liquidity_sweep", "equal_high_low_liquidity", "breaker_block", "mitigation_block",
+    "market_structure_shift", "balanced_price_range", "displacement", "judas_swing",
+    "kill_zone_setup", "power_of_three",
 })
 
 

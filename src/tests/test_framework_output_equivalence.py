@@ -3,7 +3,7 @@ from src.research.frameworks.profiling.reporting import write_equivalence_and_ca
 
 def test_framework_output_equivalence():
     equivalence, _ = write_equivalence_and_causality_reports(rows=100)
-    assert len(equivalence) == 35 and equivalence["Result"].eq("Pass").all()
+    assert len(equivalence) == 50 and equivalence["Result"].eq("Pass").all()
 
 
 if __name__ == "__main__":

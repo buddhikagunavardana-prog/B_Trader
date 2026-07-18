@@ -1,0 +1,4 @@
+Check,Frameworks,Rows,ChunkRows,Result
+Continuous versus chunked,15,60,30,Pass
+Dependency-aware warm-up,15,60,30,Pass
+Deterministic merge,15,60,30,Pass

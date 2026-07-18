@@ -10,6 +10,8 @@ __pycache__/
 
 # Cached Binance data
 data/cache/
+data/raw/
+raw_market_data/
 reports/research_runs/
 reports/historical_campaigns/
 historical_campaigns/
@@ -25,10 +27,18 @@ historical_campaigns/
 historical_runs/
 **/historical_runs/
 **/chunks/chunk_*/
+**/checkpoints/
+**/test_checkpoints/
+**/generated_decisions/
 **/*.lock
 **/*.tmp
 *.recovery.patch
 phase_*_interrupted_recovery.patch
 *.trace
+*.prof
+*.pstats
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .env
 .env.*

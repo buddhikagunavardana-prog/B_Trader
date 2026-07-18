@@ -1,0 +1,5 @@
+Check,Expected,Actual,Result
+All-framework tasks,50,50,Pass
+Framework configurations,50,50,Pass
+Concurrency,1,1,Pass
+Dynamic all selector,registry driven,registry driven,Pass

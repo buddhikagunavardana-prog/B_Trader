@@ -10,10 +10,10 @@ from src.research.frameworks.historical.campaign.configuration import (
 
 def test_portable_campaign_configurations_load():
     smoke = load_campaign_configuration("src/config/framework_research/historical/campaigns/structural_smoke.json")
-    all_35 = load_campaign_configuration("src/config/framework_research/historical/campaigns/structural_all_35.json")
-    assert smoke.concurrency == all_35.concurrency == 1
-    assert all_35.framework_configuration_names == ("all",)
-    assert all_35.output_root == "reports/historical_campaigns"
+    all_50 = load_campaign_configuration("src/config/framework_research/historical/campaigns/structural_all_50.json")
+    assert smoke.concurrency == all_50.concurrency == 1
+    assert all_50.framework_configuration_names == ("all",)
+    assert all_50.output_root == "reports/historical_campaigns"
 
 
 def test_campaign_configuration_rejects_unknown_fields(tmp_path):

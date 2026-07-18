@@ -37,7 +37,7 @@ def campaign_config(root, framework="ema_ribbon_trend", source_name="local", ran
     return HistoricalCampaignConfig(**values)
 
 
-def all_35_bindings(rows: int = 20):
+def all_50_bindings(rows: int = 20):
     names = trading_framework_registry.list_names()
     intraday = []
     groups = {
@@ -46,6 +46,7 @@ def all_35_bindings(rows: int = 20):
         "daily_1d": ("turtle_trading",),
         "multi_timeframe": ("triple_screen_trading",),
     }
+    groups["smc_multi_timeframe"] = ("premium_discount_zone",)
     special = {name for values in groups.values() for name in values}
     intraday.extend(name for name in names if name not in special)
     result = {}
@@ -55,6 +56,7 @@ def all_35_bindings(rows: int = 20):
         "four_hour_4h": "ichimoku_cloud_trading",
         "daily_1d": "turtle_trading",
         "multi_timeframe": "triple_screen_trading",
+        "smc_multi_timeframe": "premium_discount_zone",
     }
     applicable = {"intraday_15m": tuple(intraday), **groups}
     for source_name, representative in representatives.items():
@@ -67,3 +69,6 @@ def all_35_bindings(rows: int = 20):
             applicable_frameworks=applicable[source_name],
         )
     return result
+
+
+all_35_bindings = all_50_bindings

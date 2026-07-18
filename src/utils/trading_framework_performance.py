@@ -53,6 +53,11 @@ def _context(name: str, rows: int) -> FrameworkContext:
             "setup": _precomputed_frame(max(2, rows // 3), "15min"),
             "entry": _precomputed_frame(rows, "5min"),
         })
+    if name == "premium_discount_zone":
+        return FrameworkContext({
+            "execution": _precomputed_frame(rows, "15min"),
+            "structure": _precomputed_frame(max(20, rows // 4), "1h"),
+        })
     return FrameworkContext({"execution": _precomputed_frame(rows)})
 
 
