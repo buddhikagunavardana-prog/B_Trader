@@ -1,0 +1,6 @@
+Framework,Scenario,Rows,Deterministic,Causal,Non-Mutating,Output Valid,Warnings,Result
+bollinger_mean_reversion,deterministic_precomputed,200,True,True,True,True,0,Pass
+donchian_breakout,deterministic_precomputed,200,True,True,True,True,0,Pass
+ichimoku_cloud_trading,deterministic_precomputed,200,True,True,True,True,0,Pass
+triple_screen_trading,deterministic_precomputed,200,True,True,True,True,0,Pass
+turtle_trading,deterministic_precomputed,200,True,True,True,True,0,Pass

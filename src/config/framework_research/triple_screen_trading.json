@@ -1,0 +1,20 @@
+{
+  "allow_experimental": false,
+  "configuration_version": "1.0",
+  "framework": "triple_screen_trading",
+  "framework_version": "1.0.0",
+  "include_diagnostics": true,
+  "include_warnings": true,
+  "market_type": "crypto_spot",
+  "output_mode": "dataframe",
+  "parameters": {},
+  "preparation_mode": "precomputed_only",
+  "primary_role": "entry",
+  "random_seed": 0,
+  "run_id": "example_triple_screen",
+  "start_timestamp": null,
+  "end_timestamp": null,
+  "symbol": "SYNTHETIC-USD",
+  "timeframe_roles": {"entry": "5m", "setup": "15m", "trend": "1h"},
+  "warmup_policy": "skip"
+}

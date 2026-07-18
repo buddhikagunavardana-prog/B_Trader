@@ -111,6 +111,44 @@ class BaseTradingFramework(ABC):
             framework_version=self.metadata.version,
         )
 
+    def execute_prepared(
+        self,
+        context: FrameworkContext,
+        timestamp: pd.Timestamp | str,
+    ) -> FrameworkDecision:
+        """Execute an already validated, causally sliced context efficiently.
+
+        Research adapters may use this after validating complete source frames.
+        Ordinary callers should continue to use :meth:`execute`.
+        """
+        decision_timestamp = pd.Timestamp(timestamp)
+        missing_roles = [role for role in self.metadata.timeframe_roles if role not in context.frames]
+        if missing_roles:
+            raise FrameworkDataError(f"missing prepared timeframe roles: {', '.join(missing_roles)}")
+        for role in self.metadata.timeframe_roles:
+            frame = context.frames[role]
+            missing_columns = [
+                column for column in self.schema.required_columns_by_role.get(role, ())
+                if column not in frame.columns
+            ]
+            if missing_columns:
+                raise FrameworkDataError(f"prepared role '{role}' missing columns: {', '.join(missing_columns)}")
+            if len(frame) and frame.index[-1] > decision_timestamp:
+                raise FrameworkDataError(f"prepared role '{role}' contains future rows")
+        short = [
+            f"{role} requires {minimum} rows; received {len(context.frames.get(role, ()))}"
+            for role, minimum in self.minimum_history.items()
+            if len(context.frames.get(role, ())) < minimum
+        ]
+        if short:
+            return self.no_trade(decision_timestamp, "Insufficient history.", tuple(short))
+        decision = self.generate_decision(context, decision_timestamp)
+        return replace(
+            decision,
+            active_timeframe=decision.active_timeframe or self.metadata.default_timeframes.get(self.execution_role),
+            framework_version=self.metadata.version,
+        )
+
     @abstractmethod
     def generate_decision(
         self,

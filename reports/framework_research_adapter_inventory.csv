@@ -1,0 +1,8 @@
+Adapter Component,Responsibility,Status,Source Path,Test Coverage,Notes
+models,"Typed research configuration, prepared data, alignment, validation, and result models",Complete,src/research/frameworks/models.py,models; configuration,Phase 24.2 deterministic foundation
+configuration,Versioned JSON persistence and experimental controls,Complete,src/research/frameworks/configuration.py,configuration,Phase 24.2 deterministic foundation
+preparation,Precomputed-only and explicit compute-missing preparation,Complete,src/research/frameworks/preparation.py,preparation; causality,Phase 24.2 deterministic foundation
+alignment,Backward-as-of completed-bar alignment,Complete,src/research/frameworks/alignment.py,alignment; causality,Phase 24.2 deterministic foundation
+adapter,Chronological normalized decision-series generation,Complete,src/research/frameworks/adapter.py,decision series; causality,Phase 24.2 deterministic foundation
+validator,Structured output and repeatability validation,Complete,src/research/frameworks/validator.py,validation,Phase 24.2 deterministic foundation
+reporting,"Deterministic inventory, validation, and performance reports",Complete,src/research/frameworks/reporting.py,reporting,Phase 24.2 deterministic foundation
