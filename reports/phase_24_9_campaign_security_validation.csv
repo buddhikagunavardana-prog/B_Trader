@@ -1,0 +1,5 @@
+validation,status,evidence
+path_traversal,pass,campaign source-set and task path traversal rejected
+identity_privacy,pass,machine-specific source locations excluded from deterministic identity snapshots
+runtime_artifacts,pass,campaign runtime manifests children locks temporary files and bindings ignored
+network_isolation,pass,campaign tests used synthetic local sources without network access

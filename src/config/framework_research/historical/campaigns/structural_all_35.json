@@ -1,0 +1,23 @@
+{
+  "campaign_name": "structural_all_35",
+  "framework_configuration_names": ["all"],
+  "source_set_names": ["intraday_15m", "hourly_1h", "four_hour_4h", "daily_1d", "multi_timeframe"],
+  "research_ranges": [{"name": "full_local_source"}],
+  "chunk_size_rows": 1000,
+  "warmup_rows": 60,
+  "warmup_safety_margin": 5,
+  "overlap_policy": "dependency_aware",
+  "diagnostic_level": "standard",
+  "snapshot_mode": "none",
+  "output_root": "reports/historical_campaigns",
+  "failure_policy": "fail_fast",
+  "cancellation_behavior": "stop_between_tasks",
+  "structural_aggregation": {"enabled": true, "include_direction_counts": true},
+  "concurrency": 1,
+  "artifact_format": "csv",
+  "compression": "gzip",
+  "maximum_memory_bytes": 256000000,
+  "maximum_output_rows_per_artifact": 100000,
+  "strict_integrity_mode": true,
+  "manifest_schema_version": "1.0"
+}

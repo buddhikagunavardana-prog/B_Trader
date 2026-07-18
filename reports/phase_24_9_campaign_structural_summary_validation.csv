@@ -1,0 +1,5 @@
+validation,status,evidence
+validated_children_only,pass,only integrity-valid child results entered structural output
+deterministic_order,pass,summary followed canonical campaign task order
+deterministic_fingerprint,pass,equivalent structural inputs produced identical aggregate fingerprints
+bounded_metadata,pass,summary retained counts fingerprints and categorical state evidence only

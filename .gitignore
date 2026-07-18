@@ -11,6 +11,15 @@ __pycache__/
 # Cached Binance data
 data/cache/
 reports/research_runs/
+reports/historical_campaigns/
+historical_campaigns/
+**/historical_campaigns/
+**/campaign_plan.json
+**/campaign_manifest.json
+**/campaign_status.json
+**/campaign_integrity.json
+**/task_results/
+**/structural_summary_manifest.json
 
 # Historical research runtime and recovery artifacts
 historical_runs/

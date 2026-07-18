@@ -1,0 +1,5 @@
+validation,status,evidence
+serial_execution,pass,concurrency fixed at one and child tasks executed in canonical order
+phase_24_8_delegation,pass,child plan run validation resume and merge used existing historical APIs
+child_reuse,pass,integrity-valid completed children reused without recomputation
+cancellation_pause,pass,safe boundaries preserved the last valid child result

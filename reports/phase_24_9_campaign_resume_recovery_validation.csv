@@ -1,0 +1,6 @@
+validation,status,evidence
+interrupted_campaign,pass,resume continued in canonical task order
+stale_manifest,pass,valid task result and child were recovered when campaign manifest lagged
+stale_summary,pass,stale aggregate fingerprint detected for regeneration
+affected_task_only,pass,corrupt task invalidated while unrelated valid child was retained
+orphan_detection,pass,orphan child directory reported without automatic deletion

@@ -1,0 +1,5 @@
+validation,status,evidence
+registry_count,pass,current registry contains exactly 35 canonical frameworks
+configuration_count,pass,all 35 canonical framework configurations resolved successfully
+campaign_planning,pass,all registry configurations produced one compatible campaign task
+future_expansion,pass,campaign planner derives selection from registry without fixed internal count

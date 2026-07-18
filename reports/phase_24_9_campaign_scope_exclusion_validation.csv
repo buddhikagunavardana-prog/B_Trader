@@ -1,0 +1,5 @@
+validation,status,evidence
+financial_fields,pass,structural schema guard rejected prohibited financial field names
+ranking_semantics,pass,structural schema guard rejected scoring ordering and recommendation fields
+execution_scope,pass,no paper live broker exchange AI GUI or web service integration added
+research_scope,pass,no indicator framework parameter-search or child execution logic added

@@ -1,0 +1,5 @@
+validation,status,evidence
+canonical_identity,pass,equivalent mapping order produced identical campaign and task identities
+matrix_expansion,pass,framework source-set and research-range tasks expanded deterministically
+plan_only,pass,no campaign or child runtime directory created during planning
+duplicate_rejection,pass,duplicate canonical task identities rejected

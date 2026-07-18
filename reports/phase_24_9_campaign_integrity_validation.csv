@@ -1,0 +1,5 @@
+validation,status,evidence
+campaign_schema,pass,plan and manifest schema versions validated strictly
+child_integrity,pass,child artifacts checkpoints manifests and merge evidence validated
+aggregate_integrity,pass,aggregate campaign identity and fingerprint validated
+corruption_rejection,pass,corrupt child artifact and unsupported manifest version rejected

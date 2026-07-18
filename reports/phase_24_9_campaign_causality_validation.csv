@@ -1,0 +1,5 @@
+validation,status,evidence
+future_change_invariance,pass,future source changes did not alter pre-cutoff child decisions
+chunk_boundary,pass,pre-cutoff equality held across a child chunk boundary
+multi_timeframe_alignment,pass,explicit completed-bar source roles remained delegated to Phase 24.8
+campaign_boundary,pass,independent child ordering introduced no predecessor-state coupling

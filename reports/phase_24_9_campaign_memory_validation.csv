@@ -1,0 +1,5 @@
+validation,status,evidence
+active_child_limit,pass,only one child task active at a time
+bounded_aggregation,pass,structural metadata collected one child chunk at a time
+reference_release,pass,chunk frame released before the next chunk or child
+contract_rejection,pass,child memory limit violation failed without silent boundary changes
