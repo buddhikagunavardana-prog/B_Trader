@@ -1,0 +1,2 @@
+Framework,Requests,Aliases,Deterministic,Deduplicated,Collision Safe,Computed Columns,Result
+ema_ribbon_trend,5,EMA_8;EMA_13;EMA_21;EMA_34;EMA_55,True,True,True,ATR;EMA_13;EMA_21;EMA_34;EMA_55;EMA_8,Pass

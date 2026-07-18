@@ -18,6 +18,8 @@ DECISION_COLUMNS = (
     "warmup_complete", "decision_valid", "skip_reason",
 )
 
+STATE_COLUMNS=("research_position_state","previous_position_state","position_transition","bars_in_position_state","setup_state","previous_setup_state","setup_id","setup_age","setup_transition","session_id","session_state","session_open","session_close","opening_range_complete","state_warning","state_valid")
+
 
 def validate_decision_series(frame: pd.DataFrame) -> ResearchValidationResult:
     issues: list[ResearchValidationIssue] = []

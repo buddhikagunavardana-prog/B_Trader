@@ -79,7 +79,9 @@ Performance reporting separates preparation, alignment, decision-series generati
 
 ## Limitations and next integration
 
-The adapter does not infer position state from entries, because doing so would become fill/execution simulation. Consequently, exit requests that depend on a supplied open position require a future execution-aware consumer. Missing-bar policy is explicit but does not infer bars. Runtime per-run decision files are not committed. Phase 24.3 can add a small research-run artifact manager and streaming/chunked decision output while maintaining the no-profitability and no-execution boundary.
+The adapter does not infer fills or broker positions. Phase 24.4 adds a separate advisory research-state controller so exit-capable framework decisions can receive prior signal context without simulating execution. Missing-bar policy remains explicit and runtime decision files are not committed.
+
+Stateful research is enabled by a backward-compatible configuration default and may be disabled for the original stateless output. State columns are appended; existing normalized columns and framework APIs remain unchanged. See `framework_research_state.md`.
 
 ## Phase 24.3 expansion and manifests
 

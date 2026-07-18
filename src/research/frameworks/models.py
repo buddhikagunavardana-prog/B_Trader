@@ -39,10 +39,21 @@ class FrameworkResearchConfiguration:
     random_seed: int = 0
     configuration_version: str = "1.0"
     run_id: str | None = None
+    enable_stateful_research: bool = True
+    position_transition_policy: str = "conservative"
+    reverse_on_opposite_signal: bool = False
+    cooldown_bars: int = 0
+    allow_repeated_entries: bool = False
+    setup_expiration_defaults: Mapping[str, int] = field(default_factory=dict)
+    session_configuration: Mapping[str, Any] = field(default_factory=dict)
+    state_diagnostics_level: str = "standard"
+    persist_state_snapshots: bool = False
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "parameters", dict(self.parameters))
         object.__setattr__(self, "timeframe_roles", dict(self.timeframe_roles))
+        object.__setattr__(self, "setup_expiration_defaults", dict(self.setup_expiration_defaults))
+        object.__setattr__(self, "session_configuration", dict(self.session_configuration))
         if self.start_timestamp is not None:
             object.__setattr__(self, "start_timestamp", pd.Timestamp(self.start_timestamp))
         if self.end_timestamp is not None:
@@ -66,6 +77,12 @@ class FrameworkResearchConfiguration:
             "include_diagnostics": self.include_diagnostics, "include_warnings": self.include_warnings,
             "allow_experimental": self.allow_experimental, "preparation_mode": self.preparation_mode.value,
             "random_seed": self.random_seed, "configuration_version": self.configuration_version,
+            "enable_stateful_research": self.enable_stateful_research,
+            "position_transition_policy": self.position_transition_policy,
+            "reverse_on_opposite_signal": self.reverse_on_opposite_signal,
+            "cooldown_bars": self.cooldown_bars,"allow_repeated_entries": self.allow_repeated_entries,
+            "setup_expiration_defaults":dict(self.setup_expiration_defaults),"session_configuration":dict(self.session_configuration),
+            "state_diagnostics_level":self.state_diagnostics_level,"persist_state_snapshots":self.persist_state_snapshots,
         }
         if include_run_id:
             result["run_id"] = self.run_id

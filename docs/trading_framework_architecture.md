@@ -67,3 +67,5 @@ This release provides architecture and deterministic reference logic, not valida
 A future GUI can consume registry/schema dictionaries for framework discovery and safe parameter controls. A future research pipeline can supply precomputed frames, record immutable decisions, route risk proposals through the risk engine, and compare frameworks without changing their execution contract.
 
 Phase 24.3 expands the same contract to twenty canonical frameworks and adds `momentum` and `price_action` categories. Similar event frameworks share a rule engine, but each remains an explicit registry class with its own schema, metadata, dependencies, parameters, source module, and example configuration. Event signals represent transitions; persistent states must not emit repeated entries.
+
+Phase 24.4 places execution-free research state after framework decisions. The controller—not framework instances—owns setup, advisory-position, and session transitions, preventing hidden mutable state and preserving independent-run reproducibility.

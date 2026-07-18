@@ -10,7 +10,9 @@ from src.research.frameworks.alignment import alignment_diagnostics, build_causa
 from src.research.frameworks.configuration import validate_research_configuration
 from src.research.frameworks.models import DecisionSeriesResult, DecisionSeriesRow, FrameworkResearchConfiguration
 from src.research.frameworks.preparation import prepare_timeframe_data
-from src.research.frameworks.validator import DECISION_COLUMNS, validate_decision_series
+from src.research.frameworks.validator import DECISION_COLUMNS, STATE_COLUMNS, validate_decision_series
+from src.research.frameworks.state import ResearchStateController
+from src.trading_frameworks.models import FrameworkDirection
 from src.research.run_management.run_identity import stable_identity_hash
 from src.trading_frameworks.loader import load_trading_framework
 from src.trading_frameworks.models import FrameworkContext
@@ -80,6 +82,7 @@ class FrameworkResearchAdapter:
         alignment = build_causal_alignment(prepared, self.configuration.primary_role, self.configuration.start_timestamp, self.configuration.end_timestamp)
         alignment_seconds = perf_counter() - align_started
         decision_started = perf_counter(); rows = []; skipped = 0
+        controller = ResearchStateController(self.framework.metadata.name,cooldown_bars=self.configuration.cooldown_bars,allow_repeated_entries=self.configuration.allow_repeated_entries,reverse_on_opposite_signal=self.configuration.reverse_on_opposite_signal) if self.configuration.enable_stateful_research else None
         stale_ages: dict[str, list[float]] = {role: [] for role in prepared}
         for index, timestamp in enumerate(alignment.timeline):
             diagnostics = alignment_diagnostics(alignment, index)
@@ -95,16 +98,24 @@ class FrameworkResearchAdapter:
                 for role in prepared
             )
             if not warmup and self.configuration.warmup_policy == "skip":
-                rows.append(_skipped_row(timestamp, self.framework, diagnostic_payload, positions, "warmup_incomplete")); skipped += 1
+                row=_skipped_row(timestamp, self.framework, diagnostic_payload, positions, "warmup_incomplete")
+                if controller:
+                    snap=controller.snapshot(timestamp);session={k:v for k,v in snap.session.items() if k!="entry_allowed"};row.update({"research_position_state":snap.position["status"],"previous_position_state":snap.position["status"],"position_transition":"none","bars_in_position_state":snap.position["bars_in_state"],"setup_state":snap.setup["status"],"previous_setup_state":snap.setup["status"],"setup_id":snap.setup["setup_id"],"setup_age":snap.setup["bars_alive"],"setup_transition":"none",**session,"state_warning":"","state_valid":True})
+                rows.append(row); skipped += 1
                 continue
+            direction=FrameworkDirection.FLAT
+            if controller and controller.position.direction in {"long","short"}: direction=FrameworkDirection(controller.position.direction)
             context = FrameworkContext(
                 {role: item.frame.iloc[:positions[role]] for role, item in prepared.items()},
+                current_position=direction,
                 symbol=self.configuration.symbol,
             )
             decision = self.framework.execute_prepared(context, timestamp)
-            rows.append(_decision_row(decision, diagnostic_payload, positions, self.configuration.include_diagnostics, self.configuration.include_warnings))
+            row=_decision_row(decision, diagnostic_payload, positions, self.configuration.include_diagnostics, self.configuration.include_warnings)
+            if controller: row.update(controller.apply(decision,timestamp))
+            rows.append(row)
         decision_seconds = perf_counter() - decision_started
-        frame = pd.DataFrame(rows, columns=DECISION_COLUMNS)
+        frame = pd.DataFrame(rows, columns=DECISION_COLUMNS + (STATE_COLUMNS if controller else ()))
         duration = perf_counter() - started
         validation = validate_decision_series(frame)
         warnings = tuple(warning for item in prepared.values() for warning in item.warnings)

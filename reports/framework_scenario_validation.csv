@@ -1,0 +1,21 @@
+Framework,Entry Scenario,Neutral Scenario,Exit Scenario,Short Input,Future Change,State Evolution,Result
+adx_trend_following,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+atr_volatility_breakout,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+bollinger_mean_reversion,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+bollinger_squeeze_breakout,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+donchian_breakout,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+dual_moving_average_crossover,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+ema_ribbon_trend,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+ichimoku_cloud_trading,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+inside_bar_breakout,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+keltner_channel_breakout,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+macd_momentum,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+opening_range_breakout,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+parabolic_sar_trend,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+rsi_pullback_trend,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+supertrend_trend_following,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+support_resistance_bounce,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+triple_screen_trading,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+turtle_trading,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+vwap_mean_reversion,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass
+zscore_mean_reversion,Pass,Pass,Advisory where position-aware,Pass,Pass,Pass,Pass

@@ -1,7 +1,7 @@
 import json
 
 from src.research.frameworks.adapter import run_framework_decision_series
-from src.research.frameworks.validator import DECISION_COLUMNS
+from src.research.frameworks.validator import DECISION_COLUMNS,STATE_COLUMNS
 from src.tests.framework_research_test_data import precomputed_data, research_configuration, synthetic_scenarios
 from src.trading_frameworks.registry import trading_framework_registry
 from src.trading_frameworks.loader import load_trading_framework
@@ -12,7 +12,7 @@ from src.trading_frameworks.models import FrameworkContext
 def test_all_five_frameworks_generate_normalized_chronological_series():
     for name in ("triple_screen_trading","turtle_trading","ichimoku_cloud_trading","bollinger_mean_reversion","donchian_breakout"):
         result = run_framework_decision_series(research_configuration(name), precomputed_data(name, 100))
-        assert tuple(result.decisions.columns) == DECISION_COLUMNS
+        assert tuple(result.decisions.columns) == DECISION_COLUMNS+STATE_COLUMNS
         assert result.decisions["timestamp"].is_monotonic_increasing
         assert result.validation.valid, (name, result.validation.to_dict())
         assert not ({"pnl", "roi", "win_rate", "profit_factor", "drawdown", "sharpe", "balance"} & set(result.summary))
