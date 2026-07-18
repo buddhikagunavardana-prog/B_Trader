@@ -18,7 +18,7 @@ def _precomputed_frame(rows: int, freq: str = "5min") -> pd.DataFrame:
     index = pd.date_range("2026-01-01", periods=rows, freq=freq, tz="UTC")
     base = np.linspace(100.0, 120.0, rows)
     return pd.DataFrame({
-        "high": base + 1, "low": base - 1, "close": base, "volume": np.full(rows, 1500.0),
+        "open": base - .1, "high": base + 1, "low": base - 1, "close": base, "volume": np.full(rows, 1500.0),
         "EMA": base - 1, "MACD": np.ones(rows), "MACD_SIGNAL": np.zeros(rows), "MACD_HISTOGRAM": np.ones(rows), "RSI": np.full(rows, 25.0),
         "STOCHASTIC_K": np.full(rows, 20.0), "FORCE_INDEX": np.ones(rows), "ATR": np.full(rows, 1.5),
         "DONCHIAN_UPPER": base + 2, "DONCHIAN_LOWER": base - 2,
@@ -34,6 +34,15 @@ def _precomputed_frame(rows: int, freq: str = "5min") -> pd.DataFrame:
         "PARABOLIC_SAR": base-1, "PARABOLIC_SAR_DIRECTION": np.ones(rows),
         "BOLLINGER_BAND_WIDTH": np.full(rows, .04), "VWAP": base, "VWAP_DEVIATION": np.zeros(rows),
         "SUPPORT": base-1, "RESISTANCE": base+1, "SWING_HIGH": base+1, "SWING_LOW": base-1,
+        "CONNORS_RSI": np.full(rows, 50.0), "WILLIAMS_R": np.full(rows, -50.0), "CCI": np.zeros(rows),
+        "STOCHASTIC_D": np.full(rows, 20.0), "CHANDELIER_LONG": base-1, "CHANDELIER_SHORT": base+1,
+        "PRICE_CHANNEL_UPPER": base+2, "PRICE_CHANNEL_MIDDLE": base, "PRICE_CHANNEL_LOWER": base-2,
+        "HA_OPEN": base-.2, "HA_HIGH": base+1, "HA_LOW": base-.2, "HA_CLOSE": base+.2,
+        "AROON_UP": np.full(rows, 75.0), "AROON_DOWN": np.full(rows, 25.0),
+        "ROC": np.ones(rows), "MOMENTUM": np.ones(rows), "NR4": np.zeros(rows,dtype=bool), "NR7": np.zeros(rows,dtype=bool),
+        "bullish_engulfing": np.zeros(rows,dtype=bool), "bearish_engulfing": np.zeros(rows,dtype=bool),
+        "PRIOR_PIVOT": base, "PRIOR_PIVOT_R1": base+1, "PRIOR_PIVOT_S1": base-1,
+        "PRIOR_SESSION_ID": np.full(rows,"2025-12-31_UTC"),
     }, index=index)
 
 

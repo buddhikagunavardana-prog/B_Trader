@@ -1,2 +1,3 @@
 from src.trading_frameworks.price_action.expansion import InsideBarBreakoutFramework, SupportResistanceBounceFramework
-__all__=["InsideBarBreakoutFramework","SupportResistanceBounceFramework"]
+from src.trading_frameworks.price_action.professional import Nr4Nr7VolatilityBreakoutFramework,PinBarRejectionFramework,EngulfingConfirmationTrendFramework
+__all__=["InsideBarBreakoutFramework","SupportResistanceBounceFramework","Nr4Nr7VolatilityBreakoutFramework","PinBarRejectionFramework","EngulfingConfirmationTrendFramework"]

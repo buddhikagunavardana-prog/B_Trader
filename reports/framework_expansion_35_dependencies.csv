@@ -1,0 +1,16 @@
+Framework,Computed Columns,Request Fingerprints,Request Count,Deterministic Aliases,Deduplicated,Collision Safe,Source Preserved,Result
+elder_impulse_system,ADX;ATR;EMA;MACD_HISTOGRAM,55871d14dabd;97b7da2e8ecb;bc688cef1b0d;c74e69f060e5,4,True,True,True,True,Pass
+connors_rsi_mean_reversion,ATR;CONNORS_RSI;EMA,2ee0bd034dce;97b7da2e8ecb;df4064122171,3,True,True,True,True,Pass
+stochastic_pullback_trend,ADX;ATR;EMA;STOCHASTIC_D;STOCHASTIC_K,97b7da2e8ecb;c74e69f060e5;cdf1c7a9cd49;da12038b2277,5,True,True,True,True,Pass
+williams_r_reversal,ATR;EMA;WILLIAMS_R,041ef6ebf08e;2ef9b25798b5;97b7da2e8ecb,3,True,True,True,True,Pass
+cci_trend_pullback,ADX;ATR;CCI;EMA,66434ebbd25d;97b7da2e8ecb;c74e69f060e5;cdf1c7a9cd49,4,True,True,True,True,Pass
+chandelier_exit_trend,ATR;CHANDELIER_LONG;CHANDELIER_SHORT;EMA,26f9603b4ae2;7b199743460e;cdf1c7a9cd49,4,True,True,True,True,Pass
+price_channel_trend,ATR;EMA;PRICE_CHANNEL_LOWER;PRICE_CHANNEL_MIDDLE;PRICE_CHANNEL_UPPER,11496ef8652f;97b7da2e8ecb;cdf1c7a9cd49,5,True,True,True,True,Pass
+heikin_ashi_trend,ADX;ATR;EMA;HA_CLOSE;HA_HIGH;HA_LOW;HA_OPEN,46a9e5f4c1db;97b7da2e8ecb;c74e69f060e5;cdf1c7a9cd49,4,True,True,True,True,Pass
+aroon_trend,AROON_DOWN;AROON_UP;ATR;EMA,140a54b0ff6a;97b7da2e8ecb;cdf1c7a9cd49,4,True,True,True,True,Pass
+momentum_acceleration_breakout,ATR;EMA;MOMENTUM;PRICE_CHANNEL_LOWER;PRICE_CHANNEL_MIDDLE;PRICE_CHANNEL_UPPER;ROC,11496ef8652f;97b7da2e8ecb;a2dee53461a3;cdf1c7a9cd49;ce1c57835fdd,7,True,True,True,True,Pass
+volume_expansion_breakout,ATR;EMA;PRICE_CHANNEL_LOWER;PRICE_CHANNEL_MIDDLE;PRICE_CHANNEL_UPPER;VOLUME_SMA,11496ef8652f;97b7da2e8ecb;cdf1c7a9cd49;ff50e10edfbe,6,True,True,True,True,Pass
+nr4_nr7_volatility_breakout,ATR;NR4;NR7,85816c2b48a4;97b7da2e8ecb,2,True,True,True,True,Pass
+pin_bar_rejection,ATR;EMA;RESISTANCE;SUPPORT,97b7da2e8ecb;cdf1c7a9cd49,2,True,True,True,True,Pass
+engulfing_confirmation_trend,ADX;ATR;EMA;bearish_engulfing;bullish_engulfing,97b7da2e8ecb;c74e69f060e5;cdf1c7a9cd49,3,True,True,True,True,Pass
+pivot_range_breakout,ATR;EMA;PRIOR_PIVOT;PRIOR_PIVOT_R1;PRIOR_PIVOT_S1;PRIOR_SESSION_ID,97b7da2e8ecb;cdf1c7a9cd49;e4891ab1b6c8,3,True,True,True,True,Pass

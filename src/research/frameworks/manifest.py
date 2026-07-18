@@ -11,6 +11,7 @@ def build_reproducibility_manifest(configuration, framework, prepared, warnings=
         "run_id":configuration.run_id,"configuration_version":configuration.configuration_version,
         "framework":framework.metadata.name,"framework_version":framework.metadata.version,
         "parameters":dict(framework.parameters),"indicator_dependencies":list(framework.metadata.required_indicators),
+        "state_policy_requirements":list(framework.metadata.state_policy_requirements),
         "timeframe_roles":dict(configuration.timeframe_roles),"symbol":configuration.symbol,
         "start_timestamp":None if configuration.start_timestamp is None else configuration.start_timestamp.isoformat(),
         "end_timestamp":None if configuration.end_timestamp is None else configuration.end_timestamp.isoformat(),
@@ -23,7 +24,7 @@ def build_reproducibility_manifest(configuration, framework, prepared, warnings=
         "policy_layer_version":"1.0.0","reason_code_schema_version":"1.0.0",
         "policy_configuration_snapshot":{key:value for key,value in configuration.to_dict().items() if key in {"opposite_signal_mode","cooldown_after_exit_bars","cooldown_after_setup_invalidation_bars","cooldown_after_setup_consumption_bars","max_hold_enforcement","max_hold_bars","max_hold_duration","request_exit_at_session_close","clear_cooldown_on_rollover","clear_untriggered_setups_on_rollover","carry_active_position_across_sessions","level_retest_cooldown_bars","level_max_age_bars","allow_level_role_reversal","nested_inside_bar_policy","minimum_squeeze_bars","maximum_release_to_trigger_bars"}},
         "instrumentation_enabled":configuration.enable_controller_timing,
-        "dependency_request_fingerprints":[],"prepared_column_provenance":{role:item.metadata.get("computed_columns",[]) for role,item in prepared.items()},"initial_state":{"position":"flat","setup":"none"},
+        "dependency_request_fingerprints":sorted({fingerprint for item in prepared.values() for fingerprint in item.metadata.get("dependency_request_fingerprints",[])}),"prepared_column_provenance":{role:item.metadata.get("indicator_requests",[]) or item.metadata.get("computed_columns",[]) for role,item in prepared.items()},"initial_state":{"position":"flat","setup":"none"},
     }
     try: commit=subprocess.run(["git","rev-parse","HEAD"],capture_output=True,text=True,check=True).stdout.strip()
     except Exception: commit="UNAVAILABLE"

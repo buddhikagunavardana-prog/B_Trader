@@ -104,6 +104,10 @@ class FrameworkMetadata:
     tags: tuple[str, ...] = ()
     experimental_notes: str = ""
     reference_notes: str = ""
+    causality_notes: str = "Completed-bar inputs only; future rows are never read."
+    research_limitations: str = "Research decision proposal only; historical efficacy is not established."
+    state_policy_requirements: tuple[str, ...] = ()
+    execution_warning: str = "No orders, quantities, balances, fills, or profitability calculations."
 
     def __post_init__(self) -> None:
         if not self.supported_timeframes:

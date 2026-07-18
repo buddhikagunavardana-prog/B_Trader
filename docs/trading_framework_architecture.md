@@ -1,5 +1,9 @@
 # Trading Framework Architecture
 
+## Phase 24.6 dependency and metadata contract
+
+Framework metadata now explicitly exposes causality notes, research limitations, state-policy requirements, and an execution warning. Parameterized multi-output indicator requests identify a canonical component and deterministic alias, deduplicate equivalent fingerprints, reject collisions, and record prepared-column provenance. Causal derived requests cover recursive Heikin Ashi, completed NR4/NR7 setup flags, and prior completed-session pivots. `PRECOMPUTED_ONLY` remains the default and source frames are copied before preparation.
+
 ## Phase 24.5 state-policy boundary
 
 Framework code remains deterministic and stateless. It proposes a signal and advisory risk metadata; the research policy registry declares setup, session, level, and event requirements; the controller alone mutates run-local research state. This prevents hidden cooldown, reversal, or session-carry behavior while preserving Phase 24.1 APIs. Policy code has no broker, balance, fill, or profitability dependency.

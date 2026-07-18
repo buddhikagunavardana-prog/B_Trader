@@ -1,5 +1,9 @@
 # Framework State Policies
 
+## Phase 24.6 registrations
+
+Setup policy applies to Connors RSI, Stochastic Pullback, Williams %R, CCI Pullback, Momentum Acceleration, Volume Expansion, NR4/NR7, Pin Bar, Engulfing Confirmation, and Pivot Range. Event consumption also covers Elder Impulse, Chandelier, Price Channel, Heikin Ashi, and Aroon transitions. Pivot Range uses completed-session rollover policy; Pin Bar uses confirmed-level retest policy. Generic cooldown, maximum hold, and opposite-signal behavior remains unchanged.
+
 ## Research boundary and ownership
 
 Phase 24.5 separates three responsibilities: frameworks propose completed-bar decisions, typed policies decide whether proposals are legal, and `ResearchStateController` applies the final research-state transition. Policies never place orders, model fills, access balances, or calculate profitability. Every rejection carries a stable `PolicyReasonCode`; descriptive text is supplementary.

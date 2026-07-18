@@ -1,3 +1,4 @@
 from src.trading_frameworks.breakout.donchian_breakout import DonchianBreakoutFramework
+from src.trading_frameworks.breakout.professional import MomentumAccelerationBreakoutFramework,VolumeExpansionBreakoutFramework,PivotRangeBreakoutFramework
 
-__all__ = ["DonchianBreakoutFramework"]
+__all__ = ["DonchianBreakoutFramework","MomentumAccelerationBreakoutFramework","VolumeExpansionBreakoutFramework","PivotRangeBreakoutFramework"]

@@ -1,3 +1,4 @@
 from src.trading_frameworks.mean_reversion.bollinger_mean_reversion import BollingerMeanReversionFramework
+from src.trading_frameworks.mean_reversion.professional import ConnorsRsiMeanReversionFramework,WilliamsRReversalFramework
 
-__all__ = ["BollingerMeanReversionFramework"]
+__all__ = ["BollingerMeanReversionFramework","ConnorsRsiMeanReversionFramework","WilliamsRReversalFramework"]

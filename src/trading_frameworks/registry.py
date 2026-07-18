@@ -97,6 +97,11 @@ def _register_defaults() -> None:
     from src.trading_frameworks.momentum.expansion import RsiPullbackTrendFramework, MacdMomentumFramework
     from src.trading_frameworks.mean_reversion.expansion import VwapMeanReversionFramework, ZscoreMeanReversionFramework
     from src.trading_frameworks.price_action.expansion import InsideBarBreakoutFramework, SupportResistanceBounceFramework
+    from src.trading_frameworks.momentum.professional import ElderImpulseSystemFramework, StochasticPullbackTrendFramework, CciTrendPullbackFramework
+    from src.trading_frameworks.mean_reversion.professional import ConnorsRsiMeanReversionFramework, WilliamsRReversalFramework
+    from src.trading_frameworks.trend_following.professional import ChandelierExitTrendFramework, PriceChannelTrendFramework, HeikinAshiTrendFramework, AroonTrendFramework
+    from src.trading_frameworks.breakout.professional import MomentumAccelerationBreakoutFramework, VolumeExpansionBreakoutFramework, PivotRangeBreakoutFramework
+    from src.trading_frameworks.price_action.professional import Nr4Nr7VolatilityBreakoutFramework, PinBarRejectionFramework, EngulfingConfirmationTrendFramework
 
     for framework in (
         TripleScreenTradingFramework,
@@ -112,6 +117,13 @@ def _register_defaults() -> None:
         MacdMomentumFramework, VwapMeanReversionFramework,
         ZscoreMeanReversionFramework, InsideBarBreakoutFramework,
         SupportResistanceBounceFramework,
+        ElderImpulseSystemFramework, ConnorsRsiMeanReversionFramework,
+        StochasticPullbackTrendFramework, WilliamsRReversalFramework,
+        CciTrendPullbackFramework, ChandelierExitTrendFramework,
+        PriceChannelTrendFramework, HeikinAshiTrendFramework, AroonTrendFramework,
+        MomentumAccelerationBreakoutFramework, VolumeExpansionBreakoutFramework,
+        Nr4Nr7VolatilityBreakoutFramework, PinBarRejectionFramework,
+        EngulfingConfirmationTrendFramework, PivotRangeBreakoutFramework,
     ):
         trading_framework_registry.register(framework)
 

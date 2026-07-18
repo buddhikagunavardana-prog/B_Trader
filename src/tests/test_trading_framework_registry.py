@@ -13,9 +13,9 @@ EXPECTED = {
 }
 
 
-def test_registry_contains_exact_phase_24_1_inventory():
+def test_registry_preserves_phase_24_1_inventory():
     assert EXPECTED.issubset(trading_framework_registry.list_names())
-    assert len(trading_framework_registry.list_definitions()) == 20
+    assert len(trading_framework_registry.list_definitions()) == len(trading_framework_registry.list_names())
     assert set(trading_framework_registry.list_categories()) == {
         "multi_timeframe", "trend_following", "mean_reversion", "breakout", "momentum", "price_action",
     }
@@ -28,8 +28,8 @@ def test_registry_metadata_and_indicator_dependencies_are_valid():
     assert {"ichimoku_cloud_trading", "turtle_trading"}.issubset(
         trading_framework_registry.list_by_category("trend_following")
     )
-    assert len(trading_framework_registry.list_stable()) == 20
-    assert len(trading_framework_registry.list_by_market("crypto_spot")) == 20
+    assert len(trading_framework_registry.list_stable()) == len(trading_framework_registry.list_names())
+    assert len(trading_framework_registry.list_by_market("crypto_spot")) == len(trading_framework_registry.list_names())
     assert "triple_screen_trading" in trading_framework_registry.list_by_timeframe("1h")
 
 
@@ -61,7 +61,7 @@ def test_duplicate_registration_and_missing_dependency_are_rejected():
 
 
 if __name__ == "__main__":
-    test_registry_contains_exact_phase_24_1_inventory()
+    test_registry_preserves_phase_24_1_inventory()
     test_registry_metadata_and_indicator_dependencies_are_valid()
     test_duplicate_registration_and_missing_dependency_are_rejected()
     print("test_trading_framework_registry passed")

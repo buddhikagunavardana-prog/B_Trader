@@ -1,5 +1,9 @@
 # Trading Framework Library
 
+## Phase 24.6 professional expansion
+
+The canonical library now contains exactly 35 frameworks: 11 trend-following, 8 breakout, 5 momentum, 5 mean-reversion, 5 price-action, and 1 multi-timeframe. The fifteen new entries, their defaults, causal entry/exit rules, lifecycle policies, risk proposals, regime notes, limitations, and required conceptual distinctions are documented in [Professional Trading Framework Expansion to 35](trading_framework_expansion_35.md).
+
 ## Phase 24.5 lifecycle policies
 
 All 20 canonical frameworks retain their decision semantics. Opening Range, Inside Bar, RSI Pullback, Bollinger Squeeze, and Support/Resistance declare stateful setup requirements. Opening Range is session-bound; Support/Resistance declares level lifecycle requirements. Parabolic SAR, dual moving-average, MACD, ADX, SuperTrend, and event-style breakout frameworks consume transitions so persistent states do not repeat entries. These controls are research-state policies, not execution behavior.

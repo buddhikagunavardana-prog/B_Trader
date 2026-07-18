@@ -1,5 +1,9 @@
 # Framework Research Adapter
 
+## Phase 24.6 coverage
+
+The adapter loads and normalizes all 35 canonical frameworks. The fifteen new frameworks use the same causal alignment, run-local state controller, policy reason codes, configuration identity, and manifest structure. Multi-component dependency requests store canonical name, component, alias, parameter fingerprint, and provenance; equivalent requests calculate once. Prior-session pivots use only completed prior session groups and deterministic IDs.
+
 ## Phase 24.5 proposal-policy-controller flow
 
 Stateful mode passes each framework proposal through the policy layer before the controller applies it. Optional output fields cover policy permission/reason, setup expiry/invalidation, opposite action, cooldown, maximum hold, rollover cleanup, level lifecycle, and controller timing. Stateless mode and original decision columns remain unchanged. Policy settings are reproducibility inputs; measured timing remains outside stable identity.

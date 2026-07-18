@@ -1,4 +1,5 @@
 from src.trading_frameworks.trend_following.ichimoku_cloud import IchimokuCloudTradingFramework
 from src.trading_frameworks.trend_following.turtle import TurtleTradingFramework
+from src.trading_frameworks.trend_following.professional import ChandelierExitTrendFramework,PriceChannelTrendFramework,HeikinAshiTrendFramework,AroonTrendFramework
 
-__all__ = ["IchimokuCloudTradingFramework", "TurtleTradingFramework"]
+__all__ = ["IchimokuCloudTradingFramework", "TurtleTradingFramework","ChandelierExitTrendFramework","PriceChannelTrendFramework","HeikinAshiTrendFramework","AroonTrendFramework"]

@@ -1,14 +1,23 @@
 STATEFUL_SETUP_FRAMEWORKS = frozenset({
     "inside_bar_breakout", "opening_range_breakout", "rsi_pullback_trend",
     "support_resistance_bounce", "bollinger_squeeze_breakout",
+    "connors_rsi_mean_reversion", "stochastic_pullback_trend", "williams_r_reversal",
+    "cci_trend_pullback", "momentum_acceleration_breakout", "volume_expansion_breakout",
+    "nr4_nr7_volatility_breakout", "pin_bar_rejection",
+    "engulfing_confirmation_trend", "pivot_range_breakout",
 })
 
-SESSION_BOUND_FRAMEWORKS = frozenset({"opening_range_breakout"})
-LEVEL_FRAMEWORKS = frozenset({"support_resistance_bounce"})
+SESSION_BOUND_FRAMEWORKS = frozenset({"opening_range_breakout", "pivot_range_breakout"})
+LEVEL_FRAMEWORKS = frozenset({"support_resistance_bounce", "pin_bar_rejection"})
 EVENT_FRAMEWORKS = frozenset({
     "parabolic_sar_trend", "dual_moving_average_crossover", "macd_momentum",
     "adx_trend_following", "supertrend_trend_following", "opening_range_breakout",
     "inside_bar_breakout", "bollinger_squeeze_breakout",
+    "elder_impulse_system", "chandelier_exit_trend", "price_channel_trend",
+    "heikin_ashi_trend", "aroon_trend", "momentum_acceleration_breakout",
+    "volume_expansion_breakout", "nr4_nr7_volatility_breakout", "pin_bar_rejection",
+    "engulfing_confirmation_trend", "pivot_range_breakout", "stochastic_pullback_trend",
+    "williams_r_reversal", "cci_trend_pullback", "connors_rsi_mean_reversion",
 })
 
 

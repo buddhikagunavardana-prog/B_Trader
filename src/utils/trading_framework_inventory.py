@@ -7,6 +7,7 @@ import pandas as pd
 
 from src.trading_frameworks.registry import trading_framework_registry
 from src.trading_frameworks.validator import validate_registry
+from src.research.frameworks.state.policies import framework_policy_requirements
 
 
 REPORT_PATH = Path("reports/trading_framework_inventory.csv")
@@ -34,8 +35,13 @@ def build_trading_framework_inventory() -> pd.DataFrame:
             "Supported Markets": "; ".join(metadata["supported_markets"]),
             "Supported Directions": "; ".join(metadata["supported_directions"]),
             "Required Timeframes": json.dumps(metadata["default_timeframes"], sort_keys=True),
+            "Timeframe Roles": "; ".join(metadata["timeframe_roles"]),
             "Required Indicators": "; ".join(metadata["required_indicators"]),
+            "Optional Indicators": "; ".join(metadata["optional_indicators"]),
             "Parameter Count": len(definition["schema"]["parameters"]),
+            "State Requirements": "; ".join(metadata.get("state_policy_requirements", ())) or "generic",
+            "Session Requirements": "session-bound" if framework_policy_requirements(metadata["name"])["session"] else "default",
+            "Policy Requirements": "; ".join(key for key,value in framework_policy_requirements(metadata["name"]).items() if value) or "generic",
             "Source Path": source_path,
             "Validation Result": validation_text,
             "Notes": metadata["reference_notes"],

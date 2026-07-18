@@ -1,5 +1,9 @@
 # Framework Research State
 
+## Phase 24.6 framework integration
+
+The policy registry now recognizes the ten new setup-bearing frameworks and all fifteen new event frameworks. Pivot Range is session-bound; Pin Bar is level-bound. Every adapter run creates fresh state, setup expiry and consumption suppress retriggers, opposite events use the configured Phase 24.5 mode, and daily pivot levels clear on rollover.
+
 ## Phase 24.5 policy enforcement
 
 The controller now evaluates typed setup, position, session, level, opposite-signal, event-consumption, cooldown, and maximum-hold policies before applying transitions. Machine-readable reason codes make every accepted or rejected proposal observable. Session rollover clears configured state deterministically, while framework-aware policies define Opening Range, Inside Bar, RSI Pullback, Bollinger Squeeze, and Support/Resistance behavior. Controller timing is opt-in runtime metadata and never affects deterministic run IDs. See `framework_state_policies.md` for the full contract.
