@@ -48,6 +48,30 @@ class FrameworkResearchConfiguration:
     session_configuration: Mapping[str, Any] = field(default_factory=dict)
     state_diagnostics_level: str = "standard"
     persist_state_snapshots: bool = False
+    setup_expiration_mode: str = "bars"
+    setup_expiration_bars: int = 5
+    expire_at_session_end: bool = True
+    expire_at_entry_cutoff: bool = False
+    opposite_signal_mode: str = "request_exit"
+    cooldown_after_exit_bars: int = 0
+    cooldown_after_setup_invalidation_bars: int = 0
+    cooldown_after_setup_consumption_bars: int = 0
+    max_hold_enforcement: bool = False
+    max_hold_bars: int | None = None
+    max_hold_duration: str | None = None
+    request_exit_at_session_close: bool = False
+    clear_cooldown_on_rollover: bool = False
+    clear_untriggered_setups_on_rollover: bool = True
+    clear_consumed_setups_on_rollover: bool = True
+    carry_active_position_across_sessions: bool = True
+    carry_levels_across_sessions: bool = False
+    level_retest_cooldown_bars: int = 1
+    level_max_age_bars: int = 500
+    allow_level_role_reversal: bool = False
+    nested_inside_bar_policy: str = "keep_original_mother_bar"
+    minimum_squeeze_bars: int = 1
+    maximum_release_to_trigger_bars: int = 5
+    enable_controller_timing: bool = False
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "parameters", dict(self.parameters))
@@ -83,6 +107,25 @@ class FrameworkResearchConfiguration:
             "cooldown_bars": self.cooldown_bars,"allow_repeated_entries": self.allow_repeated_entries,
             "setup_expiration_defaults":dict(self.setup_expiration_defaults),"session_configuration":dict(self.session_configuration),
             "state_diagnostics_level":self.state_diagnostics_level,"persist_state_snapshots":self.persist_state_snapshots,
+            "setup_expiration_mode":self.setup_expiration_mode,"setup_expiration_bars":self.setup_expiration_bars,
+            "expire_at_session_end":self.expire_at_session_end,"expire_at_entry_cutoff":self.expire_at_entry_cutoff,
+            "opposite_signal_mode":self.opposite_signal_mode,
+            "cooldown_after_exit_bars":self.cooldown_after_exit_bars,
+            "cooldown_after_setup_invalidation_bars":self.cooldown_after_setup_invalidation_bars,
+            "cooldown_after_setup_consumption_bars":self.cooldown_after_setup_consumption_bars,
+            "max_hold_enforcement":self.max_hold_enforcement,"max_hold_bars":self.max_hold_bars,
+            "max_hold_duration":self.max_hold_duration,"request_exit_at_session_close":self.request_exit_at_session_close,
+            "clear_cooldown_on_rollover":self.clear_cooldown_on_rollover,
+            "clear_untriggered_setups_on_rollover":self.clear_untriggered_setups_on_rollover,
+            "clear_consumed_setups_on_rollover":self.clear_consumed_setups_on_rollover,
+            "carry_active_position_across_sessions":self.carry_active_position_across_sessions,
+            "carry_levels_across_sessions":self.carry_levels_across_sessions,
+            "level_retest_cooldown_bars":self.level_retest_cooldown_bars,"level_max_age_bars":self.level_max_age_bars,
+            "allow_level_role_reversal":self.allow_level_role_reversal,
+            "nested_inside_bar_policy":self.nested_inside_bar_policy,
+            "minimum_squeeze_bars":self.minimum_squeeze_bars,
+            "maximum_release_to_trigger_bars":self.maximum_release_to_trigger_bars,
+            "enable_controller_timing":self.enable_controller_timing,
         }
         if include_run_id:
             result["run_id"] = self.run_id

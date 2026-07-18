@@ -1,5 +1,9 @@
 # Trading Framework Library
 
+## Phase 24.5 lifecycle policies
+
+All 20 canonical frameworks retain their decision semantics. Opening Range, Inside Bar, RSI Pullback, Bollinger Squeeze, and Support/Resistance declare stateful setup requirements. Opening Range is session-bound; Support/Resistance declares level lifecycle requirements. Parabolic SAR, dual moving-average, MACD, ADX, SuperTrend, and event-style breakout frameworks consume transitions so persistent states do not repeat entries. These controls are research-state policies, not execution behavior.
+
 Phase 24.3 registers exactly twenty stable reference frameworks. They are research-ready architectural baselines, not evidence of profitability. All signals use completed bars and precomputed indicator columns.
 
 | Canonical name | Category | Roles and defaults | Required indicators |

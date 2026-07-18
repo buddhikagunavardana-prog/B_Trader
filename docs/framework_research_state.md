@@ -1,5 +1,9 @@
 # Framework Research State
 
+## Phase 24.5 policy enforcement
+
+The controller now evaluates typed setup, position, session, level, opposite-signal, event-consumption, cooldown, and maximum-hold policies before applying transitions. Machine-readable reason codes make every accepted or rejected proposal observable. Session rollover clears configured state deterministically, while framework-aware policies define Opening Range, Inside Bar, RSI Pullback, Bollinger Squeeze, and Support/Resistance behavior. Controller timing is opt-in runtime metadata and never affects deterministic run IDs. See `framework_state_policies.md` for the full contract.
+
 Phase 24.4 adds deterministic research memory without execution simulation. `ResearchStateController` owns serializable position, setup, and session state; frameworks remain stateless and cannot mutate it. Position states cover flat, pending, active long/short, exit pending, and cooldown. Conservative defaults allow one advisory position, suppress repeated entries, disable automatic reversal, and return directly to flat on the matching exit request. Quantities, fills, balances, fees, and PnL are absent.
 
 Setup states cover none, forming, armed, triggered, expired, invalidated, and consumed. Inside Bar, Opening Range, RSI Pullback, Support/Resistance, and Bollinger Squeeze receive setup IDs, ages, transitions, consumption, and expiry diagnostics. Sessions support 24/7, recurring daily, and overnight definitions with timezone, opening range, cutoff, weekdays, stable IDs, and optional future holiday-provider boundaries without network dependencies.

@@ -9,8 +9,16 @@ from src.research.frameworks.state.models import SessionType
 class SessionConfiguration:
  session_type:SessionType=SessionType.CONTINUOUS_24_7;timezone:str="UTC";start:str="00:00";end:str="23:59";opening_range_minutes:int=30;entry_cutoff:str="23:59";weekdays:tuple[int,...]=(0,1,2,3,4,5,6)
  def to_dict(self):return {**self.__dict__,"session_type":self.session_type.value,"weekdays":list(self.weekdays)}
+ @classmethod
+ def from_mapping(cls,values=None):
+  data=dict(values or {})
+  if "session_type" in data and isinstance(data["session_type"],str):data["session_type"]=SessionType(data["session_type"])
+  if "weekdays" in data:data["weekdays"]=tuple(data["weekdays"])
+  return cls(**data)
 def session_snapshot(timestamp,configuration:SessionConfiguration):
- ts=pd.Timestamp(timestamp).tz_convert(ZoneInfo(configuration.timezone)); start_h,start_m=map(int,configuration.start.split(":"));end_h,end_m=map(int,configuration.end.split(":"));start=ts.normalize()+pd.Timedelta(hours=start_h,minutes=start_m);end=ts.normalize()+pd.Timedelta(hours=end_h,minutes=end_m)
+ ts=pd.Timestamp(timestamp)
+ if ts.tzinfo is None:ts=ts.tz_localize("UTC")
+ ts=ts.tz_convert(ZoneInfo(configuration.timezone)); start_h,start_m=map(int,configuration.start.split(":"));end_h,end_m=map(int,configuration.end.split(":"));start=ts.normalize()+pd.Timedelta(hours=start_h,minutes=start_m);end=ts.normalize()+pd.Timedelta(hours=end_h,minutes=end_m)
  if configuration.session_type is SessionType.OVERNIGHT_SESSION and end<=start:
   if ts<end:start-=pd.Timedelta(days=1)
   else:end+=pd.Timedelta(days=1)

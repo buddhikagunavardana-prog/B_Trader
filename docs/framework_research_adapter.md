@@ -1,5 +1,9 @@
 # Framework Research Adapter
 
+## Phase 24.5 proposal-policy-controller flow
+
+Stateful mode passes each framework proposal through the policy layer before the controller applies it. Optional output fields cover policy permission/reason, setup expiry/invalidation, opposite action, cooldown, maximum hold, rollover cleanup, level lifecycle, and controller timing. Stateless mode and original decision columns remain unchanged. Policy settings are reproducibility inputs; measured timing remains outside stable identity.
+
 ## Scope
 
 Phase 24.2 converts the point-in-time decisions introduced in Phase 24.1 into deterministic chronological decision series. It is a structural research foundation only. It does not download data, resample inside a framework, model fills, place orders, size positions, simulate balances, or calculate profitability metrics.

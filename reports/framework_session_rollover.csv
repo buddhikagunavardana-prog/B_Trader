@@ -1,0 +1,5 @@
+Scenario,Cleanup Actions,Deterministic,Result
+daily rollover,clear_untriggered_setup;clear_consumed_setup,True,Pass
+overnight rollover,deterministic session ID cleanup,True,Pass
+skipped session,compare prior/new session IDs,True,Pass
+24/7 rollover,preserve active position by default,True,Pass

@@ -1,0 +1,9 @@
+Framework,Scenario,Initial State,Proposed Action,Allowed Action,Resulting State,Reason Code,Deterministic,Causal,Non-Mutating,Result,Warning
+generic,setup expiration,armed,buy,blocked,expired,SETUP_EXPIRED,True,True,True,Pass,
+generic,cooldown entry,cooldown,buy,blocked,cooldown,COOLDOWN_ACTIVE,True,True,True,Pass,
+generic,maximum hold,long_active,hold,exit request,flat,MAX_HOLD_REACHED,True,True,True,Pass,
+generic,opposite signal,long_active,sell,exit request,exit_pending,EXIT_REQUIRED_BEFORE_REVERSAL,True,True,True,Pass,
+opening_range_breakout,session rollover,armed,hold,cleanup,armed,SESSION_ROLLOVER_RESET,True,True,True,Pass,
+inside_bar_breakout,consumed retrigger,consumed,buy,blocked,consumed,SETUP_ALREADY_CONSUMED,True,True,True,Pass,
+rsi_pullback_trend,trend invalidation,armed,hold,blocked,invalidated,SETUP_INVALIDATED,True,True,True,Pass,
+bollinger_squeeze_breakout,squeeze reentry,release_detected,hold,blocked,invalidated,SETUP_INVALIDATED,True,True,True,Pass,

@@ -1,0 +1,5 @@
+Scenario,Initial Level State,Resulting Level State,Reason Code,Deterministic,Causal,Result
+first support test,confirmed,testing,ALLOWED,True,True,Pass
+continuous zone repeat,testing,testing,LEVEL_RETEST_COOLDOWN,True,True,Pass
+support break,active,broken,LEVEL_INVALIDATED,True,True,Pass
+stale level,active,retired,LEVEL_INVALIDATED,True,True,Pass

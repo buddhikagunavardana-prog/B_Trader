@@ -18,7 +18,7 @@ DECISION_COLUMNS = (
     "warmup_complete", "decision_valid", "skip_reason",
 )
 
-STATE_COLUMNS=("research_position_state","previous_position_state","position_transition","bars_in_position_state","setup_state","previous_setup_state","setup_id","setup_age","setup_transition","session_id","session_state","session_open","session_close","opening_range_complete","state_warning","state_valid")
+STATE_COLUMNS=("research_position_state","previous_position_state","position_transition","bars_in_position_state","setup_state","previous_setup_state","setup_id","setup_age","setup_transition","session_id","session_state","session_open","session_close","opening_range_complete","state_warning","state_valid","policy_allowed","policy_reason_code","policy_reason","setup_expiration_reason","setup_invalidation_reason","opposite_signal_action","cooldown_active","cooldown_bars_remaining","max_hold_reached","session_rollover","session_cleanup_actions","level_id","level_state","level_test_count","level_retest_allowed","controller_time_ns","policy_time_ns")
 
 
 def validate_decision_series(frame: pd.DataFrame) -> ResearchValidationResult:
@@ -50,6 +50,8 @@ def validate_decision_series(frame: pd.DataFrame) -> ResearchValidationResult:
         median = gaps.median()
         if median > 0 and (gaps > median * 3).any():
             issues.append(ResearchValidationIssue("timeline_gap", "WARNING", "primary timeline contains a gap greater than three intervals"))
+    if "policy_reason_code" in frame and ((frame["policy_reason_code"].isna()) | (frame["policy_reason_code"] == "")).any():
+        issues.append(ResearchValidationIssue("missing_policy_reason_code", "ERROR", "stateful rows require machine-readable policy reason codes"))
     return ResearchValidationResult(tuple(issues))
 
 

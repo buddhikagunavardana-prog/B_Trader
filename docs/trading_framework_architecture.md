@@ -1,5 +1,9 @@
 # Trading Framework Architecture
 
+## Phase 24.5 state-policy boundary
+
+Framework code remains deterministic and stateless. It proposes a signal and advisory risk metadata; the research policy registry declares setup, session, level, and event requirements; the controller alone mutates run-local research state. This prevents hidden cooldown, reversal, or session-carry behavior while preserving Phase 24.1 APIs. Policy code has no broker, balance, fill, or profitability dependency.
+
 ## Purpose and boundary
 
 Phase 24.1 introduces a reusable decision layer between precomputed indicators and downstream risk/execution engines. An indicator calculates market information. A strategy remains the repository's configurable rule configuration. A trading framework is a named, typed interpretation of indicators, timeframe roles, entries, exits, and proposed risk controls. A framework never downloads data, resamples bars, calls an exchange, places an order, or claims profitability.

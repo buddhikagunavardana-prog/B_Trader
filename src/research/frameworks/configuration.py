@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
+
 from src.research.frameworks.exceptions import ResearchConfigurationError
 from src.research.frameworks.models import FrameworkResearchConfiguration
 from src.research.run_management.run_identity import validate_run_id
@@ -11,11 +13,15 @@ from src.trading_frameworks.loader import load_trading_framework
 from src.trading_frameworks.models import FrameworkStability
 from src.trading_frameworks.registry import trading_framework_registry
 from src.trading_frameworks.exceptions import TradingFrameworkError
+from src.research.frameworks.state.session_state import SessionConfiguration, session_snapshot
 
 
 CONFIG_FIELDS = set(FrameworkResearchConfiguration.__dataclass_fields__)
 SUPPORTED_CONFIGURATION_VERSIONS = {"1.0"}
 VALID_WARMUP_POLICIES = {"skip", "include_marked"}
+VALID_EXPIRATION_MODES = {"bars", "timestamp", "session_end", "entry_cutoff", "framework"}
+VALID_OPPOSITE_MODES = {"ignore", "reject", "request_exit", "exit_then_reverse", "allow_immediate_reverse"}
+VALID_NESTED_INSIDE_BAR_POLICIES = {"keep_original_mother_bar", "replace_with_latest_mother_bar", "narrow_range", "reject_nested_setup"}
 
 
 def enforce_experimental_access(framework, allow_experimental: bool) -> None:
@@ -47,6 +53,32 @@ def validate_research_configuration(config: FrameworkResearchConfiguration) -> F
         raise ResearchConfigurationError(f"invalid warmup policy: {config.warmup_policy}")
     if config.start_timestamp is not None and config.end_timestamp is not None and config.start_timestamp > config.end_timestamp:
         raise ResearchConfigurationError("start_timestamp must be <= end_timestamp")
+    if config.setup_expiration_mode not in VALID_EXPIRATION_MODES:
+        raise ResearchConfigurationError(f"invalid setup_expiration_mode: {config.setup_expiration_mode}")
+    if config.opposite_signal_mode not in VALID_OPPOSITE_MODES:
+        raise ResearchConfigurationError(f"invalid opposite_signal_mode: {config.opposite_signal_mode}")
+    if config.nested_inside_bar_policy not in VALID_NESTED_INSIDE_BAR_POLICIES:
+        raise ResearchConfigurationError(f"invalid nested_inside_bar_policy: {config.nested_inside_bar_policy}")
+    for name in ("cooldown_bars", "setup_expiration_bars", "cooldown_after_exit_bars", "cooldown_after_setup_invalidation_bars", "cooldown_after_setup_consumption_bars", "level_retest_cooldown_bars", "level_max_age_bars", "minimum_squeeze_bars", "maximum_release_to_trigger_bars"):
+        if getattr(config, name) < 0:
+            raise ResearchConfigurationError(f"{name} must be non-negative")
+    if config.setup_expiration_mode == "bars" and config.setup_expiration_bars < 1:
+        raise ResearchConfigurationError("setup_expiration_bars must be positive in bars mode")
+    if config.max_hold_enforcement and (config.max_hold_bars is None or config.max_hold_bars < 1) and not config.max_hold_duration:
+        raise ResearchConfigurationError("max-hold enforcement requires max_hold_bars or max_hold_duration")
+    if config.max_hold_bars is not None and config.max_hold_bars < 1:
+        raise ResearchConfigurationError("max_hold_bars must be positive")
+    if config.max_hold_duration:
+        try:
+            duration = pd.Timedelta(config.max_hold_duration)
+        except (TypeError, ValueError) as error:
+            raise ResearchConfigurationError("max_hold_duration must be a valid positive duration") from error
+        if duration <= pd.Timedelta(0):
+            raise ResearchConfigurationError("max_hold_duration must be a valid positive duration")
+    try:
+        session_snapshot(pd.Timestamp("2026-01-01", tz="UTC"), SessionConfiguration.from_mapping(config.session_configuration))
+    except (TypeError, ValueError, KeyError, OverflowError) as error:
+        raise ResearchConfigurationError(f"invalid session_configuration: {error}") from error
     enforce_experimental_access(framework, config.allow_experimental)
     if config.run_id:
         validate_run_id(config.run_id)
