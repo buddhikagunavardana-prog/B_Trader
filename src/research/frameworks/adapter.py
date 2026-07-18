@@ -76,7 +76,7 @@ class FrameworkResearchAdapter:
         self.configuration = validate_research_configuration(configuration)
         self.framework = load_trading_framework(self.configuration.framework, self.configuration.parameters)
 
-    def run(self, timeframe_data: Mapping[str, pd.DataFrame]) -> DecisionSeriesResult:
+    def run(self, timeframe_data: Mapping[str, pd.DataFrame], initial_state: dict | None = None, row_offsets: Mapping[str, int] | None = None) -> DecisionSeriesResult:
         started = perf_counter()
         prepare_started = perf_counter()
         prepared = prepare_timeframe_data(self.configuration, self.framework, timeframe_data)
@@ -99,12 +99,15 @@ class FrameworkResearchAdapter:
             reverse_on_opposite_signal=self.configuration.reverse_on_opposite_signal,
             policy_configuration=policy_values,
             snapshot_mode=runtime.snapshots,
+            initial_state=initial_state,
         ) if self.configuration.enable_stateful_research else None
         stale_ages: dict[str, list[float]] = {role: [] for role in prepared}
+        row_offsets = dict(row_offsets or {})
         for index, timestamp in enumerate(alignment.timeline):
             diagnostic_started = perf_counter()
             diagnostics = alignment_diagnostics(alignment, index)
             positions = {role: alignment.positions[role][index] for role in prepared}
+            reported_positions = {role: positions[role] + int(row_offsets.get(role, 0)) for role in prepared}
             if runtime.diagnostics is DiagnosticLevel.NONE:
                 diagnostic_payload = {}
             elif runtime.diagnostics is DiagnosticLevel.SUMMARY:
@@ -125,7 +128,7 @@ class FrameworkResearchAdapter:
                 for role in prepared
             )
             if not warmup and self.configuration.warmup_policy == "skip":
-                row=_skipped_row(timestamp, self.framework, diagnostic_payload, positions, "warmup_incomplete")
+                row=_skipped_row(timestamp, self.framework, diagnostic_payload, reported_positions, "warmup_incomplete")
                 if controller:
                     session_context = dict(runtime.session.snapshots[index])
                     snap=controller.snapshot(timestamp,session_context);session={k:v for k,v in snap.session.items() if k!="entry_allowed"};row.update({"research_position_state":snap.position["status"],"previous_position_state":snap.position["status"],"position_transition":"none","bars_in_position_state":snap.position["bars_in_state"],"setup_state":snap.setup["status"],"previous_setup_state":snap.setup["status"],"setup_id":snap.setup["setup_id"],"setup_age":snap.setup["bars_alive"],"setup_transition":"none",**session,"state_warning":"","state_valid":True,"policy_allowed":True,"policy_reason_code":"NO_ACTION","policy_reason":"Warm-up row; state unchanged.","setup_expiration_reason":"","setup_invalidation_reason":"","opposite_signal_action":"none","cooldown_active":False,"cooldown_bars_remaining":snap.position.get("cooldown_bars_remaining",0),"max_hold_reached":False,"session_rollover":False,"session_cleanup_actions":[],"level_id":None,"level_state":None,"level_test_count":0,"level_retest_allowed":True,"controller_time_ns":0,"policy_time_ns":0})
@@ -142,7 +145,7 @@ class FrameworkResearchAdapter:
             decision = self.framework.execute_runtime(context, timestamp)
             framework_decision_seconds += perf_counter() - framework_started
             normalization_started = perf_counter()
-            row=_decision_row(decision, diagnostic_payload, positions, runtime.diagnostics is not DiagnosticLevel.NONE, self.configuration.include_warnings)
+            row=_decision_row(decision, diagnostic_payload, reported_positions, runtime.diagnostics is not DiagnosticLevel.NONE, self.configuration.include_warnings)
             normalization_elapsed = perf_counter() - normalization_started
             normalization_seconds += normalization_elapsed
             serialization_seconds += normalization_elapsed
@@ -190,5 +193,5 @@ class FrameworkResearchAdapter:
         )
 
 
-def run_framework_decision_series(configuration, timeframe_data) -> DecisionSeriesResult:
-    return FrameworkResearchAdapter(configuration).run(timeframe_data)
+def run_framework_decision_series(configuration, timeframe_data, initial_state=None, row_offsets=None) -> DecisionSeriesResult:
+    return FrameworkResearchAdapter(configuration).run(timeframe_data, initial_state=initial_state, row_offsets=row_offsets)

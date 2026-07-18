@@ -1,0 +1,12 @@
+Scenario,Corrupt Accepted,Downstream Invalidated,Result
+missing artifact,False,True,Pass
+missing checkpoint,False,True,Pass
+checksum mismatch,False,True,Pass
+changed source,False,True,Pass
+changed code,False,True,Pass
+changed predecessor state,False,True,Pass
+orphan temporary file,False,True,Pass
+partial manifest,False,True,Pass
+out of order chunk,False,True,Pass
+overlap,False,True,Pass
+gap,False,True,Pass

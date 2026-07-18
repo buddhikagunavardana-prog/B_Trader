@@ -1,0 +1,7 @@
+Metric,Value,Limit,Status
+equivalence mismatches,0.0,0,PASS
+accepted corrupt artifacts,0.0,0,PASS
+duplicate logical rows,0.0,0,PASS
+missing logical rows,0.0,0,PASS
+repeated indicator calculations,0.0,0,PASS
+chunk orchestration overhead percent,16.04677097550724,warning only,WARN

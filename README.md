@@ -15,3 +15,6 @@ Binance Spot market data analyze කරලා, backtesting, paper trading, Strat
 
 ## Rule
 No live trading until backtest + paper trading results prove the strategy.
+
+See `docs/historical_research_orchestration.md` for bounded and resumable
+framework research runs.

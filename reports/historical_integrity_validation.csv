@@ -1,0 +1,11 @@
+Scenario,Strict Rejection,Result
+checksum corruption,True,Pass
+schema change,True,Pass
+run mismatch,True,Pass
+chunk mismatch,True,Pass
+configuration mismatch,True,Pass
+code mismatch,True,Pass
+state mismatch,True,Pass
+duplicate timestamp,True,Pass
+missing rows,True,Pass
+duplicate rows,True,Pass

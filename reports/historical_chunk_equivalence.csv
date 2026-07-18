@@ -1,0 +1,7 @@
+Framework,Scenario,Index Equal,Decision Fields Equal,State Equal,Mismatch Count,Result
+ema_ribbon_trend,continuous versus chunked,True,True,True,0,Pass
+stochastic_pullback_trend,continuous versus chunked,True,True,True,0,Pass
+opening_range_breakout,continuous versus chunked,True,True,True,0,Pass
+heikin_ashi_trend,continuous versus chunked,True,True,True,0,Pass
+triple_screen_trading,continuous versus chunked,True,True,True,0,Pass
+support_resistance_bounce,continuous versus chunked,True,True,True,0,Pass

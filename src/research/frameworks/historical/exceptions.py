@@ -1,0 +1,14 @@
+class HistoricalResearchError(RuntimeError): pass
+class InvalidChunkPlanError(HistoricalResearchError): pass
+class IncompatibleResumeError(HistoricalResearchError): pass
+class SourceMismatchError(HistoricalResearchError): pass
+class ConfigurationMismatchError(HistoricalResearchError): pass
+class CodeMismatchError(HistoricalResearchError): pass
+class CheckpointCorruptionError(HistoricalResearchError): pass
+class ArtifactCorruptionError(HistoricalResearchError): pass
+class StateContinuityError(HistoricalResearchError): pass
+class LockAcquisitionError(HistoricalResearchError): pass
+class HistoricalCancellationError(HistoricalResearchError): pass
+class UnsupportedSchemaVersionError(HistoricalResearchError): pass
+class MergeGapError(HistoricalResearchError): pass
+class MergeOverlapError(HistoricalResearchError): pass

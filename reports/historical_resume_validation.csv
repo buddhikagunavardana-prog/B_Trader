@@ -1,0 +1,5 @@
+Scenario,Retained Chunks,Rerun Chunks,Result
+clean completed resume,5,0,Pass
+interruption after chunk 0,1,4,Pass
+cancelled run,1,4,Pass
+resume last valid frontier,3,2,Pass

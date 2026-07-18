@@ -1,0 +1,6 @@
+Scenario,Atomic,Checksum Required,Partial Accepted,Result
+clean write,True,True,False,Pass
+idempotent rewrite,True,True,False,Pass
+temporary interruption,True,True,False,Pass
+unsupported version,True,True,False,Pass
+artifact before checkpoint,True,True,False,Pass

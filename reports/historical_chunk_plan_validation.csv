@@ -1,0 +1,8 @@
+Scenario,Rows,Chunk Size,Logical Rows,Duplicate Rows,Missing Rows,Result
+one row,23,1,23,0,0,Pass
+smaller than warmup,23,3,23,0,0,Pass
+equal warmup,23,7,23,0,0,Pass
+warmup plus one,23,8,23,0,0,Pass
+small normal,23,10,23,0,0,Pass
+large,23,20,23,0,0,Pass
+entire dataset,23,23,23,0,0,Pass

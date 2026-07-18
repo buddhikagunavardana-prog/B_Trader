@@ -24,6 +24,7 @@ class ResearchStateController:
         allow_repeated_entries: bool = False, reverse_on_opposite_signal: bool = False,
         policy_configuration: PolicyConfiguration | dict[str, Any] | None = None,
         snapshot_mode: SnapshotMode | str = SnapshotMode.NONE,
+        initial_state: dict[str, Any] | None = None,
     ) -> None:
         self.framework = framework
         self.position = PositionState(framework=framework)
@@ -56,6 +57,29 @@ class ResearchStateController:
         self.event_reset = True
         self.last_timing = PolicyTimingSummary()
         self.timing_totals = {key: 0 for key in PolicyTimingSummary.__dataclass_fields__}
+        if initial_state:
+            self.restore(initial_state)
+
+    def restore(self, state: dict[str, Any]) -> None:
+        """Restore explicit JSON-compatible continuity state for a new chunk."""
+        position = dict(state.get("position", {}))
+        setup = dict(state.get("setup", {}))
+        if position:
+            position["status"] = PositionStatus(position.get("status", "flat"))
+            for key in ("entry_signal_timestamp", "activation_timestamp", "exit_request_timestamp", "cooldown_started_at"):
+                if position.get(key) is not None:
+                    position[key] = pd.Timestamp(position[key])
+            self.position = PositionState(**{key: value for key, value in position.items() if key in PositionState.__dataclass_fields__})
+        if setup:
+            setup["status"] = SetupStatus(setup.get("status", "none"))
+            for key in ("created_timestamp", "armed_timestamp", "trigger_timestamp", "expiration_timestamp", "consumed_timestamp"):
+                if setup.get(key) is not None:
+                    setup[key] = pd.Timestamp(setup[key])
+            self.setup = SetupState(**{key: value for key, value in setup.items() if key in SetupState.__dataclass_fields__})
+        continuity = state.get("continuity", {})
+        self.previous_session_id = continuity.get("previous_session_id")
+        self.last_event_side = continuity.get("last_event_side")
+        self.event_reset = bool(continuity.get("event_reset", True))
 
     def snapshot(self, timestamp: pd.Timestamp, session: dict[str, Any] | None = None) -> StateSnapshot:
         return StateSnapshot(self.position.to_dict(), self.setup.to_dict(), session or session_snapshot(timestamp, self.session_config))
@@ -285,4 +309,9 @@ class ResearchStateController:
         value["controller_timing"] = dict(self.timing_totals)
         value["snapshot_mode"] = self.snapshot_mode.value
         value["stored_snapshot_count"] = len(self.stored_snapshots) + (1 if self.snapshot_mode is SnapshotMode.FINAL_ONLY else 0)
+        value["continuity"] = {
+            "previous_session_id": self.previous_session_id,
+            "last_event_side": self.last_event_side,
+            "event_reset": self.event_reset,
+        }
         return value
