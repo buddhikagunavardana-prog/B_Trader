@@ -12,7 +12,7 @@ from src.strategies.json_strategy_loader import load_json_strategy_file
 
 
 EXPECTED_CATEGORY_COUNTS = {
-    "trend": 10,
+    "trend": 11,
     "momentum": 11,
     "volatility": 7,
     "volume": 9,  # Professional set plus rolling VWAP and compatible volume SMA.
@@ -71,7 +71,7 @@ def _strategy(indicators: dict) -> dict:
 
 
 def test_professional_registry_inventory_and_categories():
-    assert len(indicator_registry.list_names()) == 50
+    assert len(indicator_registry.list_names()) == 51
     assert {
         category: len(indicator_registry.list_by_category(category))
         for category in indicator_registry.list_categories()

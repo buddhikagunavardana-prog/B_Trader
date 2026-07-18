@@ -1,4 +1,4 @@
-from strategies.strategy_loader import load_strategy
+from src.strategies.strategy_loader import load_strategy
 
 
 def main():

@@ -1,8 +1,8 @@
-from plugins.binance_data import download_klines
-from strategies.strategy_loader import load_strategy
-from engines.indicator_engine import calculate_indicators
-from engines.signal_engine import generate_signals
-from engines.backtest_engine import BacktestEngine
+from src.engines.backtest_engine import BacktestEngine
+from src.engines.indicator_engine import calculate_indicators
+from src.engines.signal_engine import generate_signals
+from src.plugins.binance_data import download_klines
+from src.strategies.strategy_loader import load_strategy
 
 
 strategy = load_strategy()
@@ -21,11 +21,11 @@ engine = BacktestEngine(strategy)
 result = engine.run(df, df["SIGNAL"])
 
 print("\n===== BACKTEST RESULT =====")
-print(f"Total Trades  : {result['total_trades']}")
-print(f"Wins          : {result['wins']}")
-print(f"Losses        : {result['losses']}")
-print(f"Win Rate      : {result['win_rate']}%")
-print(f"Total PnL     : {result['total_pnl_percent']}%")
-print(f"Avg Win       : {result['average_win_percent']}%")
-print(f"Avg Loss      : {result['average_loss_percent']}%")
-print(f"Profit Factor : {result['profit_factor']}")
+print(f"Total Trades  : {result.total_trades}")
+print(f"Wins          : {result.wins}")
+print(f"Losses        : {result.losses}")
+print(f"Win Rate      : {result.win_rate}%")
+print(f"Total PnL     : {result.total_pnl_pct}%")
+print(f"Avg Win       : {result.avg_win}")
+print(f"Avg Loss      : {result.avg_loss}")
+print(f"Profit Factor : {result.profit_factor}")

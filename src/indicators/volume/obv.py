@@ -1,17 +1,11 @@
+import numpy as np
 import pandas as pd
 
+from src.indicators._validation import require_columns
 
-def calculate_obv(df):
-    if df.empty:
-        return pd.Series(dtype=float, index=df.index, name="OBV")
-    obv = [0]
 
-    for i in range(1, len(df)):
-        if df["close"].iloc[i] > df["close"].iloc[i - 1]:
-            obv.append(obv[-1] + df["volume"].iloc[i])
-        elif df["close"].iloc[i] < df["close"].iloc[i - 1]:
-            obv.append(obv[-1] - df["volume"].iloc[i])
-        else:
-            obv.append(obv[-1])
-
-    return df["volume"].copy().__class__(obv, index=df.index)
+def calculate_obv(df: pd.DataFrame) -> pd.Series:
+    """Calculate vectorized On-Balance Volume from close direction."""
+    require_columns(df, ["close", "volume"])
+    direction = np.sign(df["close"].diff()).fillna(0.0)
+    return (direction * df["volume"]).cumsum().rename("OBV")

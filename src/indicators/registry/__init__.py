@@ -7,6 +7,7 @@ from typing import Any
 
 import pandas as pd
 
+from src.indicators._validation import require_columns
 from src.indicators.candlestick.candlestick import calculate_candlestick_patterns
 from src.indicators.market_strength.adx import calculate_adx
 from src.indicators.market_strength.aroon import calculate_aroon
@@ -36,6 +37,7 @@ from src.indicators.trend.ema import calculate_ema
 from src.indicators.trend.hma import calculate_hma
 from src.indicators.trend.ichimoku import calculate_ichimoku_cloud
 from src.indicators.trend.kama import calculate_kama
+from src.indicators.trend.parabolic_sar import calculate_parabolic_sar
 from src.indicators.trend.sma import calculate_sma
 from src.indicators.trend.supertrend import calculate_supertrend
 from src.indicators.trend.tema import calculate_tema
@@ -65,13 +67,23 @@ class IndicatorDefinition:
     category: str
     function: Callable
     default_params: dict[str, Any]
+    required_columns: tuple[str, ...]
+    output_columns: tuple[str, ...]
+    description: str
+    dependencies: tuple[str, ...]
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "category": self.category,
             "function": self.function,
+            "callable": self.function,
             "default_params": dict(self.default_params),
+            "default_parameters": dict(self.default_params),
+            "required_columns": list(self.required_columns),
+            "output_columns": list(self.output_columns),
+            "description": self.description,
+            "dependencies": list(self.dependencies),
         }
 
 
@@ -85,17 +97,35 @@ class IndicatorRegistry:
         category: str,
         function: Callable,
         default_params: dict[str, Any] | None = None,
+        *,
+        required_columns: tuple[str, ...] = (),
+        output_columns: tuple[str, ...] = (),
+        description: str = "",
+        dependencies: tuple[str, ...] = (),
     ) -> None:
         key = self._normalize(name)
         if not key or not callable(function):
             raise ValueError("indicator name and callable function are required")
         if key in self._definitions:
             raise ValueError(f"indicator already registered: {key}")
+        normalized_category = str(category).strip().lower()
+        if not normalized_category:
+            raise ValueError("indicator category is required")
+        if output_columns and len(set(output_columns)) != len(output_columns):
+            raise ValueError(f"output columns must be unique: {key}")
+        if any(not str(column).strip() for column in required_columns):
+            raise ValueError(f"required columns must be non-empty: {key}")
         definition = IndicatorDefinition(
             name=key,
-            category=str(category).strip().lower(),
+            category=normalized_category,
             function=function,
             default_params=dict(default_params or {}),
+            required_columns=tuple(required_columns),
+            # Preserve the original four-argument registration API while
+            # giving older callers a predictable single-output convention.
+            output_columns=tuple(output_columns) or (key.upper(),),
+            description=str(description).strip() or f"Calculate {key.replace('_', ' ')}.",
+            dependencies=tuple(self._normalize(item) for item in dependencies),
         )
         self._validate_signature(definition, definition.default_params)
         self._definitions[key] = definition
@@ -137,7 +167,10 @@ class IndicatorRegistry:
             }:
                 if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
                     raise ValueError(f"{key} must be a positive integer")
-            elif key in {"multiplier", "std_dev", "deviations", "annualization", "volume_divisor"}:
+            elif key in {
+                "multiplier", "std_dev", "deviations", "annualization",
+                "volume_divisor", "acceleration", "maximum",
+            }:
                 if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
                     raise ValueError(f"{key} must be positive")
         return merged
@@ -151,7 +184,15 @@ class IndicatorRegistry:
         definition = self._definitions.get(self._normalize(name))
         if definition is None:
             raise ValueError(f"Indicator not found in registry: {name}")
-        return definition.function(df, **self.validate_parameters(name, params))
+        require_columns(df, definition.required_columns)
+        self._validate_dependencies(definition)
+        output = definition.function(df, **self.validate_parameters(name, params))
+        return self._standardize_output(definition, output, df.index)
+
+    def validate_dependencies(self) -> None:
+        """Verify that all declared indicator dependencies are registered."""
+        for definition in self._definitions.values():
+            self._validate_dependencies(definition)
 
     @staticmethod
     def _normalize(name: str) -> str:
@@ -178,8 +219,209 @@ class IndicatorRegistry:
                 f"invalid parameters for indicator {definition.name}: {error}",
             ) from error
 
+    def _validate_dependencies(self, definition: IndicatorDefinition) -> None:
+        missing = [
+            dependency for dependency in definition.dependencies
+            if dependency not in self._definitions
+        ]
+        if missing:
+            raise ValueError(
+                f"indicator {definition.name} has unregistered dependencies: {missing}",
+            )
+
+    @staticmethod
+    def _standardize_output(
+        definition: IndicatorDefinition,
+        output: Any,
+        index: pd.Index,
+    ) -> Any:
+        expected = definition.output_columns
+
+        def normalize_series(series: pd.Series, column: str) -> pd.Series:
+            if not isinstance(series, pd.Series) or not series.index.equals(index):
+                raise ValueError(
+                    f"indicator {definition.name} returned a misaligned output",
+                )
+            result = series.rename(column)
+            if pd.api.types.is_numeric_dtype(result.dtype):
+                result = result.replace([float("inf"), float("-inf")], float("nan"))
+            return result
+
+        if isinstance(output, pd.Series):
+            if len(expected) != 1:
+                raise ValueError(f"indicator {definition.name} output count mismatch")
+            return normalize_series(output, expected[0])
+        if isinstance(output, pd.DataFrame):
+            if not output.index.equals(index) or tuple(output.columns) != expected:
+                raise ValueError(f"indicator {definition.name} output columns mismatch")
+            result = output.copy()
+            numeric = result.select_dtypes(include="number").columns
+            result[numeric] = result[numeric].replace(
+                [float("inf"), float("-inf")], float("nan"),
+            )
+            return result
+        if isinstance(output, (tuple, list)):
+            if len(output) != len(expected):
+                raise ValueError(f"indicator {definition.name} output count mismatch")
+            values = [
+                normalize_series(series, column)
+                for series, column in zip(output, expected)
+            ]
+            return tuple(values) if isinstance(output, tuple) else values
+        if isinstance(output, dict):
+            if len(output) != len(expected):
+                raise ValueError(f"indicator {definition.name} output count mismatch")
+            return {
+                key: normalize_series(series, column)
+                for (key, series), column in zip(output.items(), expected)
+            }
+        raise ValueError(
+            f"indicator {definition.name} returned unsupported output {type(output)!r}",
+        )
+
 
 indicator_registry = IndicatorRegistry()
+
+
+_INDICATOR_METADATA: dict[str, dict[str, tuple[str, ...]]] = {
+    "ema": {"required_columns": ("close",), "output_columns": ("EMA",)},
+    "sma": {"required_columns": ("close",), "output_columns": ("SMA",)},
+    "wma": {"required_columns": ("close",), "output_columns": ("WMA",)},
+    "vwma": {"required_columns": ("close", "volume"), "output_columns": ("VWMA",)},
+    "hma": {"required_columns": ("close",), "output_columns": ("HMA",)},
+    "dema": {"required_columns": ("close",), "output_columns": ("DEMA",)},
+    "tema": {"required_columns": ("close",), "output_columns": ("TEMA",)},
+    "kama": {"required_columns": ("close",), "output_columns": ("KAMA",)},
+    "supertrend": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("SUPERTREND", "SUPERTREND_DIRECTION"),
+        "dependencies": ("atr",),
+    },
+    "ichimoku_cloud": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": (
+            "ICHIMOKU_CONVERSION", "ICHIMOKU_BASE", "ICHIMOKU_SPAN_A",
+            "ICHIMOKU_SPAN_B", "ICHIMOKU_LAGGING",
+        ),
+    },
+    "parabolic_sar": {
+        "required_columns": ("high", "low"),
+        "output_columns": ("PARABOLIC_SAR", "PARABOLIC_SAR_DIRECTION"),
+    },
+    "rsi": {"required_columns": ("close",), "output_columns": ("RSI",)},
+    "macd": {
+        "required_columns": ("close",),
+        "output_columns": ("MACD", "MACD_SIGNAL", "MACD_HISTOGRAM"),
+    },
+    "stochastic": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("STOCHASTIC_K", "STOCHASTIC_D"),
+    },
+    "stochastic_rsi": {
+        "required_columns": ("close",),
+        "output_columns": ("STOCHASTIC_RSI_K", "STOCHASTIC_RSI_D"),
+        "dependencies": ("rsi",),
+    },
+    "cci": {"required_columns": ("high", "low", "close"), "output_columns": ("CCI",)},
+    "williams_r": {"required_columns": ("high", "low", "close"), "output_columns": ("WILLIAMS_R",)},
+    "roc": {"required_columns": ("close",), "output_columns": ("ROC",)},
+    "momentum": {"required_columns": ("close",), "output_columns": ("MOMENTUM",)},
+    "tsi": {"required_columns": ("close",), "output_columns": ("TSI",)},
+    "ultimate_oscillator": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("ULTIMATE_OSCILLATOR",),
+    },
+    "zscore": {"required_columns": ("close",), "output_columns": ("ZSCORE",)},
+    "atr": {"required_columns": ("high", "low", "close"), "output_columns": ("ATR",)},
+    "bollinger_bands": {
+        "required_columns": ("close",),
+        "output_columns": ("BOLLINGER_UPPER", "BOLLINGER_MIDDLE", "BOLLINGER_LOWER"),
+    },
+    "keltner_channel": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("KELTNER_UPPER", "KELTNER_MIDDLE", "KELTNER_LOWER"),
+        "dependencies": ("ema", "atr"),
+    },
+    "donchian_channel": {
+        "required_columns": ("high", "low"),
+        "output_columns": ("DONCHIAN_UPPER", "DONCHIAN_MIDDLE", "DONCHIAN_LOWER"),
+    },
+    "historical_volatility": {"required_columns": ("close",), "output_columns": ("HISTORICAL_VOLATILITY",)},
+    "standard_deviation": {"required_columns": ("close",), "output_columns": ("STANDARD_DEVIATION",)},
+    "chaikin_volatility": {"required_columns": ("high", "low"), "output_columns": ("CHAIKIN_VOLATILITY",)},
+    "obv": {"required_columns": ("close", "volume"), "output_columns": ("OBV",)},
+    "vwap": {"required_columns": ("high", "low", "close", "volume"), "output_columns": ("VWAP",)},
+    "cmf": {"required_columns": ("high", "low", "close", "volume"), "output_columns": ("CMF",)},
+    "mfi": {"required_columns": ("high", "low", "close", "volume"), "output_columns": ("MFI",)},
+    "accumulation_distribution": {
+        "required_columns": ("high", "low", "close", "volume"),
+        "output_columns": ("ACCUMULATION_DISTRIBUTION",),
+    },
+    "volume_roc": {"required_columns": ("volume",), "output_columns": ("VOLUME_ROC",)},
+    "ease_of_movement": {"required_columns": ("high", "low", "volume"), "output_columns": ("EASE_OF_MOVEMENT",)},
+    "volume_sma": {"required_columns": ("volume",), "output_columns": ("VOLUME_SMA",)},
+    "rolling_vwap": {
+        "required_columns": ("high", "low", "close", "volume"),
+        "output_columns": ("ROLLING_VWAP",),
+    },
+    "adx": {"required_columns": ("high", "low", "close"), "output_columns": ("ADX",)},
+    "aroon": {"required_columns": ("high", "low"), "output_columns": ("AROON_UP", "AROON_DOWN")},
+    "vortex": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("VORTEX_POSITIVE", "VORTEX_NEGATIVE"),
+    },
+    "choppiness_index": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("CHOPPINESS_INDEX",),
+    },
+    "dmi": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("DMI_PLUS", "DMI_MINUS"),
+        "dependencies": ("atr",),
+    },
+    "elder_ray_index": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("BULL_POWER", "BEAR_POWER"),
+        "dependencies": ("ema",),
+    },
+    "pivot_points": {
+        "required_columns": ("high", "low", "close"),
+        "output_columns": ("PIVOT", "PIVOT_R1", "PIVOT_R2", "PIVOT_R3", "PIVOT_S1", "PIVOT_S2", "PIVOT_S3"),
+    },
+    "support_resistance": {
+        "required_columns": ("high", "low"),
+        "output_columns": ("SUPPORT", "RESISTANCE"),
+    },
+    "swing_high_low": {"required_columns": ("high", "low"), "output_columns": ("SWING_HIGH", "SWING_LOW")},
+    "price_channels": {
+        "required_columns": ("high", "low"),
+        "output_columns": ("PRICE_CHANNEL_UPPER", "PRICE_CHANNEL_MIDDLE", "PRICE_CHANNEL_LOWER"),
+    },
+    "fibonacci_retracement": {
+        "required_columns": ("high", "low"),
+        "output_columns": (
+            "FIBONACCI_0_0", "FIBONACCI_23_6", "FIBONACCI_38_2", "FIBONACCI_50_0",
+            "FIBONACCI_61_8", "FIBONACCI_78_6", "FIBONACCI_100_0",
+        ),
+    },
+    "linear_regression_channel": {
+        "required_columns": ("close",),
+        "output_columns": (
+            "LINEAR_REGRESSION_UPPER", "LINEAR_REGRESSION_MIDDLE", "LINEAR_REGRESSION_LOWER",
+        ),
+    },
+    "candlestick": {
+        "required_columns": ("open", "high", "low", "close"),
+        "output_columns": (
+            "doji", "dragonfly_doji", "gravestone_doji", "hammer", "hanging_man",
+            "inverted_hammer", "shooting_star", "bullish_engulfing", "bearish_engulfing",
+            "bullish_harami", "bearish_harami", "morning_star", "evening_star",
+            "bullish_marubozu", "bearish_marubozu", "spinning_top", "tweezer_bottom",
+            "tweezer_top", "piercing_line", "dark_cloud_cover", "three_white_soldiers",
+            "three_black_crows", "inside_bar", "outside_bar", "gap_up", "gap_down",
+        ),
+    },
+}
 
 
 def _register_defaults() -> None:
@@ -194,6 +436,7 @@ def _register_defaults() -> None:
         ("kama", "trend", calculate_kama, {"period": 10, "fast_period": 2, "slow_period": 30, "source": "close"}),
         ("supertrend", "trend", calculate_supertrend, {"period": 10, "multiplier": 3.0}),
         ("ichimoku_cloud", "trend", calculate_ichimoku_cloud, {"conversion_period": 9, "base_period": 26, "span_b_period": 52, "displacement": 26}),
+        ("parabolic_sar", "trend", calculate_parabolic_sar, {"acceleration": 0.02, "maximum": 0.2}),
         ("rsi", "momentum", calculate_rsi, {"period": 14}),
         ("macd", "momentum", calculate_macd, {"fast": 12, "slow": 26, "signal": 9}),
         ("stochastic", "momentum", calculate_stochastic, {"k_period": 14, "d_period": 3}),
@@ -236,7 +479,15 @@ def _register_defaults() -> None:
         ("candlestick", "candlestick", calculate_candlestick_patterns, {}),
     ]
     for name, category, function, defaults in definitions:
-        indicator_registry.register(name, category, function, defaults)
+        indicator_registry.register(
+            name,
+            category,
+            function,
+            defaults,
+            description=f"Calculate {name.replace('_', ' ')}.",
+            **_INDICATOR_METADATA[name],
+        )
+    indicator_registry.validate_dependencies()
 
 
 _register_defaults()

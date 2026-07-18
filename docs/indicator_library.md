@@ -1,16 +1,19 @@
 # B Trader Professional Indicator Library
 
-B Trader exposes 50 registered indicators through
+B Trader exposes 51 registered indicators through
 `src.indicators.registry.indicator_registry`. The registry validates JSON
-parameters, supplies documented defaults, resolves backward-compatible names,
-and attaches newly enabled indicators to the research DataFrame without manual
-engine imports.
+parameters and required columns, supplies documented defaults and output
+metadata, resolves backward-compatible names, validates dependencies, and
+attaches newly enabled indicators to the research DataFrame without manual
+engine imports. The detailed framework and gap inventory is maintained in
+`reports/indicator_framework_inventory.csv`.
 
 ## Inventory
 
-### Trend (10)
+### Trend (11)
 
 EMA, SMA, WMA, VWMA, HMA, DEMA, TEMA, KAMA, SuperTrend, and Ichimoku Cloud.
+Parabolic SAR provides both its trailing level and direction.
 
 ### Momentum (11)
 

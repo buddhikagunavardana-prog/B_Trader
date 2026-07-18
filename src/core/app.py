@@ -1,9 +1,9 @@
-from utils.banner import show_banner
-from utils.system import show_system_info
-from plugins.binance_data import get_live_price, download_klines
-from engines.indicator_engine import calculate_indicators
-from strategies.signal import generate_signal
-from engines.risk_engine import calculate_risk_levels
+from src.engines.indicator_engine import calculate_indicators
+from src.engines.risk_engine import calculate_risk_levels
+from src.plugins.binance_data import download_klines, get_live_price
+from src.strategies.signal import generate_signal
+from src.utils.banner import show_banner
+from src.utils.system import show_system_info
 
 import os
 

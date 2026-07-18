@@ -1,0 +1,67 @@
+Indicator,Category,Status,File,Registered,Tested,Outputs,Notes
+EMA,Trend,Existing,src/indicators/trend/ema.py,Yes,Smoke,EMA,
+SMA,Trend,Existing,src/indicators/trend/sma.py,Yes,Smoke,SMA,
+WMA,Trend,Existing,src/indicators/trend/wma.py,Yes,Smoke,WMA,
+VWMA,Trend,Existing,src/indicators/trend/vwma.py,Yes,Smoke,VWMA,
+HMA,Trend,Existing,src/indicators/trend/hma.py,Yes,Smoke,HMA,
+DEMA,Trend,Existing,src/indicators/trend/dema.py,Yes,Smoke,DEMA,
+TEMA,Trend,Existing,src/indicators/trend/tema.py,Yes,Smoke,TEMA,
+KAMA,Trend,Existing,src/indicators/trend/kama.py,Yes,Smoke,KAMA,
+SuperTrend,Trend,Existing,src/indicators/trend/supertrend.py,Yes,Smoke,"SUPERTREND; SUPERTREND_DIRECTION",Depends on ATR
+Ichimoku Cloud,Trend,Corrected,src/indicators/trend/ichimoku.py,Yes,Focused,"ICHIMOKU_CONVERSION; ICHIMOKU_BASE; ICHIMOKU_SPAN_A; ICHIMOKU_SPAN_B; ICHIMOKU_LAGGING",Lagging span corrected to causal alignment
+Parabolic SAR,Trend,Added,src/indicators/trend/parabolic_sar.py,Yes,Focused,"PARABOLIC_SAR; PARABOLIC_SAR_DIRECTION",First safe expansion pack
+RSI,Momentum,Existing,src/indicators/momentum/rsi.py,Yes,Smoke,RSI,
+MACD,Momentum,Existing,src/indicators/momentum/macd.py,Yes,Smoke,"MACD; MACD_SIGNAL; MACD_HISTOGRAM",
+Stochastic Oscillator,Momentum,Existing,src/indicators/momentum/stochastic.py,Yes,Smoke,"STOCHASTIC_K; STOCHASTIC_D",
+Stochastic RSI,Momentum,Existing,src/indicators/momentum/stochastic_rsi.py,Yes,Smoke,"STOCHASTIC_RSI_K; STOCHASTIC_RSI_D",Depends on RSI
+CCI,Momentum,Existing,src/indicators/momentum/cci.py,Yes,Smoke,CCI,
+Williams %R,Momentum,Existing,src/indicators/momentum/williams_r.py,Yes,Smoke,WILLIAMS_R,
+ROC,Momentum,Existing,src/indicators/momentum/roc.py,Yes,Smoke,ROC,
+Momentum,Momentum,Existing,src/indicators/momentum/momentum.py,Yes,Smoke,MOMENTUM,
+TSI,Momentum,Existing,src/indicators/momentum/tsi.py,Yes,Smoke,TSI,
+Ultimate Oscillator,Momentum,Existing,src/indicators/momentum/ultimate_oscillator.py,Yes,Smoke,ULTIMATE_OSCILLATOR,
+Z-Score,Momentum,Existing,src/indicators/momentum/zscore.py,Yes,Smoke,ZSCORE,Extra professional indicator outside requested target list
+ATR,Volatility,Existing,src/indicators/volatility/atr.py,Yes,Smoke,ATR,
+Bollinger Bands,Volatility,Existing,src/indicators/volatility/bollinger.py,Yes,Smoke,"BOLLINGER_UPPER; BOLLINGER_MIDDLE; BOLLINGER_LOWER",Width and Percent B are not separate outputs
+Keltner Channel,Volatility,Existing,src/indicators/volatility/keltner.py,Yes,Smoke,"KELTNER_UPPER; KELTNER_MIDDLE; KELTNER_LOWER",Requested target classifies this under Trend
+Donchian Channel,Volatility,Existing,src/indicators/volatility/donchian.py,Yes,Smoke,"DONCHIAN_UPPER; DONCHIAN_MIDDLE; DONCHIAN_LOWER",Requested target classifies this under Trend
+Historical Volatility,Volatility,Existing,src/indicators/volatility/historical_volatility.py,Yes,Smoke,HISTORICAL_VOLATILITY,
+Standard Deviation,Volatility,Existing,src/indicators/volatility/standard_deviation.py,Yes,Smoke,STANDARD_DEVIATION,Extra professional indicator outside requested target list
+Chaikin Volatility,Volatility,Existing,src/indicators/volatility/chaikin.py,Yes,Smoke,CHAIKIN_VOLATILITY,Extra professional indicator outside requested target list
+OBV,Volume,Existing,src/indicators/volume/obv.py,Yes,Smoke,OBV,
+VWAP,Volume,Existing,src/indicators/volume/vwap.py,Yes,Smoke,VWAP,Cumulative session-agnostic implementation
+CMF,Volume,Existing,src/indicators/volume/cmf.py,Yes,Smoke,CMF,
+MFI,Volume,Existing,src/indicators/volume/mfi.py,Yes,Smoke,MFI,
+Accumulation/Distribution Line,Volume,Existing,src/indicators/volume/adl.py,Yes,Smoke,ACCUMULATION_DISTRIBUTION,
+Volume ROC,Volume,Existing,src/indicators/volume/volume_roc.py,Yes,Smoke,VOLUME_ROC,Extra professional indicator outside requested target list
+Ease of Movement,Volume,Existing,src/indicators/volume/ease_of_movement.py,Yes,Smoke,EASE_OF_MOVEMENT,
+Volume SMA,Volume,Existing,src/indicators/volume/volume.py,Yes,Smoke,VOLUME_SMA,
+Rolling VWAP,Volume,Existing,src/indicators/volume/rolling_vwap.py,Yes,Smoke,ROLLING_VWAP,Overlaps cumulative VWAP but uses a fixed rolling window
+ADX,Market Strength,Existing,src/indicators/market_strength/adx.py,Yes,Smoke,ADX,
+Aroon,Market Strength,Existing,src/indicators/market_strength/aroon.py,Yes,Smoke,"AROON_UP; AROON_DOWN",
+Vortex Indicator,Market Strength,Existing,src/indicators/market_strength/vortex.py,Yes,Smoke,"VORTEX_POSITIVE; VORTEX_NEGATIVE",Requested target classifies this under Trend
+Choppiness Index,Market Strength,Existing,src/indicators/market_strength/choppiness.py,Yes,Smoke,CHOPPINESS_INDEX,
+DMI,Market Strength,Existing,src/indicators/market_strength/dmi.py,Yes,Smoke,"DMI_PLUS; DMI_MINUS",Overlaps standalone Plus DI and Minus DI target entries
+Elder Ray Index,Market Strength,Existing,src/indicators/market_strength/elder_ray.py,Yes,Smoke,"BULL_POWER; BEAR_POWER",Extra professional indicator outside requested target list
+Pivot Points,Structure,Existing,src/indicators/structure/pivot_points.py,Yes,Smoke,"PIVOT; PIVOT_R1; PIVOT_R2; PIVOT_R3; PIVOT_S1; PIVOT_S2; PIVOT_S3",
+Support and Resistance,Structure,Existing,src/indicators/structure/support_resistance.py,Yes,Smoke,"SUPPORT; RESISTANCE",Overlaps price-channel extrema
+Swing High and Swing Low,Structure,Corrected,src/indicators/structure/swing.py,Yes,Focused,"SWING_HIGH; SWING_LOW",Signals now appear at confirmation time without centered-window look-ahead
+Price Channels,Structure,Existing,src/indicators/structure/price_channels.py,Yes,Smoke,"PRICE_CHANNEL_UPPER; PRICE_CHANNEL_MIDDLE; PRICE_CHANNEL_LOWER",Overlaps Donchian Channel and support/resistance
+Fibonacci Retracement,Structure,Existing,src/indicators/structure/fibonacci_retracement.py,Yes,Smoke,"FIBONACCI_0_0; FIBONACCI_23_6; FIBONACCI_38_2; FIBONACCI_50_0; FIBONACCI_61_8; FIBONACCI_78_6; FIBONACCI_100_0",Duplicates helper in src/indicators/structure/fibonacci.py
+Linear Regression Channel,Structure,Existing,src/indicators/structure/linear_regression_channel.py,Yes,Smoke,"LINEAR_REGRESSION_UPPER; LINEAR_REGRESSION_MIDDLE; LINEAR_REGRESSION_LOWER",Middle output overlaps requested Linear Regression Trend
+Candlestick Engine,Candlestick,Existing,src/indicators/candlestick/candlestick.py,Yes,Smoke,26 pattern columns,Counted once as required
+Aroon Oscillator,Market Strength,Unregistered,src/indicators/market_strength/aroon_oscillator.py,No,Missing,AROON_OSCILLATOR,Derived overlap of Aroon Up minus Aroon Down
+Breakout Detection,Structure,Unregistered,src/indicators/structure/breakout.py,No,Missing,"BREAKOUT_HIGH; BREAKOUT_LOW",Implementation overlaps price channels and lacks framework validation
+Fibonacci Levels Helper,Structure,Duplicate,src/indicators/structure/fibonacci.py,No,Missing,7 static levels,Overlaps registered rolling Fibonacci Retracement
+Linear Regression Trend,Trend,Missing,,No,Missing,LINEAR_REGRESSION_TREND,Linear Regression Channel middle output partially overlaps
+TRIX,Momentum,Missing,,No,Missing,TRIX,
+PPO,Momentum,Missing,,No,Missing,"PPO; PPO_SIGNAL; PPO_HISTOGRAM",
+Force Index,Volume,Missing,,No,Missing,FORCE_INDEX,
+Bollinger Band Width,Volatility,Missing,,No,Missing,BOLLINGER_BAND_WIDTH,Derivable from existing Bollinger Bands
+Bollinger Percent B,Volatility,Missing,,No,Missing,BOLLINGER_PERCENT_B,Derivable from existing Bollinger Bands
+Chandelier Exit,Volatility,Missing,,No,Missing,"CHANDELIER_LONG; CHANDELIER_SHORT",
+Plus DI,Market Strength,Overlap,,No,Missing,PLUS_DI,Available only as DMI_PLUS output from registered DMI
+Minus DI,Market Strength,Overlap,,No,Missing,MINUS_DI,Available only as DMI_MINUS output from registered DMI
+Fair Value Gap,Structure,Missing,,No,Missing,"FVG_BULLISH; FVG_BEARISH",
+Order Block,Structure,Missing,,No,Missing,"ORDER_BLOCK_BULLISH; ORDER_BLOCK_BEARISH",
+Market Structure BOS / CHoCH,Structure,Missing,,No,Missing,"BOS; CHOCH",

@@ -1,4 +1,4 @@
-from plugins.binance_data import download_klines
+from src.plugins.binance_data import download_klines
 
 df = download_klines(
     symbol="BTCUSDT",

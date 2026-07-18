@@ -1,7 +1,7 @@
-from plugins.binance_data import download_klines
-from strategies.strategy_loader import load_strategy
-from engines.indicator_engine import calculate_indicators
-from engines.signal_engine import generate_signals
+from src.engines.indicator_engine import calculate_indicators
+from src.engines.signal_engine import generate_signals
+from src.plugins.binance_data import download_klines
+from src.strategies.strategy_loader import load_strategy
 
 
 strategy = load_strategy()
